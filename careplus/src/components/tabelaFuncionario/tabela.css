@@ -1,0 +1,70 @@
+.tabela-container{
+    background-color: #fff;
+    width: 1000px;
+    min-height: 700px;
+    margin: 5% auto;
+    border-radius: 10px;
+}
+
+
+table{
+   width: 100%; 
+}
+
+.tabela-container td{
+    padding: 16px 15px;
+
+}
+
+.tabela-pacientes{
+    border-collapse: separate;
+    border-spacing: 0; /* opcional, remove espaços entre células */
+    border-radius: 10px; /* arredondamento */
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.tabela-pacientes thead{
+    background: #F5F5F5;
+    border: none;
+}
+
+.tabela-pacientes th {
+    padding: 22px 22px 30px 16px;
+    text-align: center;
+    font-weight: 500;
+    color: #666;
+    font-size: 14px;
+    border: none;
+    vertical-align: middle;
+}
+
+.tabela-pacientes th svg {
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+
+
+.tabela-pacientes td {
+    padding: 16px;
+    text-align: center;
+    font-weight: 400;
+    border: none;
+    border-bottom: 1px solid rgb(142, 142, 142);
+}
+
+.usuario-dados{
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.usuario-dados :nth-child(2){
+    color: #666;
+    font-size: 13px;
+}
+
+.botao:hover{
+    cursor: pointer;
+}
