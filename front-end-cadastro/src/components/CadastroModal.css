@@ -21,7 +21,7 @@ body {
 .modal-card {
   width: 450px;
   background: #fff;
-  padding: 35px 35px 45px;
+  padding: 30px 30px 25px;
   border-radius: 25px;
   position: relative;
   text-align: center;
@@ -39,7 +39,7 @@ h2 {
 }
 
 .modal-field {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -60,6 +60,14 @@ h2 {
   border-radius: 10px;
   font-size: 15px;
   box-sizing: border-box;
+}
+
+.modal-field-checkbox{
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
 }
 
 .btn-submit {
