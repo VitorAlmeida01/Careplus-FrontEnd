@@ -15,7 +15,7 @@
 
 .sidebar-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     background: linear-gradient(135deg, #4FC3F7 0%, #5FCB9F 100%);

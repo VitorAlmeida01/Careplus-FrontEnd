@@ -1,0 +1,13 @@
+.botaoCadastro{
+    padding: 15px;
+    background: linear-gradient(90deg, #00a0ff, #00d48c);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.6ch;
+}
+
+.botaoCadastro:hover{
+    cursor: pointer;
+    border: 1px solid black;
+}

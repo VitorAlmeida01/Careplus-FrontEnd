@@ -8,7 +8,7 @@ export default function RoutesApp(){
     return(
         <BrowserRouter>
             <Routes>
-                <Route path="/login" element={<TelaLogin/>} />
+                <Route path="/" element={<TelaLogin/>} />
                 <Route path="/funcionarios" element={<Funcionarios/>} />
             </Routes>
         </BrowserRouter>

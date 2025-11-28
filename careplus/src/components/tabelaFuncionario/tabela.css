@@ -1,8 +1,9 @@
 .tabela-container{
     background-color: #fff;
-    width: 1000px;
+    width: 90%;
     min-height: 700px;
-    margin: 5% auto;
+    margin: 1% 4%;
+
     border-radius: 10px;
 }
 

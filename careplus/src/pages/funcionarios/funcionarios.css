@@ -1,6 +1,22 @@
 .container-main{
-    border: 1px solid black;
-    background-color: #ffffff;
     width: 100%;
-    height: 100%;
+    height: 100vh;
+}
+
+.containerHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0% 2%;
+}
+
+.containerBotaoCadastro{
+    width: 90%;
+    display: flex;
+    margin: 1% 4%;
+    justify-content: flex-end;
+}
+
+.containerBotaoCadastro button{
+    align-self: flex-end;
 }

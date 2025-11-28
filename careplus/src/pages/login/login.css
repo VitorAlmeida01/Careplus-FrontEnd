@@ -57,8 +57,11 @@ h2 {
   box-sizing: border-box;
 }
 
-button {
-  width: 100%;
+.botaologin {
+  display: flex;
+  text-decoration: none;
+  justify-content: center;
+  width: 90%;
   padding: 16px;
   border: none;
   margin-top: 10px;

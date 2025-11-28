@@ -1,6 +1,7 @@
 import React from "react";
 import "./login.css";
 import logo from '/src/assets/logo.png';
+import { Link } from "react-router-dom";
 
 export default function TelaLogin() {
   return (
@@ -21,7 +22,9 @@ export default function TelaLogin() {
           <input type="password" placeholder="******"/>
         </div>
 
-        <button>Entrar</button>
+        {/* <button className="botaologin"></button> */}
+
+        <Link to={"/funcionarios"} className="botaologin">Login</Link>
 
         <a href="#" className="esqueceu">Esqueceu sua senha?</a>
       </div>
