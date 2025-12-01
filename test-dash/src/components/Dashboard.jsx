@@ -21,7 +21,7 @@ export function Dashboard() {
                 <div className="Breadcrumbs">
                     <img src={cardapio} alt="" className="MenuHamburguer"/>
                 </div>
-                <div className="TopDashKpis">
+                <div className="TopDashKpis" >
                     <KpiCards {...dadosFilaEspera[0]} />
                     <KpiCards {...dadosFilaEspera[1]} />
                 </div>
