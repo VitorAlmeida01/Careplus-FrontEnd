@@ -1,11 +1,11 @@
-import './style.css'
+import "./style.css"
 
-export default function BotaoCadastro(){
-    return(
-        <>
-            <button className="botaoCadastro">
-                Cadastrar
-            </button>
-        </>
-    )
+export default function BotaoCadastro({ onClick }) {
+  return (
+    <>
+      <button className="botaoCadastro" onClick={onClick}>
+        Cadastrar
+      </button>
+    </>
+  )
 }

@@ -1,13 +1,15 @@
-.botaoCadastro{
-    padding: 15px;
-    background: linear-gradient(90deg, #00a0ff, #00d48c);
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.6ch;
+.botaoCadastro {
+  padding: 15px;
+  background: linear-gradient(90deg, #00a0ff, #00d48c);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.6ch;
+  transition: 0.2s;
 }
 
-.botaoCadastro:hover{
-    cursor: pointer;
-    border: 1px solid black;
+.botaoCadastro:hover {
+  cursor: pointer;
+  border: 1px solid black;
+  box-shadow: 10px 9px 39px -2px rgba(0, 0, 0, 0.35);
 }

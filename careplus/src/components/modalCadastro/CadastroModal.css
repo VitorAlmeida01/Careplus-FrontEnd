@@ -10,7 +10,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -25,7 +25,7 @@ body {
   border-radius: 25px;
   position: relative;
   text-align: center;
-  box-shadow: 0px 12px 40px rgba(0,0,0,0.15);
+  box-shadow: 0px 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .modal-logo {
@@ -52,7 +52,8 @@ h2 {
   color: #5a5a5a;
 }
 
-.modal-field input, .modal-field select {
+.modal-field input,
+.modal-field select {
   width: 100%;
   padding: 16px;
   border: rgb(161, 156, 156) 1px solid;
@@ -74,8 +75,7 @@ h2 {
   font-size: 16px;
 }
 
-
-.close-btn {
+.close-btn-modal {
   position: absolute;
   top: 18px;
   right: 18px;
