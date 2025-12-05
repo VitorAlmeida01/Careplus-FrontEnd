@@ -1,6 +1,5 @@
 import { useState } from "react"
 import Tabela from "../../components/tabelaFuncionario/Tabela"
-import SideBar from "../../components/sidebar/SideBar"
 import Layout from "../../components/layout/Layout"
 import BarraPesquisa from "../../components/barraPesquisa"
 import "./funcionarios.css"

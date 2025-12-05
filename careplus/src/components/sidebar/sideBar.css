@@ -69,15 +69,14 @@
 }
 
 .nav-item:hover {
-    /* background: rgba(28, 28, 28, 0.334);
-     */
-    border-style: solid;
-    border-width: 2px;
-    border-color: linear-gradient(135deg, #4FC3F7 0%, #5FCB9F 100%);
+    /* background: rgba(28, 28, 28, 0.334); */
+    
+    border-bottom: 2px solid;
+    border-image: linear-gradient(135deg, #4FC3F7 0%, #5FCB9F 100%) 1;
 }
 
 .nav-item.active {
-    border:1px solid linear-gradient(135deg, #4FC3F7 0%, #5FCB9F 100%);
+    border-bottom: linear-gradient(135deg, #4FC3F7 0%, #5FCB9F 100%);
 }
 
 .logout-btn {
@@ -101,4 +100,14 @@
 
 .logout-btn:hover {
     background: rgba(239, 83, 80, 0.1);
+}
+
+.botaoSideBar{
+    text-decoration: none;
+    color: #000;
+}
+
+.botaoSideBarSair{
+    text-decoration: none;
+    color: #ff0000;
 }
