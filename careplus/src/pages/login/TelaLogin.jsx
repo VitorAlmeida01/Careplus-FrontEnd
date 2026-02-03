@@ -14,6 +14,9 @@ import { Link } from "react-router-dom";
 //   padding: 20px;
 // }
 
+// Link da documentação
+// https://tailwindcss.com/docs/flex
+
 export default function TelaLogin() {
   return (
     <div className=" flex flex-col h-screen justify-center items-center gap-5 p-2">
