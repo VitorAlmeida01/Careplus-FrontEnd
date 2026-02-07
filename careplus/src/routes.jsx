@@ -4,6 +4,7 @@ import SideBar from './components/sidebar/SideBar'
 import  TelaLogin  from './pages/login/TelaLogin'
 import Funcionarios from './pages/funcionarios/Funcionarios'
 import TelaDashboard from './pages/telaDashboard/TelaDashboard'
+import ConsultaAtual from './pages/consultaAtual/ConsultaAtual'
 
 export default function RoutesApp(){
     return(
@@ -12,6 +13,7 @@ export default function RoutesApp(){
                 <Route path="/" element={<TelaLogin/>} />
                 <Route path="/funcionarios" element={<Funcionarios/>} />
                 <Route path='/dashboard' element={<TelaDashboard/>} />
+                <Route path='/consulta-atual' element={<ConsultaAtual/>} />
             </Routes>
         </BrowserRouter>
     )
