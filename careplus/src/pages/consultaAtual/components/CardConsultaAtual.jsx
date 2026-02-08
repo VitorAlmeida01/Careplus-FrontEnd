@@ -1,3 +1,5 @@
+import LinhaInformacao from "./LinhaInformacao"
+
 export default function CardConsultaAtual({
   data,
   horario,
@@ -7,57 +9,63 @@ export default function CardConsultaAtual({
   tratamentoAtual
 }) {
   return (
-    <div className="flex-1 bg-white rounded-[10px] p-[25px]">
-      <div className="cabecalho-card">
-        <div className="icone-card icone-azul">📄</div>
+    <div className="flex w-[50vw] items-center justify-center bg-white rounded-[10px] ">
+      <div className="flex w-[95%]  h-[99%] justify-around items-center flex-col gap-3 p-4">
+
+      <div className="flex w-[90%] items-center gap-3 p-4">
+        <div className="  
+        w-[35px] h-[35px]
+        rounded-lg
+        flex items-center justify-center
+        text-[18px]
+        bg-[#00b8d4] text-white
+        ">📄</div>
         <h2>Consulta Atual</h2>
       </div>
 
-      <div className="conteudo-card">
+      <div className="flex flex-col justify-between gap-[15px] w-[90%] h-[75%] ">
 
-        <div className="linha-informacao">
-          <div className="campo">
-            <span className="label">Data:</span>
-            <span className="valor">{data}</span>
-          </div>
-          <div className="campo">
-            <span className="label">Horário:</span>
-            <span className="valor">{horario}</span>
-          </div>
-        </div>
+        <LinhaInformacao tipo1="Data" dado1={data} tipo2="Horário" dado2={horario} />
+        <LinhaInformacao tipo1="Tipo" dado1={tipo} tipo2="Especialidade" dado2={especialidade} />
+        <LinhaInformacao tipo1="Profissional" dado1={profissional} tipo2="Tratamento atual" dado2={tratamentoAtual} />
 
-        <div className="linha-informacao">
-          <div className="campo">
-            <span className="label">Tipo:</span>
-            <span className="valor">{tipo}</span>
-          </div>
-          <div className="campo">
-            <span className="label">Especialidade:</span>
-            <span className="valor">{especialidade}</span>
-          </div>
-        </div>
 
-        <div className="linha-informacao">
-          <div className="campo">
-            <span className="label">Profissional:</span>
-            <span className="valor">{profissional}</span>
-          </div>
-          <div className="campo">
-            <span className="label">Tratamento atual:</span>
-            <span className="valor">{tratamentoAtual}</span>
-          </div>
-        </div>
-
-        <div className="secao-observacoes">
-          <h3>Observações Comportamentais (na sessão)</h3>
-          <textarea className="caixa-texto">
-    
-          </textarea>
+        <div className="mt-[10px]">
+          <textarea
+            className="
+              bg-[#f8f8f8]
+              border border-[#000000]
+              rounded-lg
+              p-[15px]
+              min-h-[300px]
+              w-full
+              resize-none
+            "
+            placeholder="Descreva aqui"
+          />
         </div>
 
       </div>
 
-      <button className="botao-salvar">Salvar</button>
+      <button
+        className="
+          w-[50%]
+          h-[45px]
+          bg-[#00b8d4]
+          text-white
+          border-0
+          rounded-lg
+          p-[12px]
+          text-[16px]
+          font-semibold
+          cursor-pointer
+          mt-5
+        "
+        >
+      Salvar
+      </button>
+
+      </div>
     </div>
   )
 }

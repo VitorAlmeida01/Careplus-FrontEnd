@@ -2,13 +2,15 @@ import './consultaAtual.css'
 import Breadcrumb from './components/Breadcrumb'
 import CardConsultaAtual from './components/CardConsultaAtual'
 import ColunaDireita from './components/ColunaDireita'
+import Layout from '../../components/layout/Layout'
 
 export default function ConsultaAtual() {
     return(
-        <div>
-            <Breadcrumb />
+        <Layout>
+  
+            {/* <Breadcrumb /> */}
 
-            <div className='flex gap-5 max-w-screen'>
+            <div className='flex ml-5 gap-5 w-[95%] p-4'>
                 <CardConsultaAtual
                  data="01/01/2024"
                  horario="14:00"
@@ -22,6 +24,6 @@ export default function ConsultaAtual() {
 
             </div>
 
-        </div>
+     </Layout>   
     )
 }
