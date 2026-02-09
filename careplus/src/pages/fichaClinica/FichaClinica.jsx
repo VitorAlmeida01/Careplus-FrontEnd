@@ -154,7 +154,7 @@ export default function FichaClinica() {
               <CardFichaClinica.Header>
                 <section className="flex justify-between mb-1.25">
                   <h2>Última consulta</h2>
-                  <BotaoLayout nome="Ver" />
+                  <BotaoLayout nome="Visualizar" />
                 </section>
               </CardFichaClinica.Header>
               <CardFichaClinica.Body>
