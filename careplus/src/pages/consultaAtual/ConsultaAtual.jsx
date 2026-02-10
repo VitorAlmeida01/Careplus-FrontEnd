@@ -1,5 +1,4 @@
 import './consultaAtual.css'
-import Breadcrumb from './components/Breadcrumb'
 import CardConsultaAtual from './components/CardConsultaAtual'
 import ColunaDireita from './components/ColunaDireita'
 import Layout from '../../components/layout/Layout'
@@ -8,7 +7,6 @@ export default function ConsultaAtual() {
     return(
         <Layout>
   
-            {/* <Breadcrumb /> */}
 
             <div className='flex ml-5 gap-5 w-[95%] p-4'>
                 <CardConsultaAtual

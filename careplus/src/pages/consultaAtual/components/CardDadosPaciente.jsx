@@ -10,7 +10,7 @@ export default function CardDadosPaciente({
   atendimentoEspecial 
 }) {
   return (
-    <div className="card-dados-paciente">
+    <div className="bg-white rounded-lg p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
       <div className="cabecalho-card">
         <div className="icone-card icone-verde">👤</div>
         <h2>Dados do Paciente</h2>

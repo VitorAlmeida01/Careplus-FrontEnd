@@ -7,7 +7,7 @@ import CardReforcadores from './CardReforcadores'
 
 export default function ColunaDireita() {
   return (
-    <div className="coluna-direita">
+    <div className="flex w-[40%] mt-[5px] flex-col gap-[15px]">
       
       <CardDadosPaciente
       nome="João Silva"
