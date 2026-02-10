@@ -1,4 +1,13 @@
-import { Home, Calendar, Users, LogOut, X, Menu, BarChart3 } from "lucide-react"
+import {
+  Home,
+  Calendar,
+  Users,
+  LogOut,
+  X,
+  Menu,
+  BarChart3,
+  ClipboardMinus,
+} from "lucide-react"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import "./sideBar.css"
@@ -40,7 +49,11 @@ export default function SideBar() {
           onClick={() => setActiveItem("pacientes")}
         >
           <Users size={24} />
-          {isOpen && <Link to={"/funcionarios"} className="botaoSideBar">Funcionarios</Link>} 
+          {isOpen && (
+            <Link to={"/funcionarios"} className="botaoSideBar">
+              Funcionarios
+            </Link>
+          )}
           {/* Modificar o estilo de botaoSideBar */}
         </button>
 
@@ -51,13 +64,35 @@ export default function SideBar() {
           onClick={() => setActiveItem("pacientes")}
         >
           <BarChart3 size={24} />
-          {isOpen && <Link to={"/dashboard"} className="botaoSideBar">Dashboard</Link>}
+          {isOpen && (
+            <Link to={"/dashboard"} className="botaoSideBar">
+              Dashboard
+            </Link>
+          )}
+        </button>
+
+        <button
+          className={
+            activeItem === "pacientes" ? "nav-item active" : "nav-item"
+          }
+          onClick={() => setActiveItem("pacientes")}
+        >
+          <ClipboardMinus size={24} />
+          {isOpen && (
+            <Link to={"/ficha-clinica"} className="botaoSideBar">
+              Ficha Clinica
+            </Link>
+          )}
         </button>
       </nav>
 
       <button className="logout-btn">
         <LogOut size={24} />
-        {isOpen && <Link to={"/"} className="botaoSideBarSair">Sair</Link>}
+        {isOpen && (
+          <Link to={"/"} className="botaoSideBarSair">
+            Sair
+          </Link>
+        )}
       </button>
     </div>
   )

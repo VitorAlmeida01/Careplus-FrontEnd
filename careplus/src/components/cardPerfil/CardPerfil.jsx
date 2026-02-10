@@ -1,0 +1,27 @@
+import logo from "/src/assets/logo.png"
+
+export default function CardPerfil() {
+  return (
+    <div className="flex md:flex-row flex-col justify-between mb-2 gap-5  w-full items-center bg-[#FFFF] p-4 md:p-6 rounded-2xl shadow-xl md:w-full lg:w-full">
+      <div className="flex gap-4">
+        <img src={logo} alt="" className="w-16 md:w-20" />
+        <div className="flex flex-col gap-3">
+          <h2>Gabriel de Oliveira Santos</h2>
+          <div className="flex gap-3">
+            <p className="bg-linear-to-r from-[#00D492] to-[#009966] text-white px-1 py-1 rounded-3xl">
+              Reavaliado
+            </p>
+            <p className="bg-linear-to-r from-[#FDC700] to-[#D08700] text-white px-3 py-1 rounded-3xl">
+              2 Faltas
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="flex items-start h-full">
+        <button className="border border-[#D1D5DC] rounded-xl p-2 bg-white hover:bg-gradient-to-r from-[#00B8DB] to-[#2B7FFF] hover:text-white cursor-pointer">
+          Contato
+        </button>
+      </div>
+    </div>
+  )
+}
