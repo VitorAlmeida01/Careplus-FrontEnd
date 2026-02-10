@@ -4,6 +4,8 @@ import SideBar from './components/sidebar/SideBar'
 import  TelaLogin  from './pages/login/TelaLogin'
 import Funcionarios from './pages/funcionarios/Funcionarios'
 import TelaDashboard from './pages/telaDashboard/TelaDashboard'
+import TesteAgenda from "./pages/TesteAgenda"
+
 
 export default function RoutesApp(){
     return(
