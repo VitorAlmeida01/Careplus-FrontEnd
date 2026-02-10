@@ -4,7 +4,7 @@ body {
   background: linear-gradient(135deg, #e6f3ff, #e6fff2);
 }
 
-.modal-overlay {
+/* .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -84,4 +84,4 @@ h2 {
   background: transparent;
   cursor: pointer;
   color: #666;
-}
+} */
