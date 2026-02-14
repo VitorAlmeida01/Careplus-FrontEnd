@@ -7,9 +7,18 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Ignorar projeto Login inteiro
+Login/
+
+# Build
+dist/
+dist-ssr/
+.vite/
+
 *.local
 
 # Editor directories and files
