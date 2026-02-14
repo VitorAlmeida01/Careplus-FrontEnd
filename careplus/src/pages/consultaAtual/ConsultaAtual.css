@@ -1,9 +1,9 @@
 /* Reset e configurações gerais */
-* {
+/* * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
+} */
 
 /* Caminho de navegação (breadcrumb) */
 .caminho-navegacao {
