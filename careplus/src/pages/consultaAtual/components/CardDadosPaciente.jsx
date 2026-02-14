@@ -1,3 +1,5 @@
+import LinhaInformacao from "./LinhaInformacao";
+
 export default function CardDadosPaciente({
   nome,
   contato,
@@ -11,62 +13,19 @@ export default function CardDadosPaciente({
 }) {
   return (
     <div className="bg-white rounded-lg p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
-      <div className="cabecalho-card">
-        <div className="icone-card icone-verde">👤</div>
-        <h2>Dados do Paciente</h2>
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-[35px] h-[35px] rounded-[8px] flex items-center justify-center text-[18px] bg-[#00bfa5] text-white ">👤</div>
+        <h2 className="text-lg font-semibold text-gray-800">Dados do Paciente</h2>
       </div>
 
-      <div className="conteudo-card">
-        <div className="linha-informacao">
-          <div className="campo">
-            <span className="label">Nome:</span>
-            <span className="valor">{nome}</span>
-          </div>
-          <div className="campo">
-            <span className="label">Contato:</span>
-            <span className="valor">{contato}</span>
-          </div>
-        </div>
+      <div className="flex flex-col gap-4 w-[95%]">
 
-        <div className="linha-informacao">
-          <div className="campo">
-            <span className="label">Idade:</span>
-            <span className="valor">{idade}</span>
-          </div>
-          <div className="campo">
-            <span className="label">CID:</span>
-            <span className="valor">{cid}</span>
-          </div>
-        </div>
-
-        <div className="linha-informacao">
-          <div className="campo">
-            <span className="label">Desfraldado:</span>
-            <span className="valor">{desfraldado}</span>
-          </div>
-          <div className="campo">
-            <span className="label">Hiperfoco Atual:</span>
-            <span className="valor">{hiperfocoAtual}</span>
-          </div>
-        </div>
-
-        <div className="linha-informacao">
-          <div className="campo">
-            <span className="label">Medicações:</span>
-            <span className="valor">{medicacoes}</span>
-          </div>
-          <div className="campo">
-            <span className="label">Diagnóstico:</span>
-            <span className="valor">{diagnostico}</span>
-          </div>
-        </div>
-
-        <div className="linha-informacao">
-          <div className="campo campo-completo">
-            <span className="label">Atendimento Especial:</span>
-            <span className="valor">{atendimentoEspecial}</span>
-          </div>
-        </div>
+      <LinhaInformacao tipo1="Nome" dado1={nome} tipo2="Contato" dado2={contato} />
+      <LinhaInformacao tipo1="Idade" dado1={idade} tipo2="CID" dado2={cid} />
+      <LinhaInformacao tipo1="Desfraldado" dado1={desfraldado} tipo2="Hiperfoco Atual" dado2={hiperfocoAtual} />
+      <LinhaInformacao tipo1="Medicações" dado1={medicacoes} tipo2="Diagnóstico" dado2={diagnostico} />
+      <LinhaInformacao tipo1="Atendimento Especial" dado1={atendimentoEspecial} tipo2=" " dado2=" " />
+        
       </div>
     </div>
   )

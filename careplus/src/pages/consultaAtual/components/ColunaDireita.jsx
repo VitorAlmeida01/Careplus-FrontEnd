@@ -17,7 +17,7 @@ export default function ColunaDireita() {
       desfraldado="Sim"
       hiperfocoAtual="Desenhos animados"
       medicacoes="Nenhuma"
-      diagnostico="Transtorno do Espectro Autista"
+      diagnostico="TEA"
       atendimentoEspecial="Terapia Ocupacional"
       />
 
