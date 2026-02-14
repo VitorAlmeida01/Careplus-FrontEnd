@@ -1,0 +1,215 @@
+/* Reset e configurações gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Caminho de navegação (breadcrumb) */
+.caminho-navegacao {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Container principal que organiza os cards */
+.container-principal {
+    display: flex;
+    gap: 20px;
+    max-width: 1400px;
+}
+
+/* Card da Consulta Atual (lado esquerdo) */
+.card-consulta-atual {
+    flex: 1;
+    background-color: white;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Coluna da direita com os cards menores */
+.coluna-direita {
+    width: 40%;
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Cards menores da direita */
+.card-dados-paciente,
+.card-ultima-consulta,
+.card-reforcadores {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabeçalho dos cards com ícone */
+.cabecalho-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.cabecalho-card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Ícones dos cards */
+.icone-card {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.icone-azul {
+    background-color: #00b8d4;
+    color: white;  
+}
+
+.icone-verde {
+    background-color: #00bfa5;
+    color: white;
+}
+
+/* Conteúdo dos cards */
+.conteudo-card {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 95%;
+}
+
+/* Linhas de informação */
+.linha-informacao {
+    display: flex;
+    gap: 30px;
+}
+
+/* Campos individuais */
+.campo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.campo-completo {
+    flex: 2;
+}
+
+/* Labels e valores */
+.label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+}
+
+.valor {
+    font-size: 14px;
+    color: #333;
+    font-weight: 400;
+}
+
+/* Seção de observações */
+.secao-observacoes {
+    margin-top: 10px;
+}
+
+.secao-observacoes h3 {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+/* Caixa de texto para observações */
+.caixa-texto {
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 300px;
+    width: 100%;
+    resize: none;
+}
+
+/* Botão Salvar */
+.botao-salvar {
+    width: 100%;
+    background-color: #00b8d4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.botao-salvar:hover {
+    background-color: #0097a7;
+}
+
+/* Cabeçalho da seção Última Consulta */
+.cabecalho-secao {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.cabecalho-secao h3 {
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Botão Ver */
+.botao-ver {
+    background-color: white;
+    border: 1px solid #00bfa5;
+    color: #00bfa5;
+    padding: 6px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.botao-ver:hover {
+    background-color: #e0f7f4;
+}
+
+/* Lista de reforçadores */
+.lista-reforcadores {
+    list-style: none;
+    padding: 0;
+}
+
+.lista-reforcadores li {
+    padding: 8px 0;
+    padding-left: 20px;
+    position: relative;
+    font-size: 14px;
+    color: #333;
+}
+
+.lista-reforcadores li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #00bfa5;
+    font-weight: bold;
+}
