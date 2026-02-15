@@ -21,9 +21,8 @@ export default function ConfirmacaoAgenda() {
   ]
 
   return (
-    <div className="w-full bg-white rounded-2xl shadow-xl p-4 md:p-6">
-      
-      <div className="flex items-center justify-between text-center mb-3">
+    <div className="w-full lg:w-[50%] bg-white rounded-2xl shadow-xl p-4 md:p-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-center mb-4 gap-3">
         <div className="flex items-center gap-3 align-center">
           <div className="bg-[#E6F7FF] p-2 rounded-xl">
             <Clock className="text-[#2B7FFF]" />
@@ -53,15 +52,11 @@ export default function ConfirmacaoAgenda() {
               <span className="text-gray-500">
                 {item.data} • {item.hora}
               </span>
-              <span className="font-medium text-gray-800">
-                {item.nome}
-              </span>
+              <span className="font-medium text-gray-800">{item.nome}</span>
               <span className="text-gray-500">
                 {item.tipo} | {item.idade}
               </span>
-              <span className="text-gray-500">
-                {item.profissional}
-              </span>
+              <span className="text-gray-500">{item.profissional}</span>
               <a
                 href="#"
                 className="text-[#2B7FFF] text-sm hover:underline w-fit"
