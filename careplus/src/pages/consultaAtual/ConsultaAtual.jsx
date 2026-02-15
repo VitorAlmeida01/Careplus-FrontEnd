@@ -1,6 +1,6 @@
-import CardConsultaAtual from "./components/CardConsultaAtual"
-import ColunaDireita from "./components/ColunaDireita"
-import Layout from "../../components/layout/Layout"
+import CardConsultaAtual from './components/CardConsultaAtual'
+import ColunaDireita from './components/ColunaDireita'
+import Layout from '../../components/layout/Layout'
 
 export default function ConsultaAtual() {
   return (

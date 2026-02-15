@@ -6,7 +6,7 @@ export default function CardUltimaConsulta({
     <div className="bg-white rounded-[10px] p-5 shadow-[0_2px_8px_rgba(0,0,0,0.1)]">
       <div className="flex justify-between items-center mb-[15px]">
         <h3 className="text-lg font-semibold text-gray-800">Última consulta</h3>
-        <button class="bg-white 
+        <button className="bg-white 
                border border-[#00bfa5] 
                text-[#00bfa5] 
                py-[6px] px-5 
