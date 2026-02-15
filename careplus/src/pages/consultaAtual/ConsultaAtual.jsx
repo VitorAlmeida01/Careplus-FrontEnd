@@ -1,4 +1,3 @@
-import './consultaAtual.css'
 import CardConsultaAtual from './components/CardConsultaAtual'
 import ColunaDireita from './components/ColunaDireita'
 import Layout from '../../components/layout/Layout'
