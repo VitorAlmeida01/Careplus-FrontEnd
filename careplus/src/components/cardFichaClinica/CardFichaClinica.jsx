@@ -11,7 +11,7 @@ const Footer = ({ children }) => (
 export default function CardFichaClinica({ children, estilo }) {
   return (
     <div
-      className={` w-full h-full  p-2.5 shadow-xl rounded-md bg-[#F3F4F6] flex-wrap ${estilo}`}
+      className={` w-full p-2.5 shadow-xl rounded-md bg-[#F3F4F6] flex-wrap ${estilo}`}
     >
       {children}
     </div>

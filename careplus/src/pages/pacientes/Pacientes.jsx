@@ -3,9 +3,9 @@ import Layout from "../../components/layout/Layout"
 import BarraPesquisa from "../../components/barraPesquisa"
 import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
 import CadastroFuncionarioModal from "../../components/modalCadastro/CadastroFuncionarioModal"
-import TabelaFuncionario from "../../components/tabelaFuncionario/TabelaFuncionario"
+import TabelaPaciente from "../../components/tabelaPaciente/TabelaPaciente"
 
-export default function Funcionarios() {
+export default function Pacientes() {
   const [modalAberto, setModalAberto] = useState(false)
 
   return (
@@ -19,7 +19,7 @@ export default function Funcionarios() {
           <BotaoCadastro onClick={() => setModalAberto(true)} />
         </div>
 
-        <TabelaFuncionario />
+        <TabelaPaciente />
       </Layout>
       <CadastroFuncionarioModal
         isOpen={modalAberto}

@@ -63,6 +63,21 @@ export default function SideBar() {
           }
           onClick={() => setActiveItem("pacientes")}
         >
+          <Users size={24} />
+          {isOpen && (
+            <Link to={"/pacientes"} className="botaoSideBar">
+              Pacientes
+            </Link>
+          )}
+          {/* Modificar o estilo de botaoSideBar */}
+        </button>
+
+        <button
+          className={
+            activeItem === "pacientes" ? "nav-item active" : "nav-item"
+          }
+          onClick={() => setActiveItem("pacientes")}
+        >
           <BarChart3 size={24} />
           {isOpen && (
             <Link to={"/dashboard"} className="botaoSideBar">
@@ -81,6 +96,32 @@ export default function SideBar() {
           {isOpen && (
             <Link to={"/ficha-clinica"} className="botaoSideBar">
               Ficha Clinica
+            </Link>
+          )}
+        </button>
+        <button
+          className={
+            activeItem === "pacientes" ? "nav-item active" : "nav-item"
+          }
+          onClick={() => setActiveItem("pacientes")}
+        >
+          <ClipboardMinus size={24} />
+          {isOpen && (
+            <Link to={"/consulta-atual"} className="botaoSideBar">
+              Consulta atual
+            </Link>
+          )}
+        </button>
+        <button
+          className={
+            activeItem === "pacientes" ? "nav-item active" : "nav-item"
+          }
+          onClick={() => setActiveItem("pacientes")}
+        >
+          <ClipboardMinus size={24} />
+          {isOpen && (
+            <Link to={"/tela-profissional"} className="botaoSideBar">
+              Tela Profissional
             </Link>
           )}
         </button>
