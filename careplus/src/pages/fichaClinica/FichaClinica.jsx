@@ -1,17 +1,35 @@
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import CardFichaClinica from "../../components/cardFichaClinica/CardFichaClinica"
 import Layout from "../../components/layout/Layout"
 import CardPerfil from "../../components/cardPerfil/CardPerfil"
 import BotaoLayout from "../../components/botaoLayout/BotaoLayout"
 import DonutChart from "../../components/chartsFichaClinica/DonutChart"
+import EditarFichaClinicaModal from "../../components/modalFichaClinica/EditarFichaClinicaModal"
+import EditarObservacoesModal from "../../components/modalFichaClinica/EditarObservacoesModal"
+import EditarObservacoesComportamentaisModal from "../../components/modalFichaClinica/EditarObservacoesComportamentaisModal"
+import ProximaConsultaModal from "../../components/modalFichaClinica/ProximaConsultaModal"
+import InformacoesContatoModal from "../../components/modalFichaClinica/InformacoesContatoModal"
 
 export default function FichaClinica() {
+  const navigate = useNavigate()
+  const [modalFichaClinica, setModalFichaClinica] = useState(false)
+  const [modalObservacoes, setModalObservacoes] = useState(false)
+  const [modalObservacoesComportamentais, setModalObservacoesComportamentais] =
+    useState(false)
+  const [modalProximaConsulta, setModalProximaConsulta] = useState(false)
+  const [modalContato, setModalContato] = useState(false)
+
   return (
     <>
       <Layout>
         <section className="h-fit ">
           <section>
             <section className="w-full">
-              <CardPerfil></CardPerfil>
+              <CardPerfil
+                onContatoClick={() => setModalContato(true)}
+                onProximaConsultaClick={() => setModalProximaConsulta(true)}
+              />
             </section>
           </section>
           <section className="flex flex-wrap sm:h-fit">
@@ -20,7 +38,10 @@ export default function FichaClinica() {
                 <CardFichaClinica.Header>
                   <section className="flex justify-between mb-[10px]">
                     <h2>Ficha Clinica</h2>
-                    <BotaoLayout nome="Editar" />
+                    <BotaoLayout
+                      nome="Editar"
+                      onClick={() => setModalFichaClinica(true)}
+                    />
                   </section>
                 </CardFichaClinica.Header>
                 <CardFichaClinica.Body>
@@ -61,7 +82,10 @@ export default function FichaClinica() {
                 <CardFichaClinica.Header>
                   <section className="flex justify-between mb-[10px]">
                     <h2>Observações Comportamentais</h2>
-                    <BotaoLayout nome="Editar" />
+                    <BotaoLayout
+                      nome="Editar"
+                      onClick={() => setModalObservacoesComportamentais(true)}
+                    />
                   </section>
                 </CardFichaClinica.Header>
                 <CardFichaClinica.Body>
@@ -105,7 +129,10 @@ export default function FichaClinica() {
                 <CardFichaClinica.Header>
                   <section className="flex justify-between mb-1.25">
                     <h2>Observações</h2>
-                    <BotaoLayout nome="Editar" />
+                    <BotaoLayout
+                      nome="Editar"
+                      onClick={() => setModalObservacoes(true)}
+                    />
                   </section>
                 </CardFichaClinica.Header>
                 <CardFichaClinica.Body>
@@ -154,7 +181,10 @@ export default function FichaClinica() {
                 <CardFichaClinica.Header>
                   <section className="flex justify-between mb-1.25">
                     <h2>Última consulta</h2>
-                    <BotaoLayout nome="Visualizar" />
+                    <BotaoLayout
+                      nome="Visualizar"
+                      onClick={() => navigate("/consultas-antigas")}
+                    />
                   </section>
                 </CardFichaClinica.Header>
                 <CardFichaClinica.Body>
@@ -181,6 +211,28 @@ export default function FichaClinica() {
           </section>
         </section>
       </Layout>
+
+      {/* Modais */}
+      <EditarFichaClinicaModal
+        isOpen={modalFichaClinica}
+        onClose={() => setModalFichaClinica(false)}
+      />
+      <EditarObservacoesModal
+        isOpen={modalObservacoes}
+        onClose={() => setModalObservacoes(false)}
+      />
+      <EditarObservacoesComportamentaisModal
+        isOpen={modalObservacoesComportamentais}
+        onClose={() => setModalObservacoesComportamentais(false)}
+      />
+      <ProximaConsultaModal
+        isOpen={modalProximaConsulta}
+        onClose={() => setModalProximaConsulta(false)}
+      />
+      <InformacoesContatoModal
+        isOpen={modalContato}
+        onClose={() => setModalContato(false)}
+      />
     </>
   )
 }

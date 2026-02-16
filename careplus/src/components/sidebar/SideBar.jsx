@@ -42,99 +42,94 @@ export default function SideBar() {
           {isOpen && <span>Agenda</span>}
         </button> */}
 
-        <button
-          className={
-            activeItem === "pacientes" ? "nav-item active" : "nav-item"
-          }
-          onClick={() => setActiveItem("pacientes")}
-        >
-          <Users size={24} />
-          {isOpen && (
-            <Link to={"/funcionarios"} className="botaoSideBar">
-              Funcionarios
-            </Link>
-          )}
-          {/* Modificar o estilo de botaoSideBar */}
-        </button>
+        <Link to={"/funcionarios"} className="botaoSideBar">
+          <button
+            className={
+              activeItem === "pacientes" ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setActiveItem("pacientes")}
+          >
+            <Users size={24} />
+            {isOpen && "Funcionarios"}
+          </button>
+        </Link>
 
-        <button
-          className={
-            activeItem === "pacientes" ? "nav-item active" : "nav-item"
-          }
-          onClick={() => setActiveItem("pacientes")}
-        >
-          <Users size={24} />
-          {isOpen && (
-            <Link to={"/pacientes"} className="botaoSideBar">
-              Pacientes
-            </Link>
-          )}
-          {/* Modificar o estilo de botaoSideBar */}
-        </button>
+        <Link to="/pacientes" className="botaoSideBar">
+          <button
+            className={
+              activeItem === "pacientes" ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setActiveItem("pacientes")}
+          >
+            <Users size={24} />
+            {isOpen && "Pacientes"}
+          </button>
+        </Link>
 
-        <button
-          className={
-            activeItem === "pacientes" ? "nav-item active" : "nav-item"
-          }
-          onClick={() => setActiveItem("pacientes")}
-        >
-          <BarChart3 size={24} />
-          {isOpen && (
-            <Link to={"/dashboard"} className="botaoSideBar">
-              Dashboard
-            </Link>
-          )}
-        </button>
+        <Link to="/dashboard" className="botaoSideBar">
+          <button
+            className={
+              activeItem === "pacientes" ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setActiveItem("pacientes")}
+          >
+            <BarChart3 size={24} />
+            {isOpen && "Dashboard"}
+          </button>
+        </Link>
 
-        <button
-          className={
-            activeItem === "pacientes" ? "nav-item active" : "nav-item"
-          }
-          onClick={() => setActiveItem("pacientes")}
-        >
-          <ClipboardMinus size={24} />
-          {isOpen && (
-            <Link to={"/ficha-clinica"} className="botaoSideBar">
-              Ficha Clinica
-            </Link>
-          )}
-        </button>
-        <button
-          className={
-            activeItem === "pacientes" ? "nav-item active" : "nav-item"
-          }
-          onClick={() => setActiveItem("pacientes")}
-        >
-          <ClipboardMinus size={24} />
-          {isOpen && (
-            <Link to={"/consulta-atual"} className="botaoSideBar">
-              Consulta atual
-            </Link>
-          )}
-        </button>
-        <button
-          className={
-            activeItem === "pacientes" ? "nav-item active" : "nav-item"
-          }
-          onClick={() => setActiveItem("pacientes")}
-        >
-          <ClipboardMinus size={24} />
-          {isOpen && (
-            <Link to={"/tela-profissional"} className="botaoSideBar">
-              Tela Profissional
-            </Link>
-          )}
-        </button>
+        <Link to="/ficha-clinica" className="botaoSideBar">
+          <button
+            className={
+              activeItem === "pacientes" ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setActiveItem("pacientes")}
+          >
+            <ClipboardMinus size={24} />
+            {isOpen && "Ficha Clinica"}
+          </button>
+        </Link>
+        <Link to="/consulta-atual" className="botaoSideBar">
+          <button
+            className={
+              activeItem === "pacientes" ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setActiveItem("pacientes")}
+          >
+            <ClipboardMinus size={24} />
+            {isOpen && "Consulta atual"}
+          </button>
+        </Link>
+        <Link to="/tela-profissional" className="botaoSideBar">
+          <button
+            className={
+              activeItem === "pacientes" ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setActiveItem("pacientes")}
+          >
+            <ClipboardMinus size={24} />
+            {isOpen && "Tela Profissional"}
+          </button>
+        </Link>
+
+        <Link to="/consultas-antigas" className="botaoSideBar">
+          <button
+            className={
+              activeItem === "pacientes" ? "nav-item active" : "nav-item"
+            }
+            onClick={() => setActiveItem("pacientes")}
+          >
+            <ClipboardMinus size={24} />
+            {isOpen && "Consultas Antigas"}
+          </button>
+        </Link>
       </nav>
-
-      <button className="logout-btn">
-        <LogOut size={24} />
-        {isOpen && (
-          <Link to={"/"} className="botaoSideBarSair">
-            Sair
-          </Link>
-        )}
-      </button>
+      <Link to={"/"} className="botaoSideBarSair">
+        <button className="logout-btn">
+          <LogOut size={24} />
+          Sair
+        </button>
+      </Link>
     </div>
   )
 }

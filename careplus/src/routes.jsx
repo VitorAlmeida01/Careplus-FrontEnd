@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
-import SideBar from "./components/sidebar/SideBar"
 import TelaLogin from "./pages/login/TelaLogin"
 import Funcionarios from "./pages/funcionarios/Funcionarios"
 import TelaDashboard from "./pages/telaDashboard/TelaDashboard"
@@ -8,6 +7,7 @@ import FichaClinica from "./pages/fichaClinica/FichaClinica"
 import ConsultaAtual from "./pages/consultaAtual/ConsultaAtual"
 import TelaProfissional from "./pages/telaProfissional/TelaProfissional"
 import Pacientes from "./pages/pacientes/Pacientes"
+import ConsultasAntigas from "./pages/consultasAntigas/ConsultasAntigas"
 
 export default function RoutesApp() {
   return (
@@ -20,6 +20,7 @@ export default function RoutesApp() {
         <Route path="/ficha-clinica" element={<FichaClinica />} />
         <Route path="/consulta-atual" element={<ConsultaAtual />} />
         <Route path="/tela-profissional" element={<TelaProfissional />} />
+        <Route path="/consultas-antigas" element={<ConsultasAntigas />} />
       </Routes>
     </BrowserRouter>
   )
