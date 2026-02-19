@@ -1,6 +1,6 @@
 import logo from "/src/assets/logo.png"
 
-export default function CardPerfil() {
+export default function CardPerfil({ onContatoClick, onProximaConsultaClick }) {
   return (
     <div className="flex md:flex-row flex-col justify-between mb-2 gap-5  w-full items-center bg-[#FFFF] p-4 md:p-6 rounded-2xl shadow-xl md:w-full lg:w-full">
       <div className="flex gap-4">
@@ -17,9 +17,18 @@ export default function CardPerfil() {
           </div>
         </div>
       </div>
-      <div className="flex items-start h-full">
-        <button className="border border-[#D1D5DC] rounded-xl p-2 bg-white hover:bg-gradient-to-r from-[#00B8DB] to-[#2B7FFF] hover:text-white cursor-pointer">
+      <div className="flex items-start h-full gap-3">
+        <button
+          onClick={onContatoClick}
+          className="border border-[#D1D5DC] rounded-xl p-2 bg-white hover:bg-linear-to-r from-[#00B8DB] to-[#2B7FFF] hover:text-white cursor-pointer"
+        >
           Contato
+        </button>
+        <button
+          onClick={onProximaConsultaClick}
+          className="border border-[#D1D5DC] rounded-xl p-2 bg-white hover:bg-linear-to-r from-[#00B8DB] to-[#2B7FFF] hover:text-white cursor-pointer"
+        >
+          Próxima Consulta
         </button>
       </div>
     </div>
