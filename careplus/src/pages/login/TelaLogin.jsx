@@ -29,9 +29,7 @@ export default function TelaLogin() {
   const handleSubmit = async (e) =>{
     e.preventDefault()
 
-    loginService(username, password).then((response) =>{
-
-      console.log(response)
+    loginService(username, password).then(() =>{
 
       setTimeout(()=>{
         navigate('/funcionarios')

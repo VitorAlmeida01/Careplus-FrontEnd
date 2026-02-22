@@ -18,15 +18,15 @@ export default function RoutesApp() {
         <Route
           path="/funcionarios"
           element={
-            <PrivateRoute>
+            <PrivateRoute allowedRoles={["ADMIN"]}>
               <Funcionarios />
             </PrivateRoute>
           }
         />
         <Route path="/pacientes" element={<Pacientes />} />
         <Route path="/dashboard" element={<TelaDashboard />} />
-        <Route path="/ficha-clinica" element={<FichaClinica />} />
-        <Route path="/consulta-atual" element={<ConsultaAtual />} />
+        <Route path="/pacientes/ficha-clinica" element={<FichaClinica />} />
+        <Route path="/pacientes/consulta-atual" element={<ConsultaAtual />} />
         <Route path="/tela-profissional" element={<TelaProfissional />} />
         <Route path="/consultas-antigas" element={<ConsultasAntigas />} />
       </Routes>

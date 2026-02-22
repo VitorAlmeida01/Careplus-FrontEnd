@@ -8,82 +8,7 @@ import {
   Phone,
 } from "lucide-react"
 
-export default function TabelaFuncionario() {
-  const funcionarios = [
-    {
-      id: 1,
-      nome: "Ana Silva Santos",
-      email: "ana.silva@example.com",
-      documento: "123.456.789-00",
-      supervisor: "Carlos Mendes",
-      dataNascimento: "15/03/2010",
-      telefone: "(11) 98765-4321",
-    },
-    {
-      id: 2,
-      nome: "Bruno Costa Lima",
-      email: "bruno.costa@example.com",
-      documento: "234.567.890-11",
-      supervisor: "Maria Oliveira",
-      dataNascimento: "22/07/2009",
-      telefone: "(21) 97654-3210",
-    },
-    {
-      id: 3,
-      nome: "Carla Pereira Souza",
-      email: "carla.pereira@example.com",
-      documento: "345.678.901-22",
-      supervisor: "João Santos",
-      dataNascimento: "08/11/2011",
-      telefone: "(11) 96543-2109",
-    },
-    {
-      id: 4,
-      nome: "Daniel Rodrigues",
-      email: "daniel.rodrigues@example.com",
-      documento: "456.789.012-33",
-      supervisor: "Paula Ferreira",
-      dataNascimento: "30/05/2017",
-      telefone: "(31) 95432-1098",
-    },
-    {
-      id: 5,
-      nome: "Eduarda Martins",
-      email: "eduarda.martins@example.com",
-      documento: "567.890.123-44",
-      supervisor: "Roberto Alves",
-      dataNascimento: "12/09/2019",
-      telefone: "(41) 94321-0987",
-    },
-    {
-      id: 6,
-      nome: "Fernando Almeida",
-      email: "fernando.almeida@example.com",
-      documento: "678.901.234-55",
-      supervisor: "Juliana Costa",
-      dataNascimento: "25/02/2020",
-      telefone: "(51) 93210-9876",
-    },
-    {
-      id: 7,
-      nome: "Gabriela Santos",
-      email: "gabriela.santos@example.com",
-      documento: "789.012.345-66",
-      supervisor: "Marcos Silva",
-      dataNascimento: "18/06/2021",
-      telefone: "(61) 92109-8765",
-    },
-    {
-      id: 8,
-      nome: "Henrique Oliveira",
-      email: "henrique.oliveira@example.com",
-      documento: "890.123.456-77",
-      supervisor: "Patrícia Lima",
-      dataNascimento: "03/12/2022",
-      telefone: "(71) 91098-7654",
-    },
-  ]
-
+export default function TabelaFuncionario({ funcionarioss}) {
   return (
     <div className="bg-white w-[90%] min-h-[500px] my-[1%] mx-[4%] shadow-md rounded-lg">
       <table className="w-full border-separate border-spacing-0 rounded-lg overflow-hidden">
@@ -103,7 +28,7 @@ export default function TabelaFuncionario() {
             </th>
             <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
               <Calendar size={18} className="inline align-middle mr-2" />
-              Data Nascimento
+              Cargo
             </th>
             <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
               <Phone size={18} className="inline align-middle mr-2" />
@@ -114,7 +39,7 @@ export default function TabelaFuncionario() {
           </tr>
         </thead>
         <tbody>
-          {funcionarios.map((funcionario) => {
+          {funcionarioss && funcionarioss.map((funcionario) => {
             return (
               <tr key={funcionario.id}>
                 <td className="p-4 text-center font-normal border-b border-gray-500">
@@ -128,16 +53,16 @@ export default function TabelaFuncionario() {
                   </div>
                 </td>
                 <td className="p-4 text-center font-normal border-b border-gray-500">
-                  {funcionario.documento}
+                  {funcionario.documento || '-'}
                 </td>
                 <td className="p-4 text-center font-normal border-b border-gray-500">
-                  {funcionario.supervisor}
+                  {funcionario.supervisor ? funcionario.supervisor.nome : '-'}
                 </td>
                 <td className="p-4 text-center font-normal border-b border-gray-500">
-                  {funcionario.dataNascimento}
+                  {funcionario.cargo || '-'}
                 </td>
                 <td className="p-4 text-center font-normal border-b border-gray-500">
-                  {funcionario.telefone}
+                  {funcionario.telefone || '-'}
                 </td>
                 <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer">
                   <Pencil size={18} />

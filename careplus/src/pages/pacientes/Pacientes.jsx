@@ -11,8 +11,7 @@ export default function Pacientes() {
   return (
     <>
       <Layout>
-        <div className="flex justify-between items-center h-[7%] mx-[1%]">
-          <h3>Funcionarios</h3>
+        <div className="flex justify-end items-center h-[7%] mx-[1%]">
           <BarraPesquisa />
         </div>
         <div className="w-[90%] flex my-[1%] mx-[4%] justify-end">
