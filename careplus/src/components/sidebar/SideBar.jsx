@@ -9,12 +9,18 @@ import {
   ClipboardMinus,
 } from "lucide-react"
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "./sideBar.css"
 
 export default function SideBar() {
   const [activeItem, setActiveItem] = useState("inicio")
   const [isOpen, setIsOpen] = useState(true)
+  const navigate = useNavigate()
+
+  const handleLogout = () =>{
+      sessionStorage.removeItem('authToken')
+      navigate('/')
+  }
 
   return (
     <div className={isOpen ? "sidebar" : "sidebar sidebar-closed"}>
@@ -124,12 +130,12 @@ export default function SideBar() {
           </button>
         </Link>
       </nav>
-      <Link to={"/"} className="botaoSideBarSair">
-        <button className="logout-btn">
+      {/* <Link to={"/"} className="botaoSideBarSair"> */}
+        <button className="logout-btn" onClick={handleLogout}>
           <LogOut size={24} />
           Sair
         </button>
-      </Link>
+      {/* </Link> */}
     </div>
   )
 }
