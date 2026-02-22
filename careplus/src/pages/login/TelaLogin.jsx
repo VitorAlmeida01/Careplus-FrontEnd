@@ -51,7 +51,7 @@ export default function TelaLogin() {
 
         <h2 className="font-medium m-[30px] text-gray-700">Solução Clínica</h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="w-full">
             <div className="login-field w-full ">
             <label>Login</label>
             <input
