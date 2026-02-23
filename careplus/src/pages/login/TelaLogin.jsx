@@ -3,7 +3,8 @@ import "./login.css"
 import logo from "/src/assets/logo.png"
 import { Link } from "react-router-dom"
 import { loginService } from "../../service/login/login.service"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 // Coloquei a classe que ja estava feita e fui colocando as classes do tailwind
 //  .login-container {
@@ -30,7 +31,8 @@ export default function TelaLogin() {
     e.preventDefault()
 
     loginService(username, password).then(() =>{
-
+      toast.success('Login realizado com sucesso!')
+      
       setTimeout(()=>{
         navigate('/funcionarios')
       },1000)
@@ -38,6 +40,7 @@ export default function TelaLogin() {
     })
     .catch((error) =>{
       console.error(error)
+      toast.error('Erro ao realizar login. Verifique suas credenciais.')
     })
   }
 
@@ -47,7 +50,7 @@ export default function TelaLogin() {
       <div className="flex flex-col items-center w-sm p-10 bg-white rounded-3xl text-center shadow-[0_35px_35px_rgba(0,0,0,0.25)]">
         <img src={logo} alt="logo" className="login-logo" />
 
-        <h2 className="font-medium m-[30px] text-gray-700">Solução Clínica</h2>
+        <h2 className="font-medium m-7.5 text-gray-700">Solução Clínica</h2>
 
         <form onSubmit={handleSubmit} className="w-full">
             <div className="login-field w-full ">
