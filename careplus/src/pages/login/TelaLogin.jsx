@@ -5,6 +5,8 @@ import { Link } from "react-router-dom"
 import { loginService } from "../../service/login/login.service"
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { getUserRoles } from "../../service/login/jwtDecoder"
+import { byRole } from "../../service/login/redirectPage"
 
 // Coloquei a classe que ja estava feita e fui colocando as classes do tailwind
 //  .login-container {
@@ -27,24 +29,31 @@ export default function TelaLogin() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSubmit = async (e) =>{
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
-    loginService(username, password).then(() =>{
+    loginService(username, password).then(() => {
       toast.success('Login realizado com sucesso!')
-      
-      setTimeout(()=>{
-        navigate('/funcionarios')
-      },1000)
+
+      const role = getUserRoles()
+
+      console.log("Role: ", role)
+
+      byRole(role).then((response) => {
+        setTimeout(() => {
+          navigate(`${response}`)
+        }, 1000)
+      })
+
 
     })
-    .catch((error) =>{
-      console.error(error)
-      toast.error('Erro ao realizar login. Verifique suas credenciais.')
-    })
+      .catch((error) => {
+        console.error(error)
+        toast.error('Erro ao realizar login. Verifique suas credenciais.')
+      })
   }
 
-  
+
   return (
     <div className=" flex flex-col h-screen justify-center items-center gap-5 p-2">
       <div className="flex flex-col items-center w-sm p-10 bg-white rounded-3xl text-center shadow-[0_35px_35px_rgba(0,0,0,0.25)]">
@@ -53,7 +62,7 @@ export default function TelaLogin() {
         <h2 className="font-medium m-7.5 text-gray-700">Solução Clínica</h2>
 
         <form onSubmit={handleSubmit} className="w-full">
-            <div className="login-field w-full ">
+          <div className="login-field w-full ">
             <label>Login</label>
             <input
               type="email"
@@ -66,13 +75,13 @@ export default function TelaLogin() {
 
           <div className="login-field w-full">
             <label>Senha</label>
-            <input type="password" placeholder="******" 
-            onChange={(e) => setPassword(e.target.value)}
-            value={password} />
+            <input type="password" placeholder="******"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password} />
           </div>
 
           {/* <button className="botaologin"></button> */}
-{/* 
+          {/* 
           <Link to={"/funcionarios"} className="botaologin w-full">
             Login
           </Link> */}

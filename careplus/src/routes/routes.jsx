@@ -8,6 +8,7 @@ import ConsultaAtual from "../pages/consultaAtual/ConsultaAtual"
 import TelaProfissional from "../pages/telaProfissional/TelaProfissional"
 import Pacientes from "../pages/pacientes/Pacientes"
 import ConsultasAntigas from "../pages/consultasAntigas/ConsultasAntigas"
+import Unauthorized from "../pages/unauthorized/Unauthorized"
 import PrivateRoute from "./PrivateRoute.jsx";
 
 export default function RoutesApp() {
@@ -15,6 +16,7 @@ export default function RoutesApp() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<TelaLogin />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
         <Route
           path="/funcionarios"
           element={
@@ -23,7 +25,11 @@ export default function RoutesApp() {
             </PrivateRoute>
           }
         />
-        <Route path="/pacientes" element={<Pacientes />} />
+        <Route path="/pacientes" element={
+          <PrivateRoute allowedRoles={["ADMIN", "USER"]}>
+              <Pacientes />
+          </PrivateRoute>
+        } />
         <Route path="/dashboard" element={<TelaDashboard />} />
         <Route path="/pacientes/ficha-clinica" element={<FichaClinica />} />
         <Route path="/pacientes/consulta-atual" element={<ConsultaAtual />} />

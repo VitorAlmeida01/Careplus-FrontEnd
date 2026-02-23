@@ -17,7 +17,7 @@ export const menuConfig = [
     label: "Pacientes",
     path: "/pacientes",
     icon: Users,
-    roles: ["FONOAUDIOLOGA", "ADMIN"],
+    roles: ["USER", "ADMIN"],
   },
   {
     key: "dashboard",
@@ -29,22 +29,29 @@ export const menuConfig = [
   {
     key: "ficha-clinica",
     label: "Ficha Clínica",
-    path: "/ficha-clinica",
+    path: "/pacientes/ficha-clinica",
     icon: ClipboardMinus,
-    roles: ["FONOAUDIOLOGA"],
+    roles: ["USER"],
   },
   {
     key: "consulta-atual",
     label: "Consulta Atual",
-    path: "/consulta-atual",
+    path: "/pacientes/consulta-atual",
     icon: ClipboardMinus,
-    roles: ["FONOAUDIOLOGA"],
+    roles: ["USER"],
   },
   {
     key: "consultas-antigas",
     label: "Consultas Antigas",
     path: "/consultas-antigas",
     icon: ClipboardMinus,
-    roles: ["FONOAUDIOLOGA"],
+    roles: ["USER"],
+  },
+    {
+    key: "tela-profissional",
+    label: "Tela profissional",
+    path: "/tela-profissional",
+    icon: ClipboardMinus,
+    roles: ["USER"],
   },
 ]

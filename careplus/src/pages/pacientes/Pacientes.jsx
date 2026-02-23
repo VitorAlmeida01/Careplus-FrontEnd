@@ -1,12 +1,25 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Layout from "../../components/layout/Layout"
 import BarraPesquisa from "../../components/barraPesquisa"
 import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
 import CadastroFuncionarioModal from "../../components/modalCadastro/CadastroFuncionarioModal"
 import TabelaPaciente from "../../components/tabelaPaciente/TabelaPaciente"
+import { listarPacitentes } from "../../service/pacientes/pacientes.service"
+import { toast } from 'react-toastify'
 
 export default function Pacientes() {
   const [modalAberto, setModalAberto] = useState(false)
+  const [pacientes, setPacientes] = useState([])
+
+  useEffect(() =>{
+    listarPacitentes().then((response) =>{
+      setPacientes(response)
+    }).catch((error=>{
+      console.error(error)
+      toast.error('Não foi possível listar os pacientes')
+    }))
+  }, [])
+
 
   return (
     <>
@@ -18,7 +31,7 @@ export default function Pacientes() {
           <BotaoCadastro onClick={() => setModalAberto(true)} />
         </div>
 
-        <TabelaPaciente />
+        <TabelaPaciente pacientes={pacientes}/>
       </Layout>
       <CadastroFuncionarioModal
         isOpen={modalAberto}
