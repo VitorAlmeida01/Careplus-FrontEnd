@@ -8,6 +8,7 @@ import ConsultaAtual from "./pages/consultaAtual/ConsultaAtual"
 import TelaProfissional from "./pages/telaProfissional/TelaProfissional"
 import Pacientes from "./pages/pacientes/Pacientes"
 import ConsultasAntigas from "./pages/consultasAntigas/ConsultasAntigas"
+import AgendamentoConsulta from "./pages/agendamento/AgendamentoConsulta"
 
 export default function RoutesApp() {
   return (
@@ -21,6 +22,7 @@ export default function RoutesApp() {
         <Route path="/consulta-atual" element={<ConsultaAtual />} />
         <Route path="/tela-profissional" element={<TelaProfissional />} />
         <Route path="/consultas-antigas" element={<ConsultasAntigas />} />
+        <Route path="/agendamento-consulta" element={<AgendamentoConsulta />} />
       </Routes>
     </BrowserRouter>
   )
