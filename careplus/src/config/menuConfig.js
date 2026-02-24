@@ -54,4 +54,11 @@ export const menuConfig = [
     icon: ClipboardMinus,
     roles: ["USER"],
   },
+  {
+    key: "agendamento-consulta",
+    label: "Agendamento Consulta",
+    path: "/agendamento-consulta",
+    icon: ClipboardMinus,
+    roles: ["USER", "ADMIN"],
+  },
 ]

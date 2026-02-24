@@ -13,9 +13,9 @@ const axiosInstance = axios.create({
 function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
 
- 
+
   const [areas, setAreas] = useState([]);
-  const [funcionarios, setFuncionarios] = useState([]); 
+  const [funcionarios, setFuncionarios] = useState([]);
 
   const [appliedFilters, setAppliedFilters] = useState({
     area: '',
@@ -30,7 +30,7 @@ function App() {
         const res = await axiosInstance.get('/funcionarios', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         setFuncionarios(res.data);
         const cargosUnicos = [...new Set(res.data.map(f => f.cargo).filter(Boolean))];
         setAreas(cargosUnicos);
@@ -47,41 +47,43 @@ function App() {
     setCurrentDate(new Date(y, m - 1, d, 12, 0, 0));
   };
 
- return (
-  <div className="App">
+  return (
     <Layout>
-      <div className="flex flex-col items-center w-full min-h-screen gap-6 p-4 md:p-6">
-        
-        {/* Container do FilterBar */}
-        <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>
-          <FilterBar
-            onDateChange={handleFilterDateChange}
-            currentDate={currentDate}
-            areas={areas}
-            funcionarios={funcionarios}
-            onApplyFilters={(filtros) => setAppliedFilters(filtros)}
-          />
-        </div>
 
-        {/* Container do HintCard */}
-        <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>
-          <HintCard />
-        </div>
+      <div className="App">
+        <div className="flex flex-col items-center w-full min-h-screen gap-6 p-4 md:p-6">
 
-        {/* Container do CalendarApp */}
-        <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>
-          <CalendarApp
-            currentDate={currentDate}
-            setCurrentDate={setCurrentDate}
-            selectedArea={appliedFilters.area} 
-            selectedProfissional={appliedFilters.profissional}
-          />
+          {/* Container do FilterBar */}
+          <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>
+            <FilterBar
+              onDateChange={handleFilterDateChange}
+              currentDate={currentDate}
+              areas={areas}
+              funcionarios={funcionarios}
+              onApplyFilters={(filtros) => setAppliedFilters(filtros)}
+            />
+          </div>
+
+          {/* Container do HintCard */}
+          <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>
+            <HintCard />
+          </div>
+
+          {/* Container do CalendarApp */}
+          <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>
+            <CalendarApp
+              currentDate={currentDate}
+              setCurrentDate={setCurrentDate}
+              selectedArea={appliedFilters.area}
+              selectedProfissional={appliedFilters.profissional}
+            />
+          </div>
+
         </div>
-        
       </div>
     </Layout>
-  </div>
-);
+
+  );
 }
 
 export default App;
