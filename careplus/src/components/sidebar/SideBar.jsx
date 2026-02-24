@@ -1,20 +1,29 @@
 import {
-  Home,
-  Calendar,
-  Users,
   LogOut,
   X,
   Menu,
-  BarChart3,
-  ClipboardMinus,
 } from "lucide-react"
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "./sideBar.css"
+import { logoutService } from "../../service/login/login.service"
+import { menuConfig } from "../../config/menuConfig"
+import { getUserRoles } from "../../service/login/jwtDecoder"
 
 export default function SideBar() {
-  const [activeItem, setActiveItem] = useState("inicio")
+  const [activeItem, setActiveItem] = useState("")
   const [isOpen, setIsOpen] = useState(true)
+  const userRoles = getUserRoles()
+
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logoutService()
+    navigate("/")
+  }
+
+  const hasAccess = (itemRoles) =>
+    itemRoles.some(role => userRoles.includes(role))
 
   return (
     <div className={isOpen ? "sidebar" : "sidebar sidebar-closed"}>
@@ -26,110 +35,37 @@ export default function SideBar() {
       </div>
 
       <nav className="sidebar-nav">
-        {/* <button
-          className={activeItem === "inicio" ? "nav-item active" : "nav-item"}
-          onClick={() => setActiveItem("inicio")}
-        >
-          <Home size={24} />
-          {isOpen && <span>Início</span>}
-        </button> */}
+        {menuConfig
+          .filter(item => hasAccess(item.roles))
+          .map(item => {
+            const Icon = item.icon
 
-        {/* <button
-          className={activeItem === "agenda" ? "nav-item active" : "nav-item"}
-          onClick={() => setActiveItem("agenda")}
-        >
-          <Calendar size={24} />
-          {isOpen && <span>Agenda</span>}
-        </button> */}
-
-        <Link to={"/funcionarios"} className="botaoSideBar">
-          <button
-            className={
-              activeItem === "pacientes" ? "nav-item active" : "nav-item"
-            }
-            onClick={() => setActiveItem("pacientes")}
-          >
-            <Users size={24} />
-            {isOpen && "Funcionarios"}
-          </button>
-        </Link>
-
-        <Link to="/pacientes" className="botaoSideBar">
-          <button
-            className={
-              activeItem === "pacientes" ? "nav-item active" : "nav-item"
-            }
-            onClick={() => setActiveItem("pacientes")}
-          >
-            <Users size={24} />
-            {isOpen && "Pacientes"}
-          </button>
-        </Link>
-
-        <Link to="/dashboard" className="botaoSideBar">
-          <button
-            className={
-              activeItem === "pacientes" ? "nav-item active" : "nav-item"
-            }
-            onClick={() => setActiveItem("pacientes")}
-          >
-            <BarChart3 size={24} />
-            {isOpen && "Dashboard"}
-          </button>
-        </Link>
-
-        <Link to="/ficha-clinica" className="botaoSideBar">
-          <button
-            className={
-              activeItem === "pacientes" ? "nav-item active" : "nav-item"
-            }
-            onClick={() => setActiveItem("pacientes")}
-          >
-            <ClipboardMinus size={24} />
-            {isOpen && "Ficha Clinica"}
-          </button>
-        </Link>
-        <Link to="/consulta-atual" className="botaoSideBar">
-          <button
-            className={
-              activeItem === "pacientes" ? "nav-item active" : "nav-item"
-            }
-            onClick={() => setActiveItem("pacientes")}
-          >
-            <ClipboardMinus size={24} />
-            {isOpen && "Consulta atual"}
-          </button>
-        </Link>
-        <Link to="/tela-profissional" className="botaoSideBar">
-          <button
-            className={
-              activeItem === "pacientes" ? "nav-item active" : "nav-item"
-            }
-            onClick={() => setActiveItem("pacientes")}
-          >
-            <ClipboardMinus size={24} />
-            {isOpen && "Tela Profissional"}
-          </button>
-        </Link>
-
-        <Link to="/consultas-antigas" className="botaoSideBar">
-          <button
-            className={
-              activeItem === "pacientes" ? "nav-item active" : "nav-item"
-            }
-            onClick={() => setActiveItem("pacientes")}
-          >
-            <ClipboardMinus size={24} />
-            {isOpen && "Consultas Antigas"}
-          </button>
-        </Link>
+            return (
+              <Link
+                key={item.key}
+                to={item.path}
+                className="botaoSideBar"
+              >
+                <button
+                  className={
+                    activeItem === item.key
+                      ? "nav-item active"
+                      : "nav-item"
+                  }
+                  onClick={() => setActiveItem(item.key)}
+                >
+                  <Icon size={24} />
+                  {isOpen && item.label}
+                </button>
+              </Link>
+            )
+          })}
       </nav>
-      <Link to={"/"} className="botaoSideBarSair">
-        <button className="logout-btn">
-          <LogOut size={24} />
-          Sair
-        </button>
-      </Link>
+
+      <button className="logout-btn" onClick={handleLogout}>
+        <LogOut size={24} />
+        {isOpen && "Sair"}
+      </button>
     </div>
   )
 }
