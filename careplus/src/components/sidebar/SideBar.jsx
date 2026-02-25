@@ -9,11 +9,13 @@ import "./sideBar.css"
 import { logoutService } from "../../service/login/login.service"
 import { menuConfig } from "../../config/menuConfig"
 import { getUserRoles } from "../../service/login/jwtDecoder"
+import { getTokenData } from "../../service/login/jwtDecoder"
 
 export default function SideBar() {
   const [activeItem, setActiveItem] = useState("")
   const [isOpen, setIsOpen] = useState(true)
   const userRoles = getUserRoles()
+  const [usuario] = useState(getTokenData())
 
   const navigate = useNavigate()
 
@@ -32,6 +34,11 @@ export default function SideBar() {
         <button className="close-btn" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
+
+      </div>
+      <div className="m-5 font-medium text-2xl">
+        <h2>{isOpen && usuario.nome} </h2>  
+        <h3>{isOpen && usuario.especialidade} </h3>
       </div>
 
       <nav className="sidebar-nav">

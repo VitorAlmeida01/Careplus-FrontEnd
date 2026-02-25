@@ -5,7 +5,7 @@ export default function PrivateRoute({ children, allowedRoles }) {
   const token = getToken();
 
   if (!token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/unauthorized" replace />;
   }
 
   if (allowedRoles && allowedRoles.length > 0) {

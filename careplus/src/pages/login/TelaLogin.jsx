@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import { loginService } from "../../service/login/login.service"
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { getUserRoles } from "../../service/login/jwtDecoder"
+import { getTokenData, getUserRoles } from "../../service/login/jwtDecoder"
 import { byRole } from "../../service/login/redirectPage"
 
 // Coloquei a classe que ja estava feita e fui colocando as classes do tailwind
@@ -36,8 +36,10 @@ export default function TelaLogin() {
       toast.success('Login realizado com sucesso!')
 
       const role = getUserRoles()
+      const token = getTokenData()
 
       console.log("Role: ", role)
+      console.log("Token: ", token)
 
       byRole(role).then((response) => {
         setTimeout(() => {
