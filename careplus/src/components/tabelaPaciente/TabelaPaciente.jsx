@@ -8,81 +8,15 @@ import {
   Phone,
 } from "lucide-react"
 
+import { useEffect, useState } from "react"
+
 export default function TabelaPaciente({pacientes}) {
-  // const funcionarios = [
-  //   {
-  //     id: 1,
-  //     nome: "Ana Silva Santos",
-  //     email: "ana.silva@example.com",
-  //     documento: "123.456.789-00",
-  //     responsavel: "Carlos Mendes",
-  //     dataNascimento: "15/03/2010",
-  //     telefone: "(11) 98765-4321",
-  //   },
-  //   {
-  //     id: 2,
-  //     nome: "Bruno Costa Lima",
-  //     email: "bruno.costa@example.com",
-  //     documento: "234.567.890-11",
-  //     responsavel: "Maria Oliveira",
-  //     dataNascimento: "22/07/2009",
-  //     telefone: "(21) 97654-3210",
-  //   },
-  //   {
-  //     id: 3,
-  //     nome: "Carla Pereira Souza",
-  //     email: "carla.pereira@example.com",
-  //     documento: "345.678.901-22",
-  //     responsavel: "João Santos",
-  //     dataNascimento: "08/11/2011",
-  //     telefone: "(11) 96543-2109",
-  //   },
-  //   {
-  //     id: 4,
-  //     nome: "Daniel Rodrigues",
-  //     email: "daniel.rodrigues@example.com",
-  //     documento: "456.789.012-33",
-  //     responsavel: "Paula Ferreira",
-  //     dataNascimento: "30/05/2017",
-  //     telefone: "(31) 95432-1098",
-  //   },
-  //   {
-  //     id: 5,
-  //     nome: "Eduarda Martins",
-  //     email: "eduarda.martins@example.com",
-  //     documento: "567.890.123-44",
-  //     responsavel: "Roberto Alves",
-  //     dataNascimento: "12/09/2019",
-  //     telefone: "(41) 94321-0987",
-  //   },
-  //   {
-  //     id: 6,
-  //     nome: "Fernando Almeida",
-  //     email: "fernando.almeida@example.com",
-  //     documento: "678.901.234-55",
-  //     responsavel: "Juliana Costa",
-  //     dataNascimento: "25/02/2020",
-  //     telefone: "(51) 93210-9876",
-  //   },
-  //   {
-  //     id: 7,
-  //     nome: "Gabriela Santos",
-  //     email: "gabriela.santos@example.com",
-  //     documento: "789.012.345-66",
-  //     responsavel: "Marcos Silva",
-  //     dataNascimento: "18/06/2021",
-  //     telefone: "(61) 92109-8765",
-  //   },
-  //   {
-  //     id: 8,
-  //     nome: "Henrique Oliveira",
-  //     email: "henrique.oliveira@example.com",
-  //     documento: "890.123.456-77",
-  //     responsavel: "Patrícia Lima",
-  //     dataNascimento: "03/12/2022",
-  //     telefone: "(71) 91098-7654",
-  //   },
-  // ]
+
+  const [pacientesData, setPacientesData] = useState(pacientes)
+
+  useEffect(() => {
+    setPacientesData(pacientes)
+  }, [pacientes])
 
   return (
     <div className="bg-white w-[90%] min-h-[500px] my-[1%] mx-[4%] shadow-md rounded-lg">
@@ -99,7 +33,7 @@ export default function TabelaPaciente({pacientes}) {
             </th>
             <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
               <UserCheck size={18} className="inline align-middle mr-2" />
-              Responsavel
+              Convênio
             </th>
             <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
               <Calendar size={18} className="inline align-middle mr-2" />
@@ -114,7 +48,7 @@ export default function TabelaPaciente({pacientes}) {
           </tr>
         </thead>
         <tbody>
-          {pacientes.map((paciente) => {
+          {pacientesData.map((paciente) => {
             return (
               <tr key={paciente.id}>
                 <td className="p-4 text-center font-normal border-b border-gray-500">
@@ -131,7 +65,7 @@ export default function TabelaPaciente({pacientes}) {
                   {paciente.cpf}
                 </td>
                 <td className="p-4 text-center font-normal border-b border-gray-500">
-                  {paciente.responsavel || "-"}
+                  {paciente.convenio || "-"}
                 </td>
                 <td className="p-4 text-center font-normal border-b border-gray-500">
                   {paciente.dtNascimento}

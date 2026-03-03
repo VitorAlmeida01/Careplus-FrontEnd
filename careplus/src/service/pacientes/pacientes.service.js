@@ -12,3 +12,16 @@ export async function listarPacitentes() {
         console.log(error)
     }
 }
+
+export async function cadastrarPaciente(paciente){
+    try{
+        const response = await api.post('/pacientes', paciente)
+
+        if(response.status === 201){
+            const dados = response.data
+            return dados
+        }
+    }catch(error){
+        console.log(error)
+    }
+}

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import Layout from "../../components/layout/Layout"
 import BarraPesquisa from "../../components/barraPesquisa"
 import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
-import CadastroFuncionarioModal from "../../components/modalCadastro/CadastroFuncionarioModal"
+import CadastroFuncionarioModal from "../../components/modalCadastro/Funcionarios/CadastroFuncionarioModal"
 import TabelaFuncionario from "../../components/tabelaFuncionario/TabelaFuncionario"
 import { listarFuncionarios } from "../../service/funcionarios/funcionarios.service"
 

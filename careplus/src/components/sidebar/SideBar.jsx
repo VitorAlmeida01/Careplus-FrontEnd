@@ -36,10 +36,22 @@ export default function SideBar() {
         </button>
 
       </div>
-      <div className="m-5 font-medium text-2xl">
-        <h2>{isOpen && usuario.nome} </h2>  
-        <h3>{isOpen && usuario.especialidade} </h3>
-      </div>
+      
+      {isOpen && (
+        <div className="flex flex-col items-center p-5 mx-4 my-5  rounded-2xl">
+          <div className="w-15 h-15 rounded-full bg-linear-to-br from-cyan-400 to-emerald-400 flex items-center justify-center text-white text-[28px] font-semibold mb-3 shadow-lg ">
+            {usuario.nome?.charAt(0).toUpperCase()}
+          </div>
+          <div className="text-center w-full">
+            <h2 className="text-lg font-semibold text-slate-700 mb-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
+              {usuario.nome}
+            </h2>
+            <h3 className="text-sm font-medium text-slate-500 whitespace-nowrap overflow-hidden text-ellipsis">
+              {usuario.especialidade}
+            </h3>
+          </div>
+        </div>
+      )}
 
       <nav className="sidebar-nav">
         {menuConfig
