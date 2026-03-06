@@ -15,7 +15,7 @@ export async function listarPacitentes() {
 
 export async function cadastrarPaciente(paciente){
     try{
-        const response = await api.post('/pacientes', paciente)
+        const response = await api.post('/todos-pacientes', paciente)
 
         if(response.status === 201){
             const dados = response.data
