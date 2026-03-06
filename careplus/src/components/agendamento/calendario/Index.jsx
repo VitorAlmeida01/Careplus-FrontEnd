@@ -24,7 +24,7 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         const response = await axiosInstance.get('/consultas-prontuario', {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -48,7 +48,7 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
       }
     };
     fetchEvents();
-  }, []);
+  }, []);99
 
   const filteredEvents = React.useMemo(() => {
     if (!selectedArea) return events; 
