@@ -51,17 +51,7 @@ export default function ConsultasAntigas() {
 
   return (
     <Layout>
-      <div className="w-full h-full p-4 md:p-6 bg-gray-50">
-        {/* Breadcrumb */}
-        <nav className="text-xs md:text-sm text-gray-500 mb-4 overflow-x-auto whitespace-nowrap">
-          <span>Início</span>
-          <span className="mx-2">{">"}</span>
-          <span>Pacientes</span>
-          <span className="mx-2">{">"}</span>
-          <span>Paciente</span>
-          <span className="mx-2">{">"}</span>
-          <span className="text-gray-900">Últimas Consultas</span>
-        </nav>
+      <div className="w-full h-full p-4 md:p-6 ">
 
         {/* Título com botão voltar */}
         <div className="flex items-center gap-2 mb-6">

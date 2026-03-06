@@ -17,18 +17,22 @@ export async function cadastrarPaciente(paciente){
     try{
         const formData = new FormData()
         
-        // Adiciona cada campo ao FormData
-        Object.keys(paciente).forEach(key => {
-            if(paciente[key] !== null && paciente[key] !== undefined){
-                formData.append(key, paciente[key])
-            }
-        })
+        // Adiciona cada campo explicitamente ao FormData
+        formData.append('nome', paciente.nome)
+        formData.append('email', paciente.email)
+        formData.append('cpf', paciente.cpf)
+        formData.append('telefone', paciente.telefone)
+        formData.append('dtNascimento', paciente.dtNascimento)
+        
+        if(paciente.convenio){
+            formData.append('convenio', paciente.convenio)
+        }
+        
+        if(paciente.foto){
+            formData.append('foto', paciente.foto)
+        }
 
-        const response = await api.post('/pacientes', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        })
+        const response = await api.post('/pacientes', formData)
 
         if(response.status === 201){
             const dados = response.data
