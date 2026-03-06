@@ -1,20 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import IniciarConsultaModal from '../../modalConsulta/IniciarConsultaModal'; 
+// import IniciarConsultaModal from '../../modalConsulta/IniciarConsultaModal';
+import CadastroFuncionarioModal from '../../modalConsulta/MarcacaoConsultaModal'
 
 const FilterBar = ({ 
   onDateChange, 
   selectedDate, 
   areas = [], 
   funcionarios = [], // Agora recebemos a lista bruta de funcionários do App
-  onApplyFilters // Nova prop: Função disparada pelo botão Aplicar
+  onApplyFilters //Função disparada pelo botão Aplicar
 }) => {
   const [inputType, setInputType] = useState("text");
+
+  //Estado Modal
+  const [modal, setModal] = useState(false);
 
   // ESTADOS DE RASCUNHO (Só vivem aqui até clicar em aplicar)
   const [tempArea, setTempArea] = useState("");
   const [tempProfissional, setTempProfissional] = useState("");
   // Regra: Se tem área selecionada, mostra os profissionais dela. 
-  // Se NÃO tem área (caso que você pediu), mostra TODOS os profissionais.
   const profissionaisFiltrados = useMemo(() => {
     if (!tempArea) return funcionarios;
     return funcionarios.filter(func => func.cargo === tempArea);
@@ -25,7 +28,7 @@ const FilterBar = ({
     setTempProfissional(""); // Limpa o profissional se a área mudar
   };
 
-  // A MÁGICA DO BOTÃO APLICAR ACONTECE AQUI
+  // Aplicar filtros
   const handleApplyClick = () => {
     // Envia os rascunhos para o App.jsx
     onApplyFilters({
@@ -112,12 +115,15 @@ return (
 
     {/* Botão Nova Consulta */}
     <div className="w-full sm:w-auto">
-      <button className="bg-[#00D2A0] hover:bg-[#00C092] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap" >
+      <button onClick={()=> setModal(true)} className="bg-[#00D2A0] hover:bg-[#00C092] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap" >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         Nova Consulta
       </button>
+      <CadastroFuncionarioModal 
+      isOpen={modal} onClose={() => setModal(false)} 
+      />
     </div>
   </div>
 );};

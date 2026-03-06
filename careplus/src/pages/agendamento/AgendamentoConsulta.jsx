@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import CalendarApp from '../../components/agendamento/calendario'
+import CalendarApp from '../../components/agendamento/calendario/Index'
 import HintCard from '../../components/agendamento/tipes/HintCard';
 import Layout from '../../components/layout/Layout'
 import FilterBar from '../../components/agendamento/filterBar/FilterBar';
@@ -26,10 +26,11 @@ function App() {
   useEffect(() => {
     const fetchAreas = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         const res = await axiosInstance.get('/funcionarios', {
           headers: { Authorization: `Bearer ${token}` }
         });
+
 
         setFuncionarios(res.data);
         const cargosUnicos = [...new Set(res.data.map(f => f.cargo).filter(Boolean))];
