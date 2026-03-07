@@ -82,12 +82,6 @@ export default function TelaLogin() {
               value={password} />
           </div>
 
-          {/* <button className="botaologin"></button> */}
-          {/* 
-          <Link to={"/funcionarios"} className="botaologin w-full">
-            Login
-          </Link> */}
-
           <button className="botaologin w-full" type="submit">Login</button>
         </form>
 

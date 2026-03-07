@@ -46,7 +46,7 @@ export default function ConsultaAntiga({
       {/* Botão Ver Detalhes */}
       <button
         onClick={onVerDetalhes}
-        className="text-xs md:text-sm text-gray-600 border border-gray-300 rounded-md px-3 md:px-4 py-2 hover:bg-gray-50 transition-colors flex-shrink-0 w-full sm:w-auto"
+        className="text-xs md:text-sm text-gray-600 border border-gray-300 rounded-md px-3 md:px-4 py-2 hover:bg-gray-50 transition-colors flex-shrink-0 w-full sm:w-auto cursor-pointer"
       >
         Ver detalhes
       </button>

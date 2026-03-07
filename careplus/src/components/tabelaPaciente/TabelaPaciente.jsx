@@ -20,7 +20,7 @@ export default function TabelaPaciente({pacientes}) {
   }, [pacientes])
 
   return (
-    <div className="bg-white w-[90%] min-h-[500px] my-[1%] mx-[4%] shadow-md rounded-lg">
+    <div className="bg-white w-[90%] min-h-[735px] max-h-[735px] my-[1%] mx-[4%] shadow-md rounded-lg">
       <table className="w-full border-separate border-spacing-0 rounded-lg overflow-hidden">
         <thead className="bg-gray-100">
           <tr>

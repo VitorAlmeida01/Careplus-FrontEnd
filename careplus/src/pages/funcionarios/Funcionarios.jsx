@@ -5,21 +5,24 @@ import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
 import CadastroFuncionarioModal from "../../components/modalCadastro/Funcionarios/CadastroFuncionarioModal"
 import TabelaFuncionario from "../../components/tabelaFuncionario/TabelaFuncionario"
 import { listarFuncionarios } from "../../service/funcionarios/funcionarios.service"
+import { Paginacao } from "@/src/components/Paginacao/Paginacao"
 
 export default function Funcionarios() {
   const [modalAberto, setModalAberto] = useState(false)
-
   const [funcionarios, setFuncionarios] = useState([])
+  const [page, setPage] = useState(0)
 
-  useEffect(() =>{
-
-    listarFuncionarios().then((response) =>{
-      setFuncionarios(response)
-    }).catch((error) =>{
+  useEffect(() => {
+    listarFuncionarios(page).then((response) => {
+      const resposta = response.content
+      setFuncionarios(resposta)
+      console.log(response.totalElements)
+    }).catch((error) => {
       console.error('Erro ao buscar funcionarios', error)
     })
+  }, [page])
 
-  }, [])
+
 
 
   return (
@@ -32,7 +35,8 @@ export default function Funcionarios() {
           <BotaoCadastro onClick={() => setModalAberto(true)} />
         </div>
 
-        <TabelaFuncionario funcionarioss={funcionarios}/>
+        <TabelaFuncionario funcionarioss={funcionarios} />
+        <Paginacao page={page} setPage={setPage} />
       </Layout>
       <CadastroFuncionarioModal
         isOpen={modalAberto}

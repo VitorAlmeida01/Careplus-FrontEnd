@@ -1,11 +1,12 @@
 import { api } from "../api";
 
-export async function listarPacitentes() {
+export async function listarPacitentes(pagina) {
     try{
-        const response = await api.get('/pacientes/todos-pacientes?pagina=0')
+        console.log('Página solicitada:', pagina)
+        const response = await api.get(`/pacientes/todos-pacientes?pagina=${pagina}`)
 
         if(response.status === 200){
-            const dados = response.data.content
+            const dados = response.data
             return dados
         }
     }catch(error){

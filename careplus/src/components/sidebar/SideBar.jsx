@@ -4,12 +4,13 @@ import {
   Menu,
 } from "lucide-react"
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import "./sideBar.css"
 import { logoutService } from "../../service/login/login.service"
 import { menuConfig } from "../../config/menuConfig"
 import { getUserRoles } from "../../service/login/jwtDecoder"
 import { getTokenData } from "../../service/login/jwtDecoder"
+import { Button } from "@/components/ui/button"
 
 export default function SideBar() {
   const [activeItem, setActiveItem] = useState("")
@@ -18,6 +19,7 @@ export default function SideBar() {
   const [usuario] = useState(getTokenData())
 
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleLogout = () => {
     logoutService()
@@ -36,7 +38,7 @@ export default function SideBar() {
         </button>
 
       </div>
-      
+
       {isOpen && (
         <div className="flex flex-col items-center p-5 mx-4 my-5  rounded-2xl">
           <div className="w-15 h-15 rounded-full bg-linear-to-br from-cyan-400 to-emerald-400 flex items-center justify-center text-white text-[28px] font-semibold mb-3 shadow-lg ">
@@ -63,14 +65,10 @@ export default function SideBar() {
               <Link
                 key={item.key}
                 to={item.path}
-                className="botaoSideBar"
+                className={"botaoSideBar" + (location.pathname === item.path ? " active" : "")}
               >
                 <button
-                  className={
-                    activeItem === item.key
-                      ? "nav-item active"
-                      : "nav-item"
-                  }
+                  className='nav-item'
                   onClick={() => setActiveItem(item.key)}
                 >
                   <Icon size={24} />
@@ -79,12 +77,18 @@ export default function SideBar() {
               </Link>
             )
           })}
+
       </nav>
 
-      <button className="logout-btn" onClick={handleLogout}>
+      <Button variant="outline" size="sm" className="mt-2 w-full h-15 cursor-pointer" onClick={handleLogout}>
+        <LogOut size={20} />
+        {isOpen && "Sair"}
+      </Button>
+
+      {/* <button className="logout-btn" onClick={handleLogout}>
         <LogOut size={24} />
         {isOpen && "Sair"}
-      </button>
+      </button> */}
     </div>
   )
 }

@@ -67,7 +67,7 @@ export default function ConsultasAntigas() {
         </div>
 
         {/* Lista de consultas */}
-        <div className="space-y-3 md:space-y-4 max-w-5xl">
+        <div className="space-y-3 md:space-y-4 mx-auto">
           {consultas.map((consulta) => (
             <ConsultaAntiga
               key={consulta.id}
