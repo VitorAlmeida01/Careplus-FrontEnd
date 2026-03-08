@@ -7,20 +7,21 @@ import {
   Calendar,
   Phone,
 } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 import { useEffect, useState } from "react"
 
 export default function TabelaPaciente({pacientes}) {
+  const navigate = useNavigate()
 
   const [pacientesData, setPacientesData] = useState(pacientes)
 
   useEffect(() => {
     setPacientesData(pacientes)
-    console.log(pacientes)
   }, [pacientes])
 
   return (
-    <div className="bg-white w-[90%] min-h-[735px] max-h-[735px] my-[1%] mx-[4%] shadow-md rounded-lg">
+    <div className="bg-white w-[90%] min-h-[700px] max-h-[700px] my-[1%] mx-[4%] shadow-md rounded-lg">
       <table className="w-full border-separate border-spacing-0 rounded-lg overflow-hidden">
         <thead className="bg-gray-100">
           <tr>
@@ -74,10 +75,10 @@ export default function TabelaPaciente({pacientes}) {
                 <td className="p-4 text-center font-normal border-b border-gray-500">
                   {paciente.telefone}
                 </td>
-                <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer">
+                <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500" onClick={() => navigate(`/pacientes/ficha-clinica`)}>
                   <Pencil size={18} />
                 </td>
-                <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer">
+                <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-red-500" >
                   <Trash2 size={18} />
                 </td>
               </tr>

@@ -2,7 +2,6 @@ import { api } from "../api";
 
 export async function listarPacitentes(pagina) {
     try{
-        console.log('Página solicitada:', pagina)
         const response = await api.get(`/pacientes/todos-pacientes?pagina=${pagina}`)
 
         if(response.status === 200){

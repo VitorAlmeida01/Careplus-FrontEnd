@@ -5,6 +5,13 @@ import {
 } from "lucide-react"
 
 export const menuConfig = [
+      {
+    key: "tela-profissional",
+    label: "Tela profissional",
+    path: "/tela-profissional",
+    icon: ClipboardMinus,
+    roles: ["USER"],
+  },
   {
     key: "funcionarios",
     label: "Funcionários",
@@ -26,34 +33,27 @@ export const menuConfig = [
     icon: BarChart3,
     roles: ["ADMIN"],
   },
-  {
-    key: "ficha-clinica",
-    label: "Ficha Clínica",
-    path: "/pacientes/ficha-clinica",
-    icon: ClipboardMinus,
-    roles: ["USER"],
-  },
-  {
-    key: "consulta-atual",
-    label: "Consulta Atual",
-    path: "/pacientes/consulta-atual",
-    icon: ClipboardMinus,
-    roles: ["USER"],
-  },
-  {
-    key: "consultas-antigas",
-    label: "Consultas Antigas",
-    path: "/consultas-antigas",
-    icon: ClipboardMinus,
-    roles: ["USER"],
-  },
-    {
-    key: "tela-profissional",
-    label: "Tela profissional",
-    path: "/tela-profissional",
-    icon: ClipboardMinus,
-    roles: ["USER"],
-  },
+  // {
+  //   key: "ficha-clinica",
+  //   label: "Ficha Clínica",
+  //   path: "/pacientes/ficha-clinica",
+  //   icon: ClipboardMinus,
+  //   roles: ["USER"],
+  // },
+  // {
+  //   key: "consulta-atual",
+  //   label: "Consulta Atual",
+  //   path: "/pacientes/consulta-atual",
+  //   icon: ClipboardMinus,
+  //   roles: ["USER"],
+  // },
+  // {
+  //   key: "consultas-antigas",
+  //   label: "Consultas Antigas",
+  //   path: "/pacientes/consultas-antigas",
+  //   icon: ClipboardMinus,
+  //   roles: ["USER"],
+  // },
   {
     key: "agendamento-consulta",
     label: "Agendamento Consulta",

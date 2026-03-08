@@ -22,22 +22,12 @@ export function Paginacao({ page, setPage }) {
     async function getPaginas(pagina) {
         listarFuncionarios(pagina).then((response) => {
             setTotalPaginas(response.totalPages)
-            console.log('Total de páginas:', response.totalPages)
         })
     }
 
     useEffect(() => {
-        console.log('Página atual:', page)
         getPaginas(page)
     }, [page])
-
-    useEffect(() => {
-        console.log('Paginas atuais', paginasAtuais)
-    }, [paginasAtuais])
-
-
-
-
 
     return (
         <Pagination>
@@ -52,9 +42,6 @@ export function Paginacao({ page, setPage }) {
                         </PaginationLink>
                     </PaginationItem>
                 ))}
-                <PaginationItem>
-                    <PaginationEllipsis />
-                </PaginationItem>
                 <PaginationItem>
                     <PaginationNext href='#' onClick={() => page < totalPaginas - 1 && setPage(page + 1)} />
                 </PaginationItem>

@@ -6,19 +6,25 @@ import CadastroFuncionarioModal from "../../components/modalCadastro/Funcionario
 import TabelaFuncionario from "../../components/tabelaFuncionario/TabelaFuncionario"
 import { listarFuncionarios } from "../../service/funcionarios/funcionarios.service"
 import { Paginacao } from "@/src/components/Paginacao/Paginacao"
+import { toast } from 'react-toastify'
+import Loading from "../../components/loading/Loading"
 
 export default function Funcionarios() {
   const [modalAberto, setModalAberto] = useState(false)
   const [funcionarios, setFuncionarios] = useState([])
   const [page, setPage] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     listarFuncionarios(page).then((response) => {
       const resposta = response.content
       setFuncionarios(resposta)
-      console.log(response.totalElements)
     }).catch((error) => {
       console.error('Erro ao buscar funcionarios', error)
+      toast.error('Não foi possível listar os funcionarios')
+    }).finally(() => {
+      setLoading(false)
     })
   }, [page])
 
@@ -35,7 +41,12 @@ export default function Funcionarios() {
           <BotaoCadastro onClick={() => setModalAberto(true)} />
         </div>
 
-        <TabelaFuncionario funcionarioss={funcionarios} />
+        {loading ? (
+          <Loading message="Carregando funcionários..." />
+        ) : (
+          <TabelaFuncionario funcionarios={funcionarios} />
+        )}
+        
         <Paginacao page={page} setPage={setPage} />
       </Layout>
       <CadastroFuncionarioModal

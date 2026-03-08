@@ -35,7 +35,7 @@ export default function RoutesApp() {
         <Route path="/pacientes/ficha-clinica" element={<FichaClinica />} />
         <Route path="/pacientes/consulta-atual" element={<ConsultaAtual />} />
         <Route path="/tela-profissional" element={<TelaProfissional />} />
-        <Route path="/consultas-antigas" element={<ConsultasAntigas />} />
+        <Route path="/pacientes/consultas-antigas" element={<ConsultasAntigas />} />
         <Route path="/agendamento-consulta" element={
           <PrivateRoute allowedRoles={["ADMIN", "USER"]}>
             <AgendamentoConsulta />

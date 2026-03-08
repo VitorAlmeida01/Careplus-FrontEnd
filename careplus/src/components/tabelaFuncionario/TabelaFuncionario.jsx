@@ -10,17 +10,16 @@ import {
 
 import { useEffect, useState } from "react"
 
-export default function TabelaFuncionario({ funcionarioss }) {
+export default function TabelaFuncionario({ funcionarios }) {
 
-  const [funcionariosData, setFuncionariosData] = useState(funcionarioss)
+  const [funcionariosData, setFuncionariosData] = useState(funcionarios)
 
   useEffect(() => {
-    setFuncionariosData(funcionarioss)
-    console.log(funcionarioss)
-  }, [funcionarioss])
+    setFuncionariosData(funcionarios)
+  }, [funcionarios])
 
   return (
-    <div className="bg-white w-[90%] min-h-[735px] max-h-[735px] my-[1%] mx-[4%] shadow-md rounded-lg">
+    <div className="bg-white w-[90%] min-h-[700px] max-h-[700px] my-[1%] mx-[4%] shadow-md rounded-lg">
       <table className="w-full border-separate border-spacing-0 rounded-lg overflow-hidden">
         <thead className="bg-gray-100">
           <tr>

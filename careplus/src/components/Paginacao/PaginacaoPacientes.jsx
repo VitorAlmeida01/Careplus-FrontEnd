@@ -22,21 +22,12 @@ export function PaginacaoPacientes({ page, setPage }) {
     async function getPaginas(pagina) {
         listarPacitentes(pagina).then((response) => {
             setTotalPaginas(response.totalPages)
-            console.log('Total de páginas:', response.totalPages)
         })
     }
 
     useEffect(() => {
-        console.log('Página atual:', page)
         getPaginas(page)
     }, [page])
-
-    useEffect(() => {
-        console.log('Paginas atuais', paginasAtuais)
-    }, [paginasAtuais])
-
-
-
 
 
     return (
