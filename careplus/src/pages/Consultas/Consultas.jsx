@@ -1,5 +1,5 @@
 import Layout from "../../components/layout/Layout"
-import ConsultasHojeModal from "../../components/ConsultasDia/ConsultasDia"
+import ConsultasDia from "../../components/ConsultasDia/ConsultasDia"
 import ConfirmacaoAgenda from "../../components/confirmacaoAgenda/ConfirmacaoAgenda"
 import KpiProfissional from "../../components/kpiProfissional/KpiProfissional"
 import { ClipboardClock, Clock, Check } from "lucide-react"
@@ -29,7 +29,7 @@ export default function TelaProfissional() {
         </section>
         <section className="flex flex-col lg:flex-row gap-4 lg:gap-3">
           {/* <ConfirmacaoAgenda /> */}
-          <ConsultasHojeModal />
+          <ConsultasDia />
         </section>
       </div>
     </Layout>

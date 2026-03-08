@@ -16,7 +16,7 @@ export default function ConsultasDia() {
       horario: "10:00 às 10:30",
       nome: "Vitor Almeida",
       tipo: "Outro",
-      idade: "12 Anos",
+      idade: "11 Anos",
     },
     {
       id: 3,
@@ -27,17 +27,17 @@ export default function ConsultasDia() {
     },
     {
       id: 4,
-      horario: "11:00 às 11:50",
-      nome: "Julia Santos",
+      horario: "12:00 às 12:50",
+      nome: "Pedro Augusto Santos",
       tipo: "Convencional",
-      idade: "10 Anos",
+      idade: "08 Anos",
     },
     {
       id: 5,
-      horario: "11:00 às 11:50",
-      nome: "Julia Santos",
+      horario: "13:00 às 13:50",
+      nome: "Davi Nogueira",
       tipo: "Convencional",
-      idade: "10 Anos",
+      idade: "05 Anos",
     },
   ]
 
