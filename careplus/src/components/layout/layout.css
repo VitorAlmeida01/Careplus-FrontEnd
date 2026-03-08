@@ -11,4 +11,21 @@
   height: 100vh;
   padding: 1%;
   box-sizing: border-box;
+}
+
+.mobile-menu-btn {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .content {
+    width: 100%;
+    margin-left: 0;
+  }
 }   
