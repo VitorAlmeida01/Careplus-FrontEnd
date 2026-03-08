@@ -1,24 +1,39 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import Layout from "../../components/layout/Layout"
 import BarraPesquisa from "../../components/barraPesquisa"
 import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
-import CadastroFuncionarioModal from "../../components/modalCadastro/CadastroFuncionarioModal"
+import CadastroPacienteModal from "../../components/modalCadastro/Pacientes/CadastroPacienteModal"
 import TabelaPaciente from "../../components/tabelaPaciente/TabelaPaciente"
 import { listarPacitentes } from "../../service/pacientes/pacientes.service"
 import { toast } from 'react-toastify'
+import { PaginacaoPacientes } from "@/src/components/Paginacao/PaginacaoPacientes"
+import Loading from "../../components/loading/Loading"
+
+
 
 export default function Pacientes() {
   const [modalAberto, setModalAberto] = useState(false)
   const [pacientes, setPacientes] = useState([])
+  const [page, setPage] = useState(0)
+  const [loading, setLoading] = useState(true)
 
-  useEffect(() =>{
-    listarPacitentes().then((response) =>{
-      setPacientes(response)
+  const recarregarPacientes = useCallback(() => {
+    setLoading(true)
+    listarPacitentes(page).then((response) =>{
+      const resposta = response.content
+      setPacientes(resposta)
     }).catch((error=>{
       console.error(error)
       toast.error('Não foi possível listar os pacientes')
-    }))
-  }, [])
+    })).finally(() => {
+      setLoading(false)
+    })
+  }, [page])
+
+  useEffect(() =>{
+    recarregarPacientes()
+  }, [page, recarregarPacientes])
+
 
 
   return (
@@ -29,13 +44,21 @@ export default function Pacientes() {
         </div>
         <div className="w-[90%] flex my-[1%] mx-[4%] justify-end">
           <BotaoCadastro onClick={() => setModalAberto(true)} />
+
         </div>
 
-        <TabelaPaciente pacientes={pacientes}/>
+        {loading ? (
+          <Loading message="Carregando pacientes..." />
+        ) : (
+          <TabelaPaciente pacientes={pacientes}/>
+        )}
+        
+        <PaginacaoPacientes page={page} setPage={setPage} />
       </Layout>
-      <CadastroFuncionarioModal
+      <CadastroPacienteModal
         isOpen={modalAberto}
         onClose={() => setModalAberto(false)}
+        onSuccess={recarregarPacientes}
       />
     </>
   )

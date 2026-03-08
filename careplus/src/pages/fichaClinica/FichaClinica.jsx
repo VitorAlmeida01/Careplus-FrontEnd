@@ -183,7 +183,7 @@ export default function FichaClinica() {
                     <h2>Última consulta</h2>
                     <BotaoLayout
                       nome="Visualizar"
-                      onClick={() => navigate("/consultas-antigas")}
+                      onClick={() => navigate("/pacientes/consultas-antigas")}
                     />
                   </section>
                 </CardFichaClinica.Header>

@@ -83,14 +83,18 @@ export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 p-3 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+            className="flex-1 p-3 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Fechar
           </button>
           <button
             type="button"
-            onClick={handleRealizarAnotacoes}
-            className="flex-1 p-3 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
+            onClick={() =>{
+              handleRealizarAnotacoes()
+
+              navigate("/pacientes/consulta-atual")
+            }}
+            className="flex-1 p-3 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-xl font-medium hover:opacity-90 transition-opacity cursor-pointer"
           >
             Realizar anotações
           </button>

@@ -7,7 +7,7 @@ import { ClipboardClock, Clock, Check } from "lucide-react"
 export default function TelaProfissional() {
   return (
     <Layout>
-      <div className="w-full h-full px-4 md:px-6">
+      <div className="w-full h-full px-4 md:px-6 mt-5">
         <section className="flex flex-col md:flex-row items-center justify-center mb-5 gap-4">
           <KpiProfissional
             titulo="Consultas Hoje"
@@ -28,7 +28,7 @@ export default function TelaProfissional() {
           />
         </section>
         <section className="flex flex-col lg:flex-row gap-4 lg:gap-3">
-          <ConfirmacaoAgenda />
+          {/* <ConfirmacaoAgenda /> */}
           <ConsultasHojeModal />
         </section>
       </div>
