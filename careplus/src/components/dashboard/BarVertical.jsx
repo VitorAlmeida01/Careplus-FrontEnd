@@ -71,7 +71,7 @@ export default function BarraVertical(props) {
     ]
     };
 return <ReactEcharts option={option} 
-            style={{height: "80%", width: "94%"}}
+            style={{height: "100%", width: "94%"}}
             className={props.className}
         />;
 }

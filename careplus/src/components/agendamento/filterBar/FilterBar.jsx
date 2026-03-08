@@ -41,16 +41,16 @@ return (
   <div className="bg-white rounded-[20px] p-3 shadow-sm w-full flex flex-wrap items-center justify-between gap-3">
     
     {/* Grupo da Esquerda: Filtros */}
-    <div className="flex flex-wrap items-center gap-2 flex-1 min-w-300px">
+    <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full sm:flex-1 sm:min-w-300px">
       
-      <span className="text-slate-600 font-medium text-[14px] px-1 whitespace-nowrap hidden sm:block">
+      <span className="text-slate-600 font-medium text-[14px] px-1 whitespace-nowrap w-full sm:w-auto text-left">
         Filtros
       </span>
 
-      <div className="flex flex-wrap items-center gap-2 flex-1">
+      <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full sm:flex-1">
         
         {/* Seletor de Data */}
-        <div className="flex items-center bg-[#F4F4F5] hover:bg-[#e4e4e7] rounded-xl px-3 py-2 transition-colors focus-within:ring-2 focus-within:ring-[#2B8BFF]/40 flex-1 min-w-140px max-w-1/4 md:max-w-180px">
+        <div className="flex items-center bg-[#F4F4F5] hover:bg-[#e4e4e7] rounded-xl px-3 py-2 transition-colors focus-within:ring-2 focus-within:ring-[#2B8BFF]/40 w-full sm:flex-1 sm:min-w-140px">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-500 mr-2 shrink-0">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
           </svg>
@@ -66,7 +66,7 @@ return (
         </div>
 
         {/* Seletor de Área */}
-        <div className="relative flex-1 min-w-110px max-w-1/4 md:max-w-140px">
+        <div className="relative w-full sm:flex-1 sm:min-w-110px">
           <select
             value={tempArea}
             onChange={handleAreaChange}
@@ -85,7 +85,7 @@ return (
         </div>
 
         {/* Seletor de Profissional */}
-        <div className="relative flex-1 min-w-150px max-w-1/4 md:max-w-200px">
+        <div className="relative w-full sm:flex-1 sm:min-w-150px">
           <select
             value={tempProfissional}
             onChange={(e) => setTempProfissional(e.target.value)}
@@ -107,7 +107,7 @@ return (
       {/* Botão Aplicar*/}
       <button 
         onClick={handleApplyClick} 
-        className="bg-[#2B8BFF] hover:bg-[#1A7AEB] text-white px-5 py-2 rounded-xl text-[13px] font-medium transition-colors whitespace-nowrap min-w-max"
+        className="bg-[#2B8BFF] hover:bg-[#1A7AEB] text-white px-5 py-2 rounded-xl text-[13px] font-medium transition-colors whitespace-nowrap w-full sm:w-auto"
       >
         Aplicar
       </button>

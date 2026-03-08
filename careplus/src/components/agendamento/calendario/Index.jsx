@@ -153,7 +153,7 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
 
 
   return (
-    <div className="w-full p-6 font-sans text-gray-900">
+    <div className="w-full py-6 font-sans text-gray-900">
       <Header
         currentDate={currentDate}
         view={view}

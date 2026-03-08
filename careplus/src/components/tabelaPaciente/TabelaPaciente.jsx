@@ -25,30 +25,30 @@ export default function TabelaPaciente({pacientes}) {
       {/* Visualização Desktop - Tabela */}
       <div className="hidden md:block">
         <table className="w-full min-w-[800px] border-separate border-spacing-0 rounded-lg overflow-hidden">
-          <thead className="bg-gray-100">
+          <thead className="bg-linear-to-r from-[#4fc3f7] to-[#5fcb9f]">
             <tr>
-              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
+              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle">
                 <User size={18} className="inline align-middle mr-2" />
                 Nome
               </th>
-              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
+              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle">
                 <FileText size={18} className="inline align-middle mr-2" />{" "}
                 Documento
               </th>
-              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
+              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle">
                 <UserCheck size={18} className="inline align-middle mr-2" />
                 Convênio
               </th>
-              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
+              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle">
                 <Calendar size={18} className="inline align-middle mr-2" />
                 Data Nascimento
               </th>
-              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle">
+              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle">
                 <Phone size={18} className="inline align-middle mr-2" />
                 Telefone Responsável
               </th>
-              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle"></th>
-              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-gray-600 text-sm align-middle"></th>
+              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle"></th>
+              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle"></th>
             </tr>
           </thead>
           <tbody>
