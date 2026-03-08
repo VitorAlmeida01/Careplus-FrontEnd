@@ -10,7 +10,7 @@ export const menuConfig = [
       {
     key: "Consultas",
     label: "Consultas",
-    path: "/Consultas",
+    path: "/consultas",
     icon: ClipboardMinus,
     roles: ["USER"],
   },
