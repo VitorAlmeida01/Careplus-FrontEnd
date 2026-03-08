@@ -5,7 +5,7 @@ import Funcionarios from "../pages/funcionarios/Funcionarios"
 import TelaDashboard from "../pages/telaDashboard/TelaDashboard"
 import FichaClinica from "../pages/fichaClinica/FichaClinica"
 import ConsultaAtual from "../pages/consultaAtual/ConsultaAtual"
-import TelaProfissional from "../pages/telaProfissional/TelaProfissional"
+import Consultas from "../pages/Consultas/Consultas"
 import Pacientes from "../pages/pacientes/Pacientes"
 import ConsultasAntigas from "../pages/consultasAntigas/ConsultasAntigas"
 import AgendamentoConsulta from "../pages/agendamento/AgendamentoConsulta"
@@ -33,8 +33,11 @@ export default function RoutesApp() {
         } />
         <Route path="/dashboard" element={<TelaDashboard />} />
         <Route path="/pacientes/ficha-clinica" element={<FichaClinica />} />
+        <Route path="/consultas/ficha-clinica" element={<FichaClinica />} />
+
         <Route path="/pacientes/consulta-atual" element={<ConsultaAtual />} />
-        <Route path="/tela-profissional" element={<TelaProfissional />} />
+        <Route path="/consultas/consulta-atual" element={<ConsultaAtual />} />
+        <Route path="/consultas" element={<Consultas />} />
         <Route path="/pacientes/consultas-antigas" element={<ConsultasAntigas />} />
         <Route path="/agendamento-consulta" element={
           <PrivateRoute allowedRoles={["ADMIN", "USER"]}>

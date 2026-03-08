@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
-import { BREADCRUMB_LABELS } from "../../config/breadCrumbsConfig"
+import { BREADCRUMB_LABELS } from "../../config/breadcrumbsConfig.js"
 import { logoutService } from "../../service/login/login.service"
 
 export default function Breadcrumbs() {

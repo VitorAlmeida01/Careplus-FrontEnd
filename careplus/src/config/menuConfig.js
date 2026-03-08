@@ -2,13 +2,15 @@ import {
   Users,
   BarChart3,
   ClipboardMinus,
+  Calendar,
+  IdCardLanyard
 } from "lucide-react"
 
 export const menuConfig = [
       {
-    key: "tela-profissional",
-    label: "Tela profissional",
-    path: "/tela-profissional",
+    key: "Consultas",
+    label: "Consultas",
+    path: "/Consultas",
     icon: ClipboardMinus,
     roles: ["USER"],
   },
@@ -16,7 +18,7 @@ export const menuConfig = [
     key: "funcionarios",
     label: "Funcionários",
     path: "/funcionarios",
-    icon: Users,
+    icon: IdCardLanyard,
     roles: ["ADMIN"],
   },
   {
@@ -58,7 +60,7 @@ export const menuConfig = [
     key: "agendamento-consulta",
     label: "Agendamento Consulta",
     path: "/agendamento-consulta",
-    icon: ClipboardMinus,
+    icon: Calendar,
     roles: ["USER", "ADMIN"],
   },
 ]

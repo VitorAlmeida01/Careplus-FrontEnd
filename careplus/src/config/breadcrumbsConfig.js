@@ -5,5 +5,6 @@ export const BREADCRUMB_LABELS = {
   "ficha-clinica": "Ficha Clínica",
   "consulta-atual": "Consulta Atual",
   "consultas-antigas": "Consultas Antigas",
-  "tela-profissional": "Tela Profissional",
+  "consultas": "Consultas",
+  "agendamento-consulta": "Agendamento Consulta",
 }
