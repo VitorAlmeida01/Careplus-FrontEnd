@@ -11,12 +11,14 @@ import { menuConfig } from "../../config/menuConfig"
 import { getUserRoles } from "../../service/login/jwtDecoder"
 import { getTokenData } from "../../service/login/jwtDecoder"
 import { Button } from "@/components/ui/button"
+import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
 
 export default function SideBar({ isOpen: isOpenProp, onClose }) {
   const [isOpenDesktop, setIsOpenDesktop] = useState(true)
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const userRoles = getUserRoles()
   const [usuario] = useState(getTokenData())
+  const [modalLogoutAberto, setModalLogoutAberto] = useState(false)
 
   // Detectar mudanças de tamanho da tela
   useState(() => {
@@ -44,6 +46,10 @@ export default function SideBar({ isOpen: isOpenProp, onClose }) {
   const location = useLocation()
 
   const handleLogout = () => {
+    setModalLogoutAberto(true)
+  }
+
+  const confirmarLogout = () => {
     logoutService()
     navigate("/")
   }
@@ -126,6 +132,17 @@ export default function SideBar({ isOpen: isOpenProp, onClose }) {
         {isOpen && "Sair"}
       </button> */}
       </div>
+
+      {/* Modal de Confirmação de Logout */}
+      <ConfirmacaoModal
+        isOpen={modalLogoutAberto}
+        onClose={() => setModalLogoutAberto(false)}
+        onConfirm={confirmarLogout}
+        titulo="Sair do Sistema"
+        mensagem="Você deseja realmente sair?"
+        textoBotaoConfirmar="Sair"
+        textoBotaoCancelar="Cancelar"
+      />
     </>
   )
 }

@@ -9,14 +9,48 @@ import {
 } from "lucide-react"
 
 import { useEffect, useState } from "react"
+import EditarFuncionarioModal from "../modalCadastro/Funcionarios/EditarFuncionarioModal"
+import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
 
 export default function TabelaFuncionario({ funcionarios }) {
 
   const [funcionariosData, setFuncionariosData] = useState(funcionarios)
+  const [modalAberto, setModalAberto] = useState(false)
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null)
+  const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false)
+  const [funcionarioParaExcluir, setFuncionarioParaExcluir] = useState(null)
 
   useEffect(() => {
     setFuncionariosData(funcionarios)
   }, [funcionarios])
+
+  const abrirModalEdicao = (funcionario) => {
+    setFuncionarioSelecionado(funcionario)
+    setModalAberto(true)
+  }
+
+  const fecharModal = () => {
+    setModalAberto(false)
+    setFuncionarioSelecionado(null)
+  }
+
+  const salvarAlteracoes = (dadosAtualizados) => {
+    console.log("Dados atualizados:", dadosAtualizados)
+    // Aqui você pode fazer a chamada à API para salvar as alterações
+    // Exemplo: api.put(`/funcionarios/${funcionarioSelecionado.id}`, dadosAtualizados)
+  }
+
+  const abrirModalExclusao = (funcionario) => {
+    setFuncionarioParaExcluir(funcionario)
+    setModalExclusaoAberto(true)
+  }
+
+  const confirmarExclusao = () => {
+    console.log("Funcionário excluído:", funcionarioParaExcluir)
+    // Aqui você pode fazer a chamada à API para excluir o funcionário
+    // Exemplo: api.delete(`/funcionarios/${funcionarioParaExcluir.id}`)
+    setFuncionarioParaExcluir(null)
+  }
 
   return (
     <div className="bg-white w-[90%] min-h-[700px] max-h-[700px] my-[1%] mx-[4%] shadow-md rounded-lg overflow-auto">
@@ -75,10 +109,16 @@ export default function TabelaFuncionario({ funcionarios }) {
                   <td className="p-4 text-center font-normal border-b border-gray-500">
                     {funcionario.telefone || '-'}
                   </td>
-                  <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer">
+                  <td 
+                    className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500"
+                    onClick={() => abrirModalEdicao(funcionario)}
+                  >
                     <Pencil size={18} />
                   </td>
-                  <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer">
+                  <td 
+                    className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-red-500"
+                    onClick={() => abrirModalExclusao(funcionario)}
+                  >
                     <Trash2 size={18} />
                   </td>
                 </tr>
@@ -135,11 +175,17 @@ export default function TabelaFuncionario({ funcionarios }) {
 
             {/* Ações */}
             <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
-              <button className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+              <button 
+                onClick={() => abrirModalEdicao(funcionario)}
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+              >
                 <Pencil size={16} />
                 <span className="text-sm font-medium">Editar</span>
               </button>
-              <button className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">
+              <button 
+                onClick={() => abrirModalExclusao(funcionario)}
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+              >
                 <Trash2 size={16} />
                 <span className="text-sm font-medium">Excluir</span>
               </button>
@@ -147,6 +193,27 @@ export default function TabelaFuncionario({ funcionarios }) {
           </div>
         ))}
       </div>
+
+      {/* Modal de Edição */}
+      {funcionarioSelecionado && (
+        <EditarFuncionarioModal
+          isOpen={modalAberto}
+          onClose={fecharModal}
+          funcionario={funcionarioSelecionado}
+          onSave={salvarAlteracoes}
+        />
+      )}
+
+      {/* Modal de Confirmação de Exclusão */}
+      <ConfirmacaoModal
+        isOpen={modalExclusaoAberto}
+        onClose={() => setModalExclusaoAberto(false)}
+        onConfirm={confirmarExclusao}
+        titulo="Excluir Funcionário"
+        mensagem={`Tem certeza que deseja excluir o funcionário ${funcionarioParaExcluir?.nome}? Esta ação não pode ser desfeita.`}
+        textoBotaoConfirmar="Excluir"
+        textoBotaoCancelar="Cancelar"
+      />
     </div>
   )
 }

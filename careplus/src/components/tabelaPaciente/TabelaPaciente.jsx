@@ -8,6 +8,7 @@ import {
   Phone,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
 
 import { useEffect, useState } from "react"
 
@@ -15,10 +16,24 @@ export default function TabelaPaciente({pacientes}) {
   const navigate = useNavigate()
 
   const [pacientesData, setPacientesData] = useState(pacientes)
+  const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false)
+  const [pacienteParaExcluir, setPacienteParaExcluir] = useState(null)
 
   useEffect(() => {
     setPacientesData(pacientes)
   }, [pacientes])
+
+  const abrirModalExclusao = (paciente) => {
+    setPacienteParaExcluir(paciente)
+    setModalExclusaoAberto(true)
+  }
+
+  const confirmarExclusao = () => {
+    console.log("Paciente excluído:", pacienteParaExcluir)
+    // Aqui você pode fazer a chamada à API para excluir o paciente
+    // Exemplo: api.delete(`/pacientes/${pacienteParaExcluir.id}`)
+    setPacienteParaExcluir(null)
+  }
 
   return (
     <div className="bg-white w-[90%] min-h-[700px] max-h-[700px] my-[1%] mx-[4%] shadow-md rounded-lg overflow-auto">
@@ -80,7 +95,10 @@ export default function TabelaPaciente({pacientes}) {
                   <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500" onClick={() => navigate(`/pacientes/ficha-clinica`)}>
                     <Pencil size={18} />
                   </td>
-                  <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-red-500" >
+                  <td 
+                    className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-red-500"
+                    onClick={() => abrirModalExclusao(paciente)}
+                  >
                     <Trash2 size={18} />
                   </td>
                 </tr>
@@ -142,7 +160,10 @@ export default function TabelaPaciente({pacientes}) {
                 <Pencil size={16} />
                 <span className="text-sm font-medium">Editar</span>
               </button>
-              <button className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">
+              <button 
+                onClick={() => abrirModalExclusao(paciente)}
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+              >
                 <Trash2 size={16} />
                 <span className="text-sm font-medium">Excluir</span>
               </button>
@@ -150,6 +171,17 @@ export default function TabelaPaciente({pacientes}) {
           </div>
         ))}
       </div>
+
+      {/* Modal de Confirmação de Exclusão */}
+      <ConfirmacaoModal
+        isOpen={modalExclusaoAberto}
+        onClose={() => setModalExclusaoAberto(false)}
+        onConfirm={confirmarExclusao}
+        titulo="Excluir Paciente"
+        mensagem={`Tem certeza que deseja excluir o paciente ${pacienteParaExcluir?.nome}? Esta ação não pode ser desfeita.`}
+        textoBotaoConfirmar="Excluir"
+        textoBotaoCancelar="Cancelar"
+      />
     </div>
   )
 }
