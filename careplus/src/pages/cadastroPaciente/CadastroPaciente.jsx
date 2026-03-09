@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { ChevronLeft, Upload, X } from "lucide-react"
 import Layout from "../../components/layout/Layout"
 import { toast } from "react-toastify"
+import { cadastrarPaciente } from "@/src/service/pacientes/pacientes.service"
 
 export default function CadastroPaciente() {
   const navigate = useNavigate()
@@ -85,18 +86,47 @@ export default function CadastroPaciente() {
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = (event) => {
+    event.preventDefault()
     
     // Aqui você faria a chamada à API para cadastrar o paciente
-    const dadosCompletos = {
-      ...formData,
-      fotoPaciente: fotoPaciente
+    const dados = {
+      // Dados do Paciente
+      nomePaciente: formData.nomePaciente,
+      emailPaciente: formData.emailPaciente,
+      cpfPaciente: formData.cpfPaciente,
+      telefonePaciente: formData.telefonePaciente,
+      dtNascimentoPaciente: formData.dtNascimentoPaciente,
+      convenioPaciente: formData.convenioPaciente,
+      fotoPaciente: fotoPaciente,
+      
+      // Dados do Responsável
+      nomeResponsavel: formData.nomeResponsavel,
+      emailResponsavel: formData.emailResponsavel,
+      telefoneResponsavel: formData.telefoneResponsavel,
+      dtNascimentoResponsavel: formData.dtNascimentoResponsavel,
+      cpfResponsavel: formData.cpfResponsavel,
+      parentesco: formData.parentesco,
+      
+      // Endereço
+      cep: formData.cep,
+      logradouro: formData.logradouro,
+      numero: formData.numero,
+      complemento: formData.complemento,
+      bairro: formData.bairro,
+      cidade: formData.cidade,
+      estado: formData.estado
     }
     
-    console.log("Dados do cadastro:", dadosCompletos)
-    toast.success("Paciente cadastrado com sucesso!")
-    navigate("/pacientes")
+    console.log("Dados do cadastro:", dados)
+
+    cadastrarPaciente(dados).then(() => {
+      toast.success('Paciente cadastrado com sucesso!')
+      navigate("/pacientes")
+    }).catch((error) => {
+      console.error(error)
+      toast.error('Não foi possível cadastrar o paciente')
+    })
   }
 
   return (
