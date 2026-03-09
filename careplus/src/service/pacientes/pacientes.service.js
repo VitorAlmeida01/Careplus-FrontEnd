@@ -54,7 +54,7 @@ export async function cadastrarPaciente(paciente){
 
         console.log("FormData para cadastro:", formData)
 
-        const response = await api.post('/pacientes', formData)
+        const response = await api.post('/pacientes/formCadastro', formData)
 
         if(response.status === 201){
             const dados = response.data

@@ -129,6 +129,29 @@ export default function CadastroPaciente() {
     })
   }
 
+//   {
+//   "parentesco": "parentesco_12636b82fc61",
+//   "cep": "cep_bf31b5abb352",
+//   "logradouro": "logradouro_9f56d007200b",
+//   "numero": "numero_8975a3806887",
+//   "complemento": "complemento_2f25d9d58a09",
+//   "bairro": "bairro_b83231d1e9e9",
+//   "cidade": "cidade_84c6e80805ba",
+//   "estado": "estado_93d87fd61cb2",
+//   "nomeResponsavel": "nomeResponsavel_61c8c7c7a774",
+//   "emailResponsavel": "emailResponsavel_cfa5e11dcede",
+//   "telefoneResponsavel": "telefoneResponsavel_15cb5d5d6821",
+//   "dtNascimentoResponsavel": "2026-03-09",
+//   "cpfResponsavel": "cpfResponsavel_fd8988a09551",
+//   "nomePaciente": "nomePaciente_4c939ba2e761",
+//   "emailPaciente": "emailPaciente_05e1bcaae1b6",
+//   "cpfPaciente": "cpfPaciente_7b28cfc9a8bd",
+//   "telefonePaciente": "telefonePaciente_b1ff1209aada",
+//   "dtNascimentoPaciente": "2026-03-09",
+//   "convenioPaciente": "convenioPaciente_0bcde14ec67a",
+//   "fotoPaciente": {}
+// }
+
   return (
     <Layout>
       <div className="w-full h-full p-4 md:p-6 overflow-y-auto">
