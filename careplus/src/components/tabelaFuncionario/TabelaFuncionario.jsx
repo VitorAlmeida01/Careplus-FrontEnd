@@ -6,6 +6,7 @@ import {
   UserCheck,
   Calendar,
   Phone,
+  SquarePenIcon
 } from "lucide-react"
 
 import { useEffect, useState } from "react"
@@ -113,7 +114,7 @@ export default function TabelaFuncionario({ funcionarios }) {
                     className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500"
                     onClick={() => abrirModalEdicao(funcionario)}
                   >
-                    <Pencil size={18} />
+                    <SquarePenIcon size={18} />
                   </td>
                   <td 
                     className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-red-500"
