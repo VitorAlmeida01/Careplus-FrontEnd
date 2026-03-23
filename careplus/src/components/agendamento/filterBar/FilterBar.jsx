@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 // import IniciarConsultaModal from '../../modalConsulta/IniciarConsultaModal';
 import CadastroFuncionarioModal from '../../modalConsulta/MarcacaoConsultaModal'
+import { toast} from 'react-toastify'
 
 const FilterBar = ({ 
   onDateChange, 
@@ -20,7 +21,7 @@ const FilterBar = ({
   // Regra: Se tem área selecionada, mostra os profissionais dela. 
   const profissionaisFiltrados = useMemo(() => {
     if (!tempArea) return funcionarios;
-    return funcionarios.filter(func => func.cargo === tempArea);
+    return funcionarios.filter(func => func.especialidade === tempArea);
   }, [funcionarios, tempArea]);
 
   const handleAreaChange = (e) => {
@@ -35,6 +36,7 @@ const FilterBar = ({
       area: tempArea,
       profissional: tempProfissional
     });
+    toast.success("Filtros aplicados com sucesso!")
   };
 
 return (
