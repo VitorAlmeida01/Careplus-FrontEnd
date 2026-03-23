@@ -3,68 +3,62 @@ import { Header } from './Header';
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { DayView } from './DayView';
-import { EventModal } from './EventoModal';
+// import { EventModal } from './EventoModal';
+import CadastroConsultaModal from '../../modalConsulta/MarcacaoConsultaModal'
 import { generateId, getRandomColor } from './utils';
-import axios from 'axios';
-
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import { listarConsultas } from '@/src/service/agendamento/agendamento.service';
 
 // Usando props para atualizar a data e opções de area a selecionar.
 const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
   const [view, setView] = useState('month');
-  const [events, setEvents] = useState({}); 
-  const [draggedEvent, setDraggedEvent] = useState(null);
+  const [events, setEvents] = useState({});
+  const [setDraggedEvent] = useState(null);
   const [modalState, setModalState] = useState({ isOpen: false, data: null, isReadOnly: false });
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        const response = await axiosInstance.get('/consultas-prontuario', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+    listarConsultas().then((response) => {
+      const resposta = response
+      setEvents(resposta)
+    }).catch(error => {
+      console.error("Erro ao buscar consultas:", error)
+    });
+  }, []);
 
-        const mapaEventos = response.data.reduce((acc, evento) => {
-          const dataKey = evento.dataHora.split(' ')[0];
-          const eventoFormatado = {
-            ...evento,
-            date: new Date(evento.dataHora.replace(' ', 'T')),
-            title: `${evento.paciente.nome} - ${evento.tipo}`,
-            color: 'bg-blue-500'
-          };
-          if (!acc[dataKey]) acc[dataKey] = [];
-          acc[dataKey].push(eventoFormatado);
-          return acc;
-        }, {});
-
-        setEvents(mapaEventos);
-      } catch (error) {
-        console.error('Erro ao buscar eventos:', error);
-      }
-    };
-    fetchEvents();
-  }, []);99
 
   const filteredEvents = React.useMemo(() => {
-    if (!selectedArea) return events; 
+    if (!selectedArea) return events;
 
     const filtrados = {};
     Object.keys(events).forEach(dateKey => {
       const eventosDoDia = events[dateKey].filter(
-        ev => ev.funcionario?.cargo === selectedArea
+        ev => ev.funcionario?.especialidade === selectedArea
       );
-      
+
       if (eventosDoDia.length > 0) {
         filtrados[dateKey] = eventosDoDia;
       }
     });
     return filtrados;
   }, [events, selectedArea]);
+
+  const tiposDeConsultaUnicos = React.useMemo(() => {
+    const todosOsDias = Object.values(events);
+
+    // transformar em uma lista única de consultas
+    const todasAsConsultas = todosOsDias.flat();
+
+    const tipos = new Set();
+
+    todasAsConsultas.forEach(consulta => {
+      if (consulta && consulta.tipo) {
+        tipos.add(consulta.tipo);
+      }
+    });
+
+    const resultado = Array.from(tipos);
+    console.log("DEBUG - Tipos extraídos:", resultado);
+    return resultado;
+  }, [events]);
 
   const handleNavigate = (direction) => {
     const newDate = new Date(currentDate.getTime());
@@ -85,37 +79,6 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
   const handleDragStart = (e, event) => {
     setDraggedEvent(event);
     e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e) => e.preventDefault();
-
-  // handleDrop: função para arrastar os eventos(consultas)
-  const handleDrop = (e, targetDate, targetHour = null) => {
-    e.preventDefault();
-    if (!draggedEvent) return;
-
-    const sourceDateKey = draggedEvent.date.toISOString().split('T')[0];
-    const targetDateKey = targetDate.toISOString().split('T')[0];
-
-    setEvents(prev => {
-      // Cria uma cópia do objeto de eventos atual
-      const newEvents = { ...prev };
-
-      // Remove o evento do dia de origem
-      if (newEvents[sourceDateKey]) {
-        newEvents[sourceDateKey] = newEvents[sourceDateKey].filter(ev => ev.id !== draggedEvent.id);
-      }
-
-      // Prepara o evento atualizado com a nova data e hora
-      const updatedEvent = { ...draggedEvent, date: targetDate, hour: targetHour ?? draggedEvent.hour };
-
-      // Adiciona o evento no dia de destino
-      newEvents[targetDateKey] = [...(newEvents[targetDateKey] || []), updatedEvent];
-
-      return newEvents;
-    });
-
-    setDraggedEvent(null);
   };
 
   // Salva um evento como objeto, quando o modal estiver pronto é só adaptar para estar no padrão do back-end
@@ -145,15 +108,13 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
     setModalState({ isOpen: true, data: { date, hour }, isReadOnly: false });
   };
 
-  const handleEventClick = (e, event) => {
-    e.stopPropagation();
-    setModalState({ isOpen: true, data: event, isReadOnly: true });
+  const handleEventClick = () => {
+    setModalState({ isOpen: true, data: null });
   };
 
 
-
   return (
-    <div className="w-full p-6 font-sans text-gray-900">
+    <div className="w-full py-6 font-sans text-gray-900">
       <Header
         currentDate={currentDate}
         view={view}
@@ -170,8 +131,8 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
             events={filteredEvents}
             onAddEvent={openCreateModal}
             onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
+            // onDragOver={handleDragOver}
+            // onDrop={handleDrop}
             onEventClick={handleEventClick}
           />
         )}
@@ -181,8 +142,8 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
             events={events}
             onAddEvent={openCreateModal}
             onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
+            // onDragOver={handleDragOver}
+            // onDrop={handleDrop}
             onEventClick={handleEventClick}
           />
         )}
@@ -192,19 +153,21 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
             events={events}
             onAddEvent={openCreateModal}
             onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
+            // onDragOver={handleDragOver}
+            // onDrop={handleDrop}
             onEventClick={handleEventClick}
           />
         )}
       </main>
 
-        {/* Modal do bruno vai ficar aqui */}
-       <EventModal
+      {/* Modal do bruno vai ficar aqui */}
+      <CadastroConsultaModal
+        key={tiposDeConsultaUnicos.length}
         isOpen={modalState.isOpen}
-        initialData={modalState.data}
-        onClose={() => setModalState({ isOpen: false, data: null })}
-        onSave={saveEvent} 
+        onClose={() => setModalState({ ...modalState, isOpen: false })}
+        events={events}
+        dataSelecionada={modalState.data?.date?.toISOString().split('T')[0]}
+        tiposDeConsulta={tiposDeConsultaUnicos}
       />
     </div>
   );

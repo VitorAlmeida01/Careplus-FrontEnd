@@ -98,31 +98,6 @@ export default function FichaClinica() {
                 </CardFichaClinica.Body>
               </CardFichaClinica>
 
-              <CardFichaClinica estilo="flex flex-col items-center h-auto md:h-full">
-                <CardFichaClinica.Header>
-                  <h2>Progresso</h2>
-                </CardFichaClinica.Header>
-                <CardFichaClinica.Body>
-                  <div>
-                    <DonutChart />
-                  </div>
-                  <div>
-                    <label>Tratamento já feito:</label>
-                    <p>
-                      <b>Linguagem Oral e Escrita</b>
-                    </p>
-                  </div>
-                  <div>
-                    <label>Tratamento atual:</label>
-                    <p>
-                      <b>Voz</b>
-                    </p>
-                  </div>
-                </CardFichaClinica.Body>
-                <CardFichaClinica.Footer>
-                  <BotaoLayout nome="Editar" tamanho="w-full p-3 rounded-xl" />
-                </CardFichaClinica.Footer>
-              </CardFichaClinica>
             </section>
             <section className="mt-5 flex gap-10 w-full flex-wrap md:flex-nowrap">
               <CardFichaClinica estilo="h-auto md:h-full">

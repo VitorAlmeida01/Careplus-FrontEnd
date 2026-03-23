@@ -11,17 +11,45 @@ import { menuConfig } from "../../config/menuConfig"
 import { getUserRoles } from "../../service/login/jwtDecoder"
 import { getTokenData } from "../../service/login/jwtDecoder"
 import { Button } from "@/components/ui/button"
+import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
 
-export default function SideBar() {
-  const [activeItem, setActiveItem] = useState("")
-  const [isOpen, setIsOpen] = useState(true)
+export default function SideBar({ isOpen: isOpenProp, onClose }) {
+  const [isOpenDesktop, setIsOpenDesktop] = useState(true)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const userRoles = getUserRoles()
   const [usuario] = useState(getTokenData())
+  const [modalLogoutAberto, setModalLogoutAberto] = useState(false)
+
+  // Detectar mudanças de tamanho da tela
+  useState(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
+    }
+
+    handleResize() // Executar na montagem
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // isOpen será controlado por props no mobile, e por estado local no desktop
+  const isOpen = isMobile ? isOpenProp : isOpenDesktop
+  const toggleSidebar = () => {
+    if (isMobile && onClose) {
+      onClose()
+    } else {
+      setIsOpenDesktop(!isOpenDesktop)
+    }
+  }
 
   const navigate = useNavigate()
   const location = useLocation()
 
   const handleLogout = () => {
+    setModalLogoutAberto(true)
+  }
+
+  const confirmarLogout = () => {
     logoutService()
     navigate("/")
   }
@@ -30,10 +58,19 @@ export default function SideBar() {
     itemRoles.some(role => userRoles.includes(role))
 
   return (
-    <div className={isOpen ? "sidebar" : "sidebar sidebar-closed"}>
+    <>
+      {/* Overlay/Backdrop para mobile com blur */}
+      {isMobile && isOpen && (
+        <div 
+          className="fixed inset-0 backdrop-blur-sm bg-white/30 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      <div className={`sidebar ${isOpen ? '' : 'sidebar-closed'} ${isMobile ? 'sidebar-mobile' : ''}`}>
       <div className="sidebar-header">
         {isOpen && <h2>Solução Clínica</h2>}
-        <button className="close-btn" onClick={() => setIsOpen(!isOpen)}>
+        <button className="close-btn" onClick={toggleSidebar}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
@@ -66,10 +103,15 @@ export default function SideBar() {
                 key={item.key}
                 to={item.path}
                 className={"botaoSideBar" + (location.pathname === item.path ? " active" : "")}
+                onClick={() => {
+                  // Fechar sidebar no mobile ao clicar em um item
+                  if (isMobile && onClose) {
+                    onClose()
+                  }
+                }}
               >
                 <button
                   className='nav-item'
-                  onClick={() => setActiveItem(item.key)}
                 >
                   <Icon size={24} />
                   {isOpen && item.label}
@@ -89,6 +131,18 @@ export default function SideBar() {
         <LogOut size={24} />
         {isOpen && "Sair"}
       </button> */}
-    </div>
+      </div>
+
+      {/* Modal de Confirmação de Logout */}
+      <ConfirmacaoModal
+        isOpen={modalLogoutAberto}
+        onClose={() => setModalLogoutAberto(false)}
+        onConfirm={confirmarLogout}
+        titulo="Sair do Sistema"
+        mensagem="Você deseja realmente sair?"
+        textoBotaoConfirmar="Sair"
+        textoBotaoCancelar="Cancelar"
+      />
+    </>
   )
 }

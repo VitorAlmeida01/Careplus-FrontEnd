@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 import Layout from "../../components/layout/Layout"
 import BarraPesquisa from "../../components/barraPesquisa"
 import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
@@ -12,6 +13,7 @@ import Loading from "../../components/loading/Loading"
 
 
 export default function Pacientes() {
+  const navigate = useNavigate()
   const [modalAberto, setModalAberto] = useState(false)
   const [pacientes, setPacientes] = useState([])
   const [page, setPage] = useState(0)
@@ -43,7 +45,7 @@ export default function Pacientes() {
           <BarraPesquisa />
         </div>
         <div className="w-[90%] flex my-[1%] mx-[4%] justify-end">
-          <BotaoCadastro onClick={() => setModalAberto(true)} />
+          <BotaoCadastro onClick={() => navigate("/pacientes/cadastrar")} />
 
         </div>
 

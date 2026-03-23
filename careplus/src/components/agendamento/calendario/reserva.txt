@@ -1,0 +1,33 @@
+// Funções para mover os eventos de consultas, deixar de reserva caso for necessário implementar novamente
+
+  const [draggedEvent, setDraggedEvent] = useState(null);
+  const handleDragOver = (e) => e.preventDefault();
+
+  // handleDrop: função para arrastar os eventos(consultas)
+  const handleDrop = (e, targetDate, targetHour = null) => {
+    e.preventDefault();
+    if (!draggedEvent) return;
+
+    const sourceDateKey = draggedEvent.date.toISOString().split('T')[0];
+    const targetDateKey = targetDate.toISOString().split('T')[0];
+
+    setEvents(prev => {
+      // Cria uma cópia do objeto de eventos atual
+      const newEvents = { ...prev };
+
+      // Remove o evento do dia de origem
+      if (newEvents[sourceDateKey]) {
+        newEvents[sourceDateKey] = newEvents[sourceDateKey].filter(ev => ev.id !== draggedEvent.id);
+      }
+
+      // Prepara o evento atualizado com a nova data e hora
+      const updatedEvent = { ...draggedEvent, date: targetDate, hour: targetHour ?? draggedEvent.hour };
+
+      // Adiciona o evento no dia de destino
+      newEvents[targetDateKey] = [...(newEvents[targetDateKey] || []), updatedEvent];
+
+      return newEvents;
+    });
+
+    setDraggedEvent(null);
+  };

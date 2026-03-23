@@ -9,7 +9,7 @@ export default function CardConsultaAtual({
   tratamentoAtual
 }) {
   return (
-    <div className="flex w-[50vw] items-center justify-center bg-white rounded-[10px] ">
+    <div className="flex w-full items-center justify-center bg-white rounded-[10px] sm:w-[50vw]">
       <div className="flex w-[95%]  h-[99%] justify-around items-center flex-col gap-3 p-4">
 
       <div className="flex w-[90%] items-center gap-3 p-4">

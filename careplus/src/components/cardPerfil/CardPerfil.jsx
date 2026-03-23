@@ -8,12 +8,6 @@ export default function CardPerfil({ onContatoClick, onProximaConsultaClick }) {
         <div className="flex flex-col gap-3">
           <h2>Gabriel de Oliveira Santos</h2>
           <div className="flex gap-3">
-            <p className="bg-linear-to-r from-[#00D492] to-[#009966] text-white px-1 py-1 rounded-3xl">
-              Reavaliado
-            </p>
-            <p className="bg-linear-to-r from-[#FDC700] to-[#D08700] text-white px-3 py-1 rounded-3xl">
-              2 Faltas
-            </p>
           </div>
         </div>
       </div>

@@ -1,10 +1,14 @@
 import { ChevronLeft } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 import Layout from "../../components/layout/Layout"
 import ConsultaAntiga from "../../components/ConsultaAntigaComponent/ConsultaAntiga"
+import DetalhesConsultaModal from "../../components/modalConsulta/DetalhesConsultaModal"
 
 export default function ConsultasAntigas() {
   const navigate = useNavigate()
+  const [modalAberto, setModalAberto] = useState(false)
+  const [consultaSelecionada, setConsultaSelecionada] = useState(null)
 
   const consultas = [
     {
@@ -12,42 +16,72 @@ export default function ConsultasAntigas() {
       titulo: "Retorno - Fonoaudiologia",
       data: "02/09/2025",
       horario: "16:00 - 17:00",
-      profissional: "Dra. Ana Silva",
-      tratamento: "Fonético",
+      profissional: "Marcos Ribeiro",
+      tratamento: "Fonoaudiologia",
+      especialidade: "Fonoaudiologia",
+      tipo: "Retorno",
+      materiais: "Brinquedos de encaixe, Livro de histórias",
+      observacoes: "Mostrou-se colaborativo com as atividades propostas. Buscou contato visual.\n\nSolicitou o fone abafador quando um barulho alto ocorreu no corredor. Comunicou suas vontades através de frases curtas."
     },
     {
       id: 2,
       titulo: "Retorno - Fonoaudiologia",
       data: "29/08/2025",
       horario: "15:00 - 16:00",
-      profissional: "Dra. Ana Silva",
-      tratamento: "Fonético",
+      profissional: "Marcos Ribeiro",
+      tratamento: "Fonoaudiologia",
+      especialidade: "Fonoaudiologia",
+      tipo: "Retorno",
+      materiais: "Cartões com imagens, Espelho",
+      observacoes: "Participou ativamente dos exercícios articulatórios. Demonstrou boa evolução na pronúncia dos fonemas trabalhados."
     },
     {
       id: 3,
       titulo: "Consulta - Fonoaudiologia",
       data: "19/08/2025",
       horario: "16:00 - 17:00",
-      profissional: "Dra. Ana Silva",
-      tratamento: "Fonético",
+      profissional: "Marcos Ribeiro",
+      tratamento: "Fonoaudiologia",
+      especialidade: "Fonoaudiologia",
+      tipo: "Consulta",
+      materiais: "Jogos educativos, Material de apoio visual",
+      observacoes: "Manteve-se concentrado durante toda a sessão. Apresentou dificuldade inicial, mas superou com incentivo."
     },
     {
       id: 4,
       titulo: "Avaliação - Fonoaudiologia",
       data: "12/08/2025",
       horario: "14:30 - 15:30",
-      profissional: "Dra. Ana Silva",
+      profissional: "Marcos Ribeiro",
       tratamento: "Fonoaudiologia",
+      especialidade: "Fonoaudiologia",
+      tipo: "Avaliação",
+      materiais: "Protocolos de avaliação, Materiais diversos",
+      observacoes: "Avaliação inicial realizada. Identificadas áreas de desenvolvimento prioritárias para o tratamento."
     },
     {
       id: 5,
       titulo: "Triagem - Fonoaudiologia",
       data: "05/08/2025",
       horario: "16:00 - 17:00",
-      profissional: "Dra. Ana Silva",
-      tratamento: "",
+      profissional: "Marcos Ribeiro",
+      tratamento: "Fonoaudiologia",
+      especialidade: "Fonoaudiologia",
+      tipo: "Triagem",
+      materiais: "Questionário de triagem",
+      observacoes: "Primeiro contato. Paciente mostrou-se tímido, mas receptivo. Pais colaborativos durante a anamnese."
     },
   ]
+
+  const abrirDetalhes = (consulta) => {
+    setConsultaSelecionada(consulta)
+    setModalAberto(true)
+  }
+
+  const fecharModal = () => {
+    setModalAberto(false)
+    setConsultaSelecionada(null)
+  }
 
   return (
     <Layout>
@@ -76,12 +110,19 @@ export default function ConsultasAntigas() {
               horario={consulta.horario}
               profissional={consulta.profissional}
               tratamento={consulta.tratamento}
-              onVerDetalhes={() =>
-                console.log(`Ver detalhes da consulta ${consulta.id}`)
-              }
+              onVerDetalhes={() => abrirDetalhes(consulta)}
             />
           ))}
         </div>
+
+        {/* Modal de Detalhes */}
+        {consultaSelecionada && (
+          <DetalhesConsultaModal
+            isOpen={modalAberto}
+            onClose={fecharModal}
+            consulta={consultaSelecionada}
+          />
+        )}
       </div>
     </Layout>
   )

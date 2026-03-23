@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import CalendarApp from '../../components/agendamento/calendario/Index'
 import HintCard from '../../components/agendamento/tipes/HintCard';
 import Layout from '../../components/layout/Layout'
 import FilterBar from '../../components/agendamento/filterBar/FilterBar';
+import {listarFuncionariosConsulta} from '@/src/service/agendamento/agendamento.service'
 
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
-  headers: { 'Content-Type': 'application/json' },
-});
 
 function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -24,23 +20,14 @@ function App() {
 
   // Busca os funcionários apenas para extrair os cargos para o Select
   useEffect(() => {
-    const fetchAreas = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        const res = await axiosInstance.get('/funcionarios', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-
-        setFuncionarios(res.data);
-        const cargosUnicos = [...new Set(res.data.map(f => f.cargo).filter(Boolean))];
-        setAreas(cargosUnicos);
-      } catch (error) {
-        console.error('Erro ao buscar funcionários:', error);
-      }
-    };
-    fetchAreas();
-  }, []);
+    listarFuncionariosConsulta().then((response) => {
+      setFuncionarios(response.data);
+        const areasUnicas = [...new Set(response.data.map(f => f.especialidade).filter(Boolean))];
+        setAreas(areasUnicas);
+    }).catch (error => {
+      console.error('Erro ao buscar funcionários:', error);
+    });
+    }, []);
 
   const handleFilterDateChange = (dateString) => {
     if (!dateString) return;

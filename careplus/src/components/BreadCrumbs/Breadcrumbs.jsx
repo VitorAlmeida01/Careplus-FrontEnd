@@ -10,7 +10,7 @@ export default function Breadcrumbs() {
     .filter(Boolean)
 
   return (
-    <nav className="breadcrumbs">
+    <nav className="breadcrumbs pl-14 md:pl-0">
       <Link to="/" onClick={logoutService}>Início</Link>
 
       {pathnames.map((segment, index) => {
