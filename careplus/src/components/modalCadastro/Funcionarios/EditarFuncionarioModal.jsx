@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import Modal from "react-modal"
-import "./CadastroModal.css"
 import logo from "/src/assets/logo.png"
 import ConfirmacaoModal from "../../modalConfirmacao/ConfirmacaoModal"
 
