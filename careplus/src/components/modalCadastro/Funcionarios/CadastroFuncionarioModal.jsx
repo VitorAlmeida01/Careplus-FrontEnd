@@ -1,6 +1,5 @@
 import React from "react"
 import Modal from "react-modal"
-import "./CadastroModal.css"
 import logo from "/src/assets/logo.png"
 
 // Configuração para acessibilidade

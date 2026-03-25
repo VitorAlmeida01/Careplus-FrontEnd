@@ -6,6 +6,7 @@ import {
   UserCheck,
   Calendar,
   Phone,
+  Eye
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
@@ -33,6 +34,11 @@ export default function TabelaPaciente({pacientes}) {
     // Aqui você pode fazer a chamada à API para excluir o paciente
     // Exemplo: api.delete(`/pacientes/${pacienteParaExcluir.id}`)
     setPacienteParaExcluir(null)
+  }
+
+  function fichaClinicaPaciente(id){
+    navigate(`/pacientes/ficha-clinica?idPaciente=${id}`)
+    console.log('ID do paciente: ', id)
   }
 
   return (
@@ -92,8 +98,8 @@ export default function TabelaPaciente({pacientes}) {
                   <td className="p-4 text-center font-normal border-b border-gray-500">
                     {paciente.telefone}
                   </td>
-                  <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500" onClick={() => navigate(`/pacientes/ficha-clinica`)}>
-                    <Pencil size={18} />
+                  <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500" onClick={() => fichaClinicaPaciente(paciente.id)}>
+                    <Eye size={18} />
                   </td>
                   <td 
                     className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-red-500"

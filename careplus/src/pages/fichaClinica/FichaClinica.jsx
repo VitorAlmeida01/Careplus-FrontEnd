@@ -1,15 +1,15 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useCallback, useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import CardFichaClinica from "../../components/cardFichaClinica/CardFichaClinica"
 import Layout from "../../components/layout/Layout"
 import CardPerfil from "../../components/cardPerfil/CardPerfil"
 import BotaoLayout from "../../components/botaoLayout/BotaoLayout"
-import DonutChart from "../../components/chartsFichaClinica/DonutChart"
 import EditarFichaClinicaModal from "../../components/modalFichaClinica/EditarFichaClinicaModal"
 import EditarObservacoesModal from "../../components/modalFichaClinica/EditarObservacoesModal"
 import EditarObservacoesComportamentaisModal from "../../components/modalFichaClinica/EditarObservacoesComportamentaisModal"
 import ProximaConsultaModal from "../../components/modalFichaClinica/ProximaConsultaModal"
 import InformacoesContatoModal from "../../components/modalFichaClinica/InformacoesContatoModal"
+import { fichaClinicaPorPaciente } from "@/src/service/fichaClinica/fichaClinica.service"
 
 export default function FichaClinica() {
   const navigate = useNavigate()
@@ -20,6 +20,52 @@ export default function FichaClinica() {
   const [modalProximaConsulta, setModalProximaConsulta] = useState(false)
   const [modalContato, setModalContato] = useState(false)
 
+  const [searchParams] = useSearchParams()
+
+  const idPaciente = searchParams.get("idPaciente")
+
+  const [fichaClinica, setFichaClinica] = useState({})
+
+  const exibirFichaClinica = useCallback(() => {
+    fichaClinicaPorPaciente(idPaciente).then((response) => {
+      const resposta = response
+      console.log(resposta)
+      setFichaClinica(resposta)
+    })
+  }, [idPaciente])
+
+  useEffect(() => {
+    exibirFichaClinica()
+  }, [exibirFichaClinica])
+
+  const formatarBoolean = (valor) => {
+    if (valor === true) return "Sim"
+    if (valor === false) return "Nao"
+    return "-"
+  }
+
+  const formatarData = (valor) => {
+    if (!valor) return "-"
+
+    const data = new Date(valor)
+    if (Number.isNaN(data.getTime())) return "-"
+
+    return data.toLocaleDateString("pt-BR")
+  }
+
+  const exibirValor = (valor) => {
+    if (valor === null || valor === undefined || valor === "") return "-"
+    return valor
+  }
+
+  const materiaisUltimaConsulta = fichaClinica?.ultimaConsulta?.materiais
+    ? fichaClinica.ultimaConsulta.materiais
+    : "-"
+
+  const tratamentos = Array.isArray(fichaClinica?.progresso?.tratamentoFeito)
+    ? fichaClinica.progresso.tratamentoFeito
+    : []
+
   return (
     <>
       <Layout>
@@ -28,7 +74,9 @@ export default function FichaClinica() {
             <section className="w-full">
               <CardPerfil
                 onContatoClick={() => setModalContato(true)}
-                onProximaConsultaClick={() => setModalProximaConsulta(true)}
+                onProximaConsultaClick={() => setModalProximaConsulta(true)
+                }
+                fichaClinica={fichaClinica}
               />
             </section>
           </section>
@@ -48,31 +96,31 @@ export default function FichaClinica() {
                   <section>
                     <label>Nome:</label>
                     <p>
-                      <b>Gabriel de Oliveira Santos</b>
+                      <b>{exibirValor(fichaClinica?.nome)}</b>
                     </p>
                   </section>
                   <section>
                     <label>Idade:</label>
                     <p>
-                      <b>12 Anos</b>
+                      <b>{exibirValor(fichaClinica?.fichaClinica?.idade)} Anos</b>
                     </p>
                   </section>
                   <section>
                     <label>Anamnese:</label>
                     <p>
-                      <b>Queixa Principal</b>
+                      <b>{exibirValor(fichaClinica?.fichaClinica?.anamnese)}</b>
                     </p>
                   </section>
                   <section>
                     <label>Diagnóstico</label>
                     <p>
-                      <b>Imperatividade</b>
+                      <b>{exibirValor(fichaClinica?.fichaClinica?.diagnostico)}</b>
                     </p>
                   </section>
                   <section>
-                    <label>Plano teratêutico</label>
+                    <label>Plano terapêutico</label>
                     <p>
-                      <b>Não</b>
+                      <b>{exibirValor(fichaClinica?.fichaClinica?.planoTerapeutico)}</b>
                     </p>
                   </section>
                 </CardFichaClinica.Body>
@@ -89,12 +137,7 @@ export default function FichaClinica() {
                   </section>
                 </CardFichaClinica.Header>
                 <CardFichaClinica.Body>
-                  <p>
-                    Mostrou-se colaborativo com as atividades propostas. Buscou
-                    contato visual. Solicitou o fone abafador quando um barulho
-                    alto ocorreu no corredor. Comunicou suas vontades através de
-                    frases curtas.
-                  </p>
+                  <p>{exibirValor(fichaClinica?.observacoesComportamentais)}</p>
                 </CardFichaClinica.Body>
               </CardFichaClinica>
 
@@ -116,21 +159,25 @@ export default function FichaClinica() {
                       <div>
                         <label>CID:</label>
                         <p>
-                          <b>313E13</b>
+                          <b>{exibirValor(fichaClinica?.observacoes?.cid)}</b>
                         </p>
                       </div>
 
                       <div>
                         <label>Medicação:</label>
                         <p>
-                          <b>Não</b>
+                          <b>{exibirValor(fichaClinica?.observacoes?.medicacao)}</b>
                         </p>
                       </div>
 
                       <section>
                         <label>Atendimento Especial:</label>
                         <p>
-                          <b>Lesivo</b>
+                          <b>
+                            {exibirValor(
+                              fichaClinica?.observacoes?.atendimentoEspecial,
+                            )}
+                          </b>
                         </p>
                       </section>
                     </section>
@@ -138,14 +185,14 @@ export default function FichaClinica() {
                       <div>
                         <label>Hiperfoco:</label>
                         <p>
-                          <b>Dinossauro</b>
+                          <b>{exibirValor(fichaClinica?.observacoes?.hiperfoco)}</b>
                         </p>
                       </div>
 
                       <div>
                         <label>Desfraldada:</label>
                         <p>
-                          <b>Não</b>
+                          <b>{formatarBoolean(fichaClinica?.observacoes?.desfraldada)}</b>
                         </p>
                       </div>
                     </section>
@@ -168,14 +215,14 @@ export default function FichaClinica() {
                       <div>
                         <label>Data:</label>
                         <p>
-                          <b>02/09/2025</b>
+                          <b>{formatarData(fichaClinica?.ultimaConsulta?.data)}</b>
                         </p>
                       </div>
 
                       <div>
                         <label>Materiais:</label>
                         <p>
-                          <b>Bringuedos de encaixe, Livro de histórias</b>
+                          <b>{materiaisUltimaConsulta}</b>
                         </p>
                       </div>
                     </section>
