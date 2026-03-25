@@ -42,23 +42,21 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
   }, [events, selectedArea]);
 
   const tiposDeConsultaUnicos = React.useMemo(() => {
-    const todosOsDias = Object.values(events);
-
+    const todosOsDias = Object.values(events || {});
     // transformar em uma lista única de consultas
     const todasAsConsultas = todosOsDias.flat();
-
     const tipos = new Set();
 
     todasAsConsultas.forEach(consulta => {
-      if (consulta && consulta.tipo) {
-        tipos.add(consulta.tipo);
-      }
+      if (consulta?.tipo) tipos.add(consulta.tipo);
     });
 
     const resultado = Array.from(tipos);
     console.log("DEBUG - Tipos extraídos:", resultado);
     return resultado;
   }, [events]);
+
+  console.log("events do memo:", tiposDeConsultaUnicos)
 
   const handleNavigate = (direction) => {
     const newDate = new Date(currentDate.getTime());
@@ -162,7 +160,6 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
 
       {/* Modal do bruno vai ficar aqui */}
       <CadastroConsultaModal
-        key={tiposDeConsultaUnicos.length}
         isOpen={modalState.isOpen}
         onClose={() => setModalState({ ...modalState, isOpen: false })}
         events={events}

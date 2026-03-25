@@ -18,6 +18,7 @@ export default function CadastroFuncionarioModal({ isOpen, onClose, events, data
   const [funcionarios, setFuncionarios] = useState([]);
   const [areaSelecionada, setAreaSelecionada] = useState('');
   const [tipoSelecionado, setTipoSelecionado] = useState('');
+  const [listaTipos, setListaTipos] = useState([]);
   const [horarioSelecionado, setHorarioSelecionado] = useState('');
   const slotsDisponiveis = [
     "08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"
@@ -33,6 +34,41 @@ export default function CadastroFuncionarioModal({ isOpen, onClose, events, data
 
 
 
+  // useEffect(() => {
+  //   if (!isOpen) return;
+
+  //   const carregarDadosIniciais = async () => {
+  //     try {
+  //       const resFuncionarios = await listarFuncionariosConsulta();
+  //       setFuncionarios(resFuncionarios.data);
+
+  //       const areasUnicas = [...new Set(resFuncionarios.data.map(f => f.especialidade).filter(Boolean))];
+  //       setAreas(areasUnicas);
+
+  //       if (tiposDeConsulta.length > 0 && tipoSelecionado === '') {
+  //        console.log("Tipos carregados com sucesso no Modal!");
+  //       }
+
+  //       console.log("Chegou vazio do props: ", tiposDeConsulta)
+
+  //       if (nome && nome.length >= 2) {
+  //         setLoading(true);
+  //         const dadosPacientes = await buscarPacientePorNome(nome);
+  //         setSugestoes(dadosPacientes || []);
+  //       } else {
+  //         setSugestoes([]);
+  //       }
+  //     } catch (error) {
+  //       console.error('Erro na carga de dados:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   carregarDadosIniciais();
+
+  // }, [isOpen, nome, tiposDeConsulta]);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -43,28 +79,34 @@ export default function CadastroFuncionarioModal({ isOpen, onClose, events, data
 
         const areasUnicas = [...new Set(resFuncionarios.data.map(f => f.especialidade).filter(Boolean))];
         setAreas(areasUnicas);
-
-        if (tiposDeConsulta.length > 0 && tipoSelecionado === '') {
-         console.log("Tipos carregados com sucesso no Modal!");
-        }
-
-        if (nome && nome.length >= 2) {
-          setLoading(true);
-          const dadosPacientes = await buscarPacientePorNome(nome);
-          setSugestoes(dadosPacientes || []);
-        } else {
-          setSugestoes([]);
-        }
       } catch (error) {
-        console.error('Erro na carga de dados:', error);
-      } finally {
-        setLoading(false);
+        console.error('Erro na carga:', error);
       }
     };
 
     carregarDadosIniciais();
 
-  }, [isOpen, nome]);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (Array.isArray(tiposDeConsulta) && tiposDeConsulta.length > 0) {
+      console.log("Modal sincronizado: ", tiposDeConsulta)
+      setListaTipos(tiposDeConsulta)
+    }
+  }, [tiposDeConsulta])
+
+  // busca por nome
+  useEffect(() => {
+    if (isOpen && nome?.length >= 2) {
+      const buscar = async () => {
+        const dados = await buscarPacientePorNome(nome);
+        setSugestoes(dados || []);
+      };
+      buscar();
+    }
+  }, [nome, isOpen]);
+
+
 
   return (
     <Modal
@@ -129,7 +171,7 @@ export default function CadastroFuncionarioModal({ isOpen, onClose, events, data
               onChange={(e) => setAreaSelecionada(e.target.value)}
               className="w-full p-2 border rounded-md"
             >
-              <option value="" selected disabled>Selecione a área</option>
+              <option value="" disabled>Selecione a área</option>
               {areas.map((area, index) => (
                 <option key={index} value={area}>{area}</option>
               ))}
@@ -138,7 +180,7 @@ export default function CadastroFuncionarioModal({ isOpen, onClose, events, data
 
           {/* Selecionar Profissional  */}
           <div className="modal-field">
-            <p>DEBUG: Existem {tiposDeConsulta.length} tipos</p>
+            <p>Debug: {listaTipos.length}</p>
             <label className="text-1xl font-bold text-gray-700 tracking-tighter mb-1">Profissional de Preferência</label>
             <select className="w-full p-2 border rounded-md" disabled={!areaSelecionada}>
               <option value="" selected disabled>
@@ -170,7 +212,7 @@ export default function CadastroFuncionarioModal({ isOpen, onClose, events, data
               onChange={(e) => setHorarioSelecionado(e.target.value)}
               defaultValue=""
             >
-              <option value="" selected disabled>Selecione o horário</option>
+              <option value="" disabled>Selecione o horário</option>
               {horariosLivres.map((hora) => (
                 <option key={hora} value={hora}>
                   {hora}
@@ -188,11 +230,10 @@ export default function CadastroFuncionarioModal({ isOpen, onClose, events, data
               onChange={(e) => setTipoSelecionado(e.target.value)}
             >
               <option value="" disabled>Selecione o tipo de consulta</option>
-              {tiposDeConsulta.map((tipo, index) => (
-                <option key={index} value={tipo}>
-                  {tipo}
-                </option>
+              {listaTipos.map((tipo, index) => (
+                <option key={`tipo-${index}`} value={tipo}>{tipo}</option>
               ))}
+              {console.log("xereca: ", listaTipos)}
             </select>
           </div>
           <hr className="mb-5 border-0 h-px bg-black/15 shadow-[0_1px_4px_rgba(0,0,0,0.25)]" />
