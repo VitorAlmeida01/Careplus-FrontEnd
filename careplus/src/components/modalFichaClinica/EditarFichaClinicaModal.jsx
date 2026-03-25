@@ -37,25 +37,12 @@ export default function EditarFichaClinicaModal({ isOpen, onClose, dados }) {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className={labelClassName}>Nome:</label>
-          <input
-            type="text"
-            value={formData.nome}
-            onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-            className={inputClassName}
-          />
+          <p className={inputClassName}>{formData.nome}</p>
         </div>
 
         <div className="mb-4">
           <label className={labelClassName}>Idade:</label>
-          <input
-            type="text"
-            value={formData.idade}
-            onChange={(e) =>
-              setFormData({ ...formData, idade: e.target.value })
-            }
-            className={inputClassName}
-            placeholder="Ex: 12 Anos"
-          />
+          <p className={inputClassName}>{formData.idade}</p>
         </div>
 
         <div className="mb-4">

@@ -12,8 +12,11 @@ import ConsultasAntigas from "../pages/consultasAntigas/ConsultasAntigas"
 import AgendamentoConsulta from "../pages/agendamento/AgendamentoConsulta"
 import Unauthorized from "../pages/unauthorized/Unauthorized"
 import PrivateRoute from "./PrivateRoute"
+import Responsaveis from "../pages/Responsaveis/Responsaveis"
 
 export default function RoutesApp() {
+
+
   return (
     <BrowserRouter>
       <Routes>
@@ -56,6 +59,7 @@ export default function RoutesApp() {
             <AgendamentoConsulta />
           </PrivateRoute>
         } />
+        <Route path="/responsaveis" element={<Responsaveis/>} />
       </Routes>
     </BrowserRouter>
   )

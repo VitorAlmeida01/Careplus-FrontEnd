@@ -63,4 +63,11 @@ export const menuConfig = [
     icon: Calendar,
     roles: ["USER", "ADMIN", "SCHEDULER"],
   },
+    {
+    key: "responsaveis",
+    label: "Responsáveis",
+    path: "/responsaveis",
+    icon: IdCardLanyard,
+    roles: ["SCHEDULER", "ADMIN"],
+  },
 ]
