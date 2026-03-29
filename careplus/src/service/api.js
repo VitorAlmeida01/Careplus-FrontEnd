@@ -1,7 +1,9 @@
 import axios from "axios"
 
+// const apiBaseUrl = (import.meta.env.VITE_ENDERECO_API || "/api").replace(/\/$/, "")
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_ENDERECO_API
+    baseURL: "/api"
 })
 
 api.interceptors.request.use(config => {
