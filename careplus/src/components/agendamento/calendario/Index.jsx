@@ -93,7 +93,6 @@ const CalendarApp = ({ currentDate, setCurrentDate, selectedArea }) => {
     setModalState({ isOpen: true, data: event, isReadOnly: true });
   };
 
-
   return (
     <div className="w-full py-6 font-sans text-gray-900">
       <Header

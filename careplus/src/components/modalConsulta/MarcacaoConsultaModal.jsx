@@ -7,6 +7,64 @@ import { marcarConsultaRecorrente } from '@/src/service/agendamento/consulta.ser
 import { toast } from "react-toastify"
 
 Modal.setAppElement("#root")
+//esse
+
+export default function CadastroFuncionarioModal({ isOpen, onClose, events, dataSelecionada, tiposDeConsulta = [] }) {
+
+  const [nome, setNome] = useState('');
+  const [sugestoes, setSugestoes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [areas, setAreas] = useState([]);
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [areaSelecionada, setAreaSelecionada] = useState('');
+  const [tipoSelecionado, setTipoSelecionado] = useState('');
+  const [horarioSelecionado, setHorarioSelecionado] = useState('');
+  const slotsDisponiveis = [
+    "08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"
+  ];
+
+  const horariosOcupados = (events && dataSelecionada && events[dataSelecionada])
+    ? events[dataSelecionada].map(event => event.hour)
+    : [];
+
+  const horariosLivres = slotsDisponiveis.filter(horario =>
+    !horariosOcupados.includes(horario)
+  );
+
+
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const carregarDadosIniciais = async () => {
+      try {
+        const resFuncionarios = await listarFuncionariosConsulta();
+        setFuncionarios(resFuncionarios.data);
+
+        const areasUnicas = [...new Set(resFuncionarios.data.map(f => f.especialidade).filter(Boolean))];
+        setAreas(areasUnicas);
+
+        if (tiposDeConsulta.length > 0 && tipoSelecionado === '') {
+         console.log("Tipos carregados com sucesso no Modal!");
+        }
+
+        if (nome && nome.length >= 2) {
+          setLoading(true);
+          const dadosPacientes = await buscarPacientePorNome(nome);
+          setSugestoes(dadosPacientes || []);
+        } else {
+          setSugestoes([]);
+        }
+      } catch (error) {
+        console.error('Erro na carga de dados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarDadosIniciais();
+
+  }, [isOpen, nome]);
 
 let tiposCache = [];
 
@@ -239,6 +297,7 @@ export default function CadastroFuncionarioModal({ isOpen, onClose, events, data
 
           {/* Profissional */}
           <div className="modal-field">
+            <p>DEBUG: Existem {tiposDeConsulta.length} tipos</p>
             <label className="text-1xl font-bold text-gray-700 tracking-tighter mb-1">Profissional de Preferência</label>
             <select
               className="w-full p-2 border rounded-md"
