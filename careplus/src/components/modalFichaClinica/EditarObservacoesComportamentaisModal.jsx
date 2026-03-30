@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import { useState, useEffect } from "react"
 import ModalBase from "./ModalBase"
 
 export default function EditarObservacoesComportamentaisModal({
@@ -7,9 +7,19 @@ export default function EditarObservacoesComportamentaisModal({
   dados,
 }) {
   const [observacoes, setObservacoes] = useState(
-    dados?.observacoes ||
-      "Mostrou-se colaborativo com as atividades propostas. Buscou contato visual. Solicitou o fone abafador quando um barulho alto ocorreu no corredor. Comunicou suas vontades através de frases curtas.",
+    dados ||
+      "Mostrou-se colaborativo com as atividades propostas. Buscou contato visual. Solicitou o fone abafador quando um barulho alto ocorreu no corredor. Comunicou suas vontades através de frases curtas."
   )
+
+  // Atualiza o estado quando a prop dados mudar
+  useEffect(() => {
+    setObservacoes(
+      dados ||
+        "Mostrou-se colaborativo com as atividades propostas. Buscou contato visual. Solicitou o fone abafador quando um barulho alto ocorreu no corredor. Comunicou suas vontades através de frases curtas."
+    )
+  }, [dados])
+
+  
 
   const handleSubmit = (e) => {
     e.preventDefault()

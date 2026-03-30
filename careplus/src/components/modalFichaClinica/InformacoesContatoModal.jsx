@@ -1,27 +1,34 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import ModalBase from "./ModalBase"
 
 export default function InformacoesContatoModal({ isOpen, onClose, dados }) {
-  const [formData, setFormData] = useState({
-    responsavelPrincipal: {
-      nome: dados?.responsavelPrincipal?.nome || "Maria de Oliveira Santos",
-      parentesco: dados?.responsavelPrincipal?.parentesco || "Mãe",
-      telefone: dados?.responsavelPrincipal?.telefone || "(11) 98765-4321",
-      email: dados?.responsavelPrincipal?.email || "maria.santos@email.com",
-    },
-    responsavelSecundario: {
-      nome: dados?.responsavelSecundario?.nome || "João de Oliveira Santos",
-      parentesco: dados?.responsavelSecundario?.parentesco || "Pai",
-      telefone: dados?.responsavelSecundario?.telefone || "(11) 98765-1234",
-      email: dados?.responsavelSecundario?.email || "joao.santos@email.com",
-    },
+const [formData, setFormData] = useState({
+    nome: dados?.nome || "Maria de Oliveira Santos",
+    // parentesco: dados?.parentesco || "Mãe",
+    telefone: dados?.telefone || "(11) 98765-4321",
+    email: dados?.email || "maria.santos@email.com",
+  endereco: {
+    rua: dados?.logradouro || "Rua das Flores, 123 - Apto 45",
+    bairro: dados?.bairro || "Jardim Paulista",
+    cidade: dados?.cidade || "São Paulo",
+    cep: dados?.cep || "01234-567",
+  }
+})
+
+  useEffect(() =>{
+    setFormData({
+      nome: dados?.nome || "Maria de Oliveira Santos",
+      // parentesco: dados?.parentesco || "Mãe",
+      telefone: dados?.telefone || "(11) 98765-4321",
+      email: dados?.email || "maria.santos@email.com",
     endereco: {
-      rua: dados?.endereco?.rua || "Rua das Flores, 123 - Apto 45",
-      bairro: dados?.endereco?.bairro || "Jardim Paulista",
-      cidade: dados?.endereco?.cidade || "São Paulo",
-      cep: dados?.endereco?.cep || "01234-567",
-    },
+      rua: dados?.logradouro || "Rua das Flores, 123 - Apto 45",
+      bairro: dados?.bairro || "Jardim Paulista",
+      cidade: dados?.cidade || "São Paulo",
+      cep: dados?.cep || "01234-567",
+    }
   })
+  }, [dados])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -48,14 +55,14 @@ export default function InformacoesContatoModal({ isOpen, onClose, dados }) {
     >
       <form onSubmit={handleSubmit}>
         {/* Responsável Principal */}
-        <div className={sectionTitleClassName}>Responsável Principal</div>
+        <div className={sectionTitleClassName}>Responsável</div>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
             <label className={labelClassName}>Nome:</label>
             <input
               type="text"
-              value={formData.responsavelPrincipal.nome}
+              value={formData.nome}
               onChange={(e) =>
                 setFormData({
                   ...formData,
@@ -72,7 +79,7 @@ export default function InformacoesContatoModal({ isOpen, onClose, dados }) {
             <label className={labelClassName}>Parentesco:</label>
             <input
               type="text"
-              value={formData.responsavelPrincipal.parentesco}
+              value={formData.parentesco}
               onChange={(e) =>
                 setFormData({
                   ...formData,
@@ -92,7 +99,7 @@ export default function InformacoesContatoModal({ isOpen, onClose, dados }) {
             <label className={labelClassName}>Telefone:</label>
             <input
               type="text"
-              value={formData.responsavelPrincipal.telefone}
+              value={formData.telefone}
               onChange={(e) =>
                 setFormData({
                   ...formData,
@@ -109,7 +116,7 @@ export default function InformacoesContatoModal({ isOpen, onClose, dados }) {
             <label className={labelClassName}>Email:</label>
             <input
               type="email"
-              value={formData.responsavelPrincipal.email}
+              value={formData.email}
               onChange={(e) =>
                 setFormData({
                   ...formData,
