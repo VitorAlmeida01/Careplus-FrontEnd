@@ -1,16 +1,21 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import ModalBase from "./ModalBase"
 
 export default function EditarFichaClinicaModal({ isOpen, onClose, dados }) {
-  const [formData, setFormData] = useState({
-    nome: dados?.nome || "Gabriel de Oliveira Santos",
-    idade: dados?.idade || "12 Anos",
-    anamnese:
-      dados?.anamnese ||
-      "Queixa principal, Hábitos de dormir até 10h02, Histórico médico: pé chato",
-    diagnostico: dados?.diagnostico || "Imperatividade",
-    planoTerapeutico: dados?.planoTerapeutico || "Não",
+  const [formData, setFormData] = useState({})
+
+  useEffect(() =>{
+      setFormData({
+    nome: dados?.nome || "",
+    idade: dados?.idade || "",
+    anamnese: dados?.anamnese || "",
+    diagnostico: dados?.diagnostico || "",
+    planoTerapeutico: dados?.planoTerapeutico || "",
   })
+
+  console.log(formData)
+    }, [dados])
+
 
   const handleSubmit = (e) => {
     e.preventDefault()

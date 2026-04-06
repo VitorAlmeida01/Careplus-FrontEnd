@@ -1,13 +1,19 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import ModalBase from "./ModalBase"
 
 export default function EditarObservacoesModal({ isOpen, onClose, dados }) {
   const [formData, setFormData] = useState({
+
+  })
+
+  useEffect(() =>{
+    setFormData({
     medicacao: dados?.medicacao || "Não",
     atendimentoEspecial: dados?.atendimentoEspecial || "Lesivo",
     hiperfoco: dados?.hiperfoco || "Dinossauro",
     desfraldada: dados?.desfraldada || "Não",
-  })
+    })
+  }, [dados])
 
   const handleSubmit = (e) => {
     e.preventDefault()
