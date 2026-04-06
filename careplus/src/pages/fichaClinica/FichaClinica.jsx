@@ -25,8 +25,25 @@ export default function FichaClinica() {
 
   const idPaciente = searchParams.get("idPaciente")
 
+  //   "fichaClinica": {
+  //   "id": 1,
+  //   "idade": 35,
+  //   "anamnese": "Histórico de atraso de fala",
+  //   "diagnostico": "TEA leve",
+  //   "planoTerapeutico": "Bradesco"
+  // },
+
 
   const [fichaClinica, setFichaClinica] = useState({})
+
+  const [fichaClinicaEdit, setFichaClinicaEdit] = useState({
+    id: undefined,
+    idade: undefined,
+    anamnese: undefined,
+    diagnostico: undefined,
+    planoTerapeutico: undefined
+  })
+
   const [responsavel, setResponsavel] = useState({})
   const [observacoes, setObservacoes] = useState({
     cid: undefined,
@@ -36,6 +53,7 @@ export default function FichaClinica() {
     hiperfoco: undefined,
   })
   const [observacoesComportamentais, setObservacoesComportamentais] = useState(undefined)
+
   const [ultimaConsulta, setUltimaConsulta] = useState({
     data: undefined,
     materiais: undefined,
@@ -50,6 +68,16 @@ export default function FichaClinica() {
 
   // Atualiza os estados derivados quando fichaClinica muda
   useEffect(() => {
+
+    setFichaClinicaEdit({
+      id: fichaClinica?.fichaClinica?.id,
+      nome: fichaClinica?.nome,
+      idade: fichaClinica?.fichaClinica?.idade,
+      anamnese: fichaClinica?.fichaClinica?.anamnese,
+      diagnostico: fichaClinica?.fichaClinica?.diagnostico,
+      planoTerapeutico: fichaClinica?.fichaClinica?.planoTerapeutico,
+    })
+
     setObservacoes({
       cid: fichaClinica?.observacoes?.cid,
       medicacao: fichaClinica?.observacoes?.medicacao,
@@ -299,7 +327,7 @@ export default function FichaClinica() {
       {/* Modais */}
       <EditarFichaClinicaModal
         isOpen={modalFichaClinica}
-        dados={fichaClinica}
+        dados={fichaClinicaEdit}
         onClose={() => setModalFichaClinica(false)}
       />
       <EditarObservacoesModal
