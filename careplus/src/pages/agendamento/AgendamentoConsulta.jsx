@@ -4,21 +4,23 @@ import HintCard from '../../components/agendamento/tipes/HintCard';
 import Layout from '../../components/layout/Layout'
 import FilterBar from '../../components/agendamento/filterBar/FilterBar';
 import {listarFuncionariosConsulta} from '@/src/service/agendamento/agendamento.service'
+import { listarPacitentes } from '@/src/service/pacientes/pacientes.service'
 
 
 function App() {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-
   const [areas, setAreas] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
+  const [pacientes, setPacientes] = useState([]);
 
   const [appliedFilters, setAppliedFilters] = useState({
     area: '',
-    profissional: ''
+    profissional: '',
+    paciente: '',
+    modo: 'profissional'
   });
 
-  // Busca os funcionários apenas para extrair os cargos para o Select
   useEffect(() => {
     listarFuncionariosConsulta().then((response) => {
       setFuncionarios(response.data);
@@ -27,7 +29,13 @@ function App() {
     }).catch (error => {
       console.error('Erro ao buscar funcionários:', error);
     });
-    }, []);
+
+    listarPacitentes(0).then((response) => {
+      setPacientes(response.content ?? []);
+    }).catch(error => {
+      console.error('Erro ao buscar pacientes:', error);
+    });
+  }, []);
 
   const handleFilterDateChange = (dateString) => {
     if (!dateString) return;
@@ -48,6 +56,7 @@ function App() {
               currentDate={currentDate}
               areas={areas}
               funcionarios={funcionarios}
+              pacientes={pacientes}
               onApplyFilters={(filtros) => setAppliedFilters(filtros)}
             />
           </div>
@@ -64,6 +73,10 @@ function App() {
               setCurrentDate={setCurrentDate}
               selectedArea={appliedFilters.area}
               selectedProfissional={appliedFilters.profissional}
+              selectedPaciente={appliedFilters.paciente}
+              filterMode={appliedFilters.modo}
+              funcionarios={funcionarios}
+              pacientes={pacientes}
             />
           </div>
 

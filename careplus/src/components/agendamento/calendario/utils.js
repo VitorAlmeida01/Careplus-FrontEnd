@@ -5,6 +5,7 @@ export const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getD
 export const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 export const generateId = () => Math.random().toString(36).substr(2, 9);
 export const formatTime = (hour) => `${hour.toString().padStart(2, '0')}:00`;
+export const formatEventTime = (timeStr) => timeStr ? timeStr.substring(0, 5) : '';
 
 const colors = ['bg-blue-500', 'bg-red-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500'];
 export const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)];

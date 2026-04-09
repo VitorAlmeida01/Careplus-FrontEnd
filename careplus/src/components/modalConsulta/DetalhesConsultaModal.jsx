@@ -1,119 +1,157 @@
 import React from 'react'
 import Modal from 'react-modal'
-import agendaWhite from '/src/assets/agenda_white.png'
+import './ConsultaModal.css'
 
 Modal.setAppElement('#root')
 
-export default function DetalhesConsultaModal({ 
-    isOpen, 
-    onClose, 
-    consulta = {
-        data: '02/09/2025',
-        horario: '16:00 - 17:00',
-        especialidade: 'Fonoaudiologia',
-        profissional: 'Dra. Ana Silva',
-        tipo: 'Retorno',
-        tratamento: 'Fonético',
-        materiais: 'Brinquedos de encaixe, Livro de histórias',
-        observacoes: 'Mostrou-se colaborativo com as atividades propostas. Buscou contato visual.\n\nSolicitou o fone abafador quando um barulho alto ocorreu no corredor. Comunicou suas vontades através de frases curtas.'
-    }
-}) {
-    return (
-        <Modal
-            isOpen={isOpen}
-            onRequestClose={onClose}
-            className="modal-content max-h-[90vh] w-[95%] md:w-125 bg-white rounded-xl overflow-y-auto"
-            overlayClassName="modal-overlay"
-        >
-            {/* Cabeçalho */}
-            <div className="flex flex-col items-center gap-3 pt-6 pb-4">
-                <div className='w-full px-6 flex justify-end'>
-                    <button 
-                        className="text-3xl text-gray-500 hover:bg-gray-100 rounded-lg w-10 h-10 flex items-center justify-center" 
-                        onClick={onClose}
-                    >
-                        ×
-                    </button>
-                </div>
-                <div className='w-16 h-16 flex justify-center items-center bg-linear-to-r from-[#00b7db] to-[#2b80ff] rounded-xl'>
-                    <img 
-                        src={agendaWhite} 
-                        className='w-8 h-8' 
-                        alt="Ícone de calendário" 
-                    />
-                </div>
-                <h2 className='text-xl font-semibold text-gray-800'>Detalhes da Consulta</h2>
+const DIAS = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira']
+const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+
+function formatarData(dateStr) {
+  if (!dateStr) return '—'
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const dt = new Date(y, m - 1, d)
+  return `${DIAS[dt.getDay()]}, ${d} de ${MESES[m - 1]} de ${y}`
+}
+
+function formatarHorario(inicio, fim) {
+  const i = inicio ? inicio.substring(0, 5) : null
+  const f = fim ? fim.substring(0, 5) : null
+  if (i && f) return `${i} – ${f}`
+  if (i) return i
+  return '—'
+}
+
+export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
+  if (!consulta) return null
+
+  const pacienteNome = consulta.paciente?.nome ?? '—'
+  const funcionarios = (() => {
+    if (consulta.funcionarios?.length) return consulta.funcionarios
+    if (consulta.consultaFuncionarios?.length)
+      return consulta.consultaFuncionarios.map(cf => cf.funcionario ?? cf)
+    if (consulta.funcionario) return [consulta.funcionario]
+    return []
+  })()
+  const tipo = consulta.tipo
+  console.log(consulta)
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onClose}
+      className="fixed inset-0 flex items-center justify-center p-4"
+      overlayClassName="modal-overlay"
+      contentLabel="Detalhes da Consulta"
+    >
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#2B8BFF" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+              </svg>
             </div>
+            <h2 className="text-[16px] font-semibold text-slate-800">Detalhes da Consulta</h2>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-            {/* Corpo do Modal */}
-            <div className="px-6 pb-6 space-y-4">
-                {/* Card de Informações Principais */}
-                <div className='bg-linear-to-r from-[#ECFEFF] to-[#EFF6FF] rounded-lg p-4 space-y-3'>
-                    {/* Data e Horário */}
-                    <div className='grid grid-cols-2 gap-4'>
-                        <div>
-                            <label className='text-sm font-medium text-gray-600'>Data:</label>
-                            <p className='text-base text-gray-800'>{consulta.data}</p>
-                        </div>
-                        <div>
-                            <label className='text-sm font-medium text-gray-600'>Horário:</label>
-                            <p className='text-base text-gray-800'>{consulta.horario}</p>
-                        </div>
-                    </div>
+        {/* Body */}
+        <div className="px-6 py-5 space-y-4">
 
-                    {/* Especialidade e Profissional */}
-                    <div className='grid grid-cols-2 gap-4'>
-                        <div>
-                            <label className='text-sm font-medium text-gray-600'>Especialidade:</label>
-                            <p className='text-base text-gray-800'>{consulta.especialidade}</p>
-                        </div>
-                        <div>
-                            <label className='text-sm font-medium text-gray-600'>Profissional:</label>
-                            <p className='text-base text-gray-800'>{consulta.profissional}</p>
-                        </div>
-                    </div>
+          {/* Status badge */}
+          <div className="flex items-center gap-2">
+            {tipo && (
+              <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                {tipo}
+              </span>
+            )}
+          </div>
 
-                    {/* Tipo e Tratamento */}
-                    <div className='grid grid-cols-2 gap-4'>
-                        <div>
-                            <label className='text-sm font-medium text-gray-600'>Tipo:</label>
-                            <p className='text-base text-gray-800'>{consulta.tipo}</p>
-                        </div>
-                        <div>
-                            <label className='text-sm font-medium text-gray-600'>Tratamento atual:</label>
-                            <p className='text-base text-gray-800'>{consulta.tratamento}</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Materiais Utilizados */}
-                <div>
-                    <h3 className='text-lg font-semibold text-gray-800 mb-2'>Materiais Utilizados</h3>
-                    <div className='bg-gray-50 rounded-lg p-4 border border-gray-200'>
-                        <p className='text-sm text-gray-700 whitespace-pre-line'>{consulta.materiais}</p>
-                    </div>
-                </div>
-
-                {/* Observações Comportamentais */}
-                <div>
-                    <h3 className='text-lg font-semibold text-gray-800 mb-2'>
-                        Observações Comportamentais (na sessão)
-                    </h3>
-                    <div className='bg-gray-50 rounded-lg p-4 border border-gray-200 min-h-30'>
-                        <p className='text-sm text-gray-700 whitespace-pre-line'>{consulta.observacoes}</p>
-                    </div>
-                </div>
-
-                {/* Botão Fechar */}
-                <div className='pt-2'>
-                    <button 
-                        className='w-full h-12 bg-linear-to-r from-[#00b7db] to-[#2b80ff] rounded-lg text-white font-medium hover:opacity-90 transition-opacity' 
-                        onClick={onClose}
-                    >
-                        Fechar
-                    </button>
-                </div>
+          {/* Paciente */}
+          <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#2B8BFF" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
             </div>
-        </Modal>
-    )
+            <div>
+              <p className="text-[11px] text-slate-400 font-medium mb-0.5">Paciente</p>
+              <p className="text-[14px] font-semibold text-slate-800">{pacienteNome}</p>
+            </div>
+          </div>
+
+          {/* Data e Horário */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex items-center gap-1.5 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25" />
+                </svg>
+                <p className="text-[11px] text-slate-400 font-medium">Data</p>
+              </div>
+              <p className="text-[13px] font-semibold text-slate-800">{formatarData(consulta.data)}</p>
+            </div>
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex items-center gap-1.5 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-[11px] text-slate-400 font-medium">Horário</p>
+              </div>
+              <p className="text-[13px] font-semibold text-slate-800">{formatarHorario(consulta.horarioInicio, consulta.horarioFim)}</p>
+            </div>
+          </div>
+
+          {/* Profissionais */}
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="flex items-center gap-1.5 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
+              <p className="text-[11px] text-slate-400 font-medium">
+                {funcionarios.length > 1 ? 'Profissionais' : 'Profissional'}
+              </p>
+            </div>
+            {funcionarios.length === 0 ? (
+              <p className="text-[13px] text-slate-500">—</p>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                {funcionarios.map((f, i) => (
+                  <div key={f.id ?? i} className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+                      {f.nome?.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-semibold text-slate-800 leading-tight">{f.nome}</p>
+                      <p className="text-[11px] text-slate-400 leading-tight">
+                        {[f.cargo, f.especialidade].filter(Boolean).join(' · ')}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-gray-100">
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </Modal>
+  )
 }

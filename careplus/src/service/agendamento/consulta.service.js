@@ -36,6 +36,21 @@ export async function marcarConsulta(pacienteId, funcionarioId, dataHora, tipo){
 
 }
 
+export async function adicionarFuncionario(consultaId, funcionarioId){
+
+   try {
+       const response = await api.post("/consulta-funcionario", {
+           consultaId,
+           funcionarioId
+       });
+       return response.data;
+   } catch (error) {
+       console.error("Erro na requisição:", error);
+       return null;
+   }
+
+}
+
 export async function marcarConsultaRecorrente(payload){
     if(!payload){
         console.warn("Marcação de consulta recorrente cancelada: payload está indefinido.");
