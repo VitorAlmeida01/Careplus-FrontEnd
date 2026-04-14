@@ -15,6 +15,7 @@ export default function KpiCards({titulo, texto, valor}) {
             <div className="px-6 py-10 flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-white">
                 <p className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-[#4fc3f7] to-[#5fcb9f] bg-clip-text text-transparent">{valor}</p>
                 {/* <p className="text-sm text-gray-500 mt-3">pacientes ativos</p> */}
+                {/* comiti aleatorio, só para subir a dash */}
             </div>
         </div>
     );
