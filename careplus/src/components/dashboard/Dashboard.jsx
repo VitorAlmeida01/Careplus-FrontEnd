@@ -1,25 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import  BarraAlinhada from './BarChart';
 import  BarraVertical from './BarVertical';
 import './Dashboard.css';
 import KpiCards  from '../kpiCard/KpiCard';
-// import cardapio from '../assets/cardapio.png';
+import { buscarPacienteSemConsulta} from '@/src/service/dashboard/dash.service';
 
 export default function Dashboard() {
+    const [pacientesSemConsulta, setPacientesSemConsulta] = useState(0);
 
-    const [dadosFilaEspera] = useState([
-        { titulo: "Pacientes na Fila de Espera", texto: "Número de pacientes aguardando atendimento", valor: 28 },
-        { titulo: "Clientes Ativos", texto: "Com consulta no último mês ou marcada para o futuro.", valor: 120 }
-    ]);
+    useEffect( () =>{
+        buscarPacienteSemConsulta().then((data) => {
+            if (data) {
+                setPacientesSemConsulta(data);
+            }
+        });
+    }, [])
+
+    // const [dadosFilaEspera] = useState([
+    //     { titulo: "Pacientes na Fila de Espera", texto: "Número de pacientes aguardando atendimento", valor: 28 },
+    //     { titulo: "Clientes Ativos", texto: "Com consulta no último mês ou marcada para o futuro.", valor: 120 }
+    // ]);
 
 
 
     return (
         <div className="w-full flex flex-col pt-4 md:pt-4 gap-4">
-            {/* KPI Card */}
-            <div className="flex justify-center shrink-0">
-                <div className="w-full max-w-2xl">
-                    <KpiCards {...dadosFilaEspera[1]} />
+            {/* KPI Cards */}
+            <div className="flex justify-center shrink-0 gap-4">
+                {/* <div className="w-full max-w-md">
+                    <KpiCards {...dadosFilaEspera[0]} />
+                </div> */}
+                <div className="w-full max-w-md">
+                    <KpiCards titulo="Pacientes Sem Consulta" texto="Número de pacientes sem consulta agendada" valor={pacientesSemConsulta} />
                 </div>
             </div>
 
