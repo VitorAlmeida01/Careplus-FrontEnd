@@ -1,113 +1,134 @@
 .sidebar {
-    width: 300px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    transition: width 0.3s;
-    background-color: #fff;
+  width: 300px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s, transform 0.3s ease-in-out;
+  background-color: #fff;
+}
 
+/* Mobile: Sidebar como overlay */
+@media (max-width: 767px) {
+  .sidebar-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    width: 300px;
+    transform: translateX(-100%);
+  }
+
+  .sidebar-mobile:not(.sidebar-closed) {
+    transform: translateX(0);
+  }
+
+  .sidebar-mobile.sidebar-closed {
+    transform: translateX(-100%);
+  }
 }
 
 .sidebar-closed {
-    width: 80px;
+  width: 80px;
 }
 
 .sidebar-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #4FC3F7 0%, #5FCB9F 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #4fc3f7 0%, #5fcb9f 100%);
 }
 
 .sidebar-header h2 {
-    color: white;
-    font-size: 28px;
-    font-weight: 600;
-    margin: 0;
-    margin: 10px;
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  margin: 10px;
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
 }
 
 .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px 24px;
-    margin: 5px;
-    background: transparent;
-    border: none;
-    border-radius: 12px;
-    color: #000;
-    font-size: 18px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  margin: 5px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-align: left;
 }
 
 .sidebar-closed .nav-item {
-    justify-content: center;
-        margin: 5px;
+  justify-content: center;
+  margin: 5px;
 }
 
-.nav-item:hover {
-    /* background: rgba(28, 28, 28, 0.334); */
-    
-    border-bottom: 2px solid;
-    border-image: linear-gradient(135deg, #4FC3F7 0%, #5FCB9F 100%) 1;
-}
-
-.nav-item.active {
-    border-bottom: linear-gradient(135deg, #4FC3F7 0%, #5FCB9F 100%);
+.botaoSideBar:hover {
+  border-bottom: 2px solid;
+  border-image: linear-gradient(135deg, #4fc3f7 0%, #5fcb9f 100%) 1;
 }
 
 .logout-btn {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 20px 24px;
-    background: transparent;
-    border: none;
-    color: #EF5350;
-    font-size: 18px;
-    cursor: pointer;
-    margin-top: auto;
-    transition: background-color 0.3s;
-    border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: transparent;
+  border: none;
+  color: #ef5350;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: auto;
+  transition: background-color 0.3s;
+  border-radius: 12px;
 }
 
 .sidebar-closed .logout-btn {
-    justify-content: center;
+  justify-content: center;
 }
 
-.logout-btn:hover {
-    background: rgba(239, 83, 80, 0.1);
+.botaoSideBar {
+  text-decoration: none;
+  color: #000;
+    width: 100%;
 }
 
-.botaoSideBar{
-    text-decoration: none;
-    color: #000;
+.botaoSideBar.active{
+  border-bottom: 2px solid;
+  border-image: linear-gradient(135deg, #4fc3f7 0%, #5fcb9f 100%) 1;
 }
 
-.botaoSideBarSair{
-    text-decoration: none;
-    color: #ff0000;
+.botaoSideBarSair {
+  width: 100%;
+  text-decoration: none;
+  color: #ff0000;
+}
+
+.botaoSideBarSair:hover {
+  cursor: pointer;
+  background: rgba(239, 83, 80, 0.1);
 }

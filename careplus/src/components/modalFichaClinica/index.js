@@ -1,0 +1,6 @@
+export { default as ModalBase } from "./ModalBase"
+export { default as EditarFichaClinicaModal } from "./EditarFichaClinicaModal"
+export { default as EditarObservacoesModal } from "./EditarObservacoesModal"
+export { default as EditarObservacoesComportamentaisModal } from "./EditarObservacoesComportamentaisModal"
+export { default as ProximaConsultaModal } from "./ProximaConsultaModal"
+export { default as InformacoesContatoModal } from "./InformacoesContatoModal"

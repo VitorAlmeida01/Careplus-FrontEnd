@@ -1,27 +1,53 @@
-import { useState } from "react"
-import Tabela from "../../components/tabelaFuncionario/Tabela"
+import { useState, useEffect } from "react"
 import Layout from "../../components/layout/Layout"
 import BarraPesquisa from "../../components/barraPesquisa"
-import "./funcionarios.css"
 import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
-import CadastroFuncionarioModal from "../../components/modalCadastro/CadastroFuncionarioModal"
+import CadastroFuncionarioModal from "../../components/modalCadastro/Funcionarios/CadastroFuncionarioModal"
+import TabelaFuncionario from "../../components/tabelaFuncionario/TabelaFuncionario"
+import { listarFuncionarios } from "../../service/funcionarios/funcionarios.service"
+import { Paginacao } from "@/src/components/Paginacao/Paginacao"
+import { toast } from 'react-toastify'
+import Loading from "../../components/loading/Loading"
 
 export default function Funcionarios() {
   const [modalAberto, setModalAberto] = useState(false)
+  const [funcionarios, setFuncionarios] = useState([])
+  const [page, setPage] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    listarFuncionarios(page).then((response) => {
+      const resposta = response.content
+      setFuncionarios(resposta)
+    }).catch((error) => {
+      console.error('Erro ao buscar funcionarios', error)
+      toast.error('Não foi possível listar os funcionarios')
+    }).finally(() => {
+      setLoading(false)
+    })
+  }, [page])
+
+
+
 
   return (
     <>
       <Layout>
-        {/* <div className="container-main"> */}
-        <div className="containerHeader">
-          <h3>Funcionarios</h3>
+        <div className="flex justify-end items-center h-[7%] mx-[1%]">
           <BarraPesquisa />
         </div>
-        <div className="containerBotaoCadastro">
+        <div className="w-[90%] flex my-[1%] mx-[4%] justify-end">
           <BotaoCadastro onClick={() => setModalAberto(true)} />
         </div>
 
-        <Tabela />
+        {loading ? (
+          <Loading message="Carregando funcionários..." />
+        ) : (
+          <TabelaFuncionario funcionarios={funcionarios} />
+        )}
+        
+        <Paginacao page={page} setPage={setPage} />
       </Layout>
       <CadastroFuncionarioModal
         isOpen={modalAberto}
