@@ -1,9 +1,11 @@
-import React from "react"
+import {useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import ModalBase from "./ModalBase"
 
 export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
   const navigate = useNavigate()
+
+  const [proximaConsulta, setProximaConsulta] = useState({})
 
   const consultaData = {
     data: dados?.data || "15 de Novembro de 2025",
@@ -12,6 +14,25 @@ export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
     profissional: dados?.profissional || "Dr. Ana",
     tratamento: dados?.tratamento || "Voz",
   }
+
+  useEffect(() =>{
+    console.log(dados)
+    let dataCompleta =  typeof dados === "string" ? dados.split("T")[0] : ""
+    let horarioCompleto =  typeof dados === "string" ? dados.split("T")[1] : ""
+
+    let dataFormatada = "-"
+
+     if (dataCompleta && dataCompleta.includes("-")) {
+    const ano = dataCompleta.split("-")
+    dataFormatada = `${ano[2]}/${ano[1]}/${ano[0]}`
+  }
+
+
+    setProximaConsulta({
+    data: dataFormatada,
+    horario: horarioCompleto
+    })
+  }, [dados])
 
   const handleRealizarAnotacoes = () => {
     onClose()
@@ -38,7 +59,7 @@ export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
             <div>
               <p className="text-sm text-gray-600">Data</p>
               <p className="text-lg font-semibold text-gray-800">
-                {consultaData.data}
+                {proximaConsulta.data || "-"}
               </p>
             </div>
           </div>
@@ -48,14 +69,14 @@ export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
             <div>
               <p className="text-sm text-gray-600">Horário</p>
               <p className="text-lg font-semibold text-gray-800">
-                {consultaData.horario}
+                {proximaConsulta.horario || "-"}
               </p>
             </div>
           </div>
         </div>
 
         {/* Informações adicionais - grid */}
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        {/* <div className="grid grid-cols-2 gap-6 mb-6">
           <div className="bg-gray-50 rounded-xl p-4">
             <p className="text-sm text-gray-600 mb-1">Tipo</p>
             <p className="text-base font-semibold text-gray-800">
@@ -69,14 +90,14 @@ export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
               {consultaData.profissional}
             </p>
           </div>
-        </div>
+        </div> */}
 
-        <div className="bg-gray-50 rounded-xl p-4 mb-6">
+        {/* <div className="bg-gray-50 rounded-xl p-4 mb-6">
           <p className="text-sm text-gray-600 mb-1">Tratamento</p>
           <p className="text-base font-semibold text-gray-800">
             {consultaData.tratamento}
           </p>
-        </div>
+        </div> */}
 
         {/* Botões */}
         <div className="flex gap-3 mt-6">
