@@ -7,7 +7,8 @@ import CadastroConsultaModal from '../../modalConsulta/MarcacaoConsultaModal'
 import DetalhesConsultaModal from '../../modalConsulta/DetalhesConsultaModal'
 import {
   listarAgendaSemanal,
-  listarConsultasDoDia,
+  listarAgendaDiaria,
+  listarAgendaMensal,
   listarConsultasPorPaciente,
   normalizarConsultas,
 } from '@/src/service/agendamento/agendamento.service';
@@ -57,25 +58,22 @@ const CalendarApp = ({
       return;
     }
 
-    if (filterMode === 'paciente' && selectedPacienteId) {
-      listarConsultasPorPaciente(selectedPacienteId)
-        .then(lista => setEvents(normalizarConsultas(lista)))
-        .catch(console.error);
-      return;
-    }
-
-    // Modo profissional
+    const id = filterMode === 'profissional' ? selectedFuncionarioId : selectedPacienteId;
+    const tipo = filterMode === 'profissional' ? 'funcionario' : 'paciente';
+    const dataRef = toISODate(currentDate);
     if (view === 'week') {
-      listarAgendaSemanal(selectedFuncionarioId, toISODate(currentDate))
+      listarAgendaSemanal(id, tipo, dataRef)
         .then(lista => setEvents(normalizarConsultas(lista)))
         .catch(console.error);
     } else if (view === 'day') {
-      listarConsultasDoDia(selectedFuncionarioId)
-        .then(lista => setEvents(normalizarConsultas(lista)))
+      listarAgendaDiaria(id, tipo, dataRef)
+        .then(lista => {
+          setEvents(normalizarConsultas(lista))
+          console.log("Estou no dia")
+        })
         .catch(console.error);
     } else {
-      // month: usa agenda semanal repetida ou lista geral — reutiliza semanal como proxy
-      listarAgendaSemanal(selectedFuncionarioId, toISODate(currentDate))
+      listarAgendaMensal(id, tipo, dataRef)
         .then(lista => setEvents(normalizarConsultas(lista)))
         .catch(console.error);
     }

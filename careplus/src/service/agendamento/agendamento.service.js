@@ -46,10 +46,10 @@ export async function listarConsultas(){
     }
 } 
 
-export async function listarAgendaSemanal(funcionarioId, dataReferencia) {
+export async function listarAgendaSemanal(id, tipo, dataReferencia) {
     try {
         const response = await api.get(`/consultas-prontuario/agenda-semanal`, {
-            params: { funcionarioId, dataReferencia }
+            params: { id, tipo, dataReferencia }
         });
         return response.data ?? [];
     } catch (error) {
@@ -58,15 +58,41 @@ export async function listarAgendaSemanal(funcionarioId, dataReferencia) {
     }
 }
 
-export async function listarConsultasDoDia(funcionarioId) {
+export async function listarAgendaDiaria(id, tipo, dataReferencia) {
     try {
-        const response = await api.get(`/consultas-prontuario/consultasDoDia`, {
-            params: { idFuncionario: funcionarioId }
+        const response = await api.get(`/consultas-prontuario/agenda-diaria`, {
+            params: { id, tipo, dataReferencia }
+        });
+        console.log('Agenda diaria Tipo ' + tipo)
+        console.log('Agenda diaria TESTEEE ' + response.data)
+        return response.data ?? [];
+    } catch (error) {
+        console.error("Erro ao listar agenda diária: ", error);
+        return [];
+    }
+}
+
+export async function listarAgendaMensal(id, tipo, dataReferencia) {
+    try {
+        const response = await api.get(`/consultas-prontuario/agenda-mensal`, {
+            params: { id, tipo, dataReferencia }
         });
         return response.data ?? [];
     } catch (error) {
-        console.error("Erro ao listar consultas do dia: ", error);
+        console.error("Erro ao listar agenda mensal: ", error);
         return [];
+    }
+}
+
+export async function notificarResponsavel(id, dataReferencia) {
+    try {
+        const response = await api.get(`/consultas-prontuario/notificar-responsavel`, {
+            params: { id, dataReferencia }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao notificar responsável: ", error);
+        throw error;
     }
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect as useEffectDOM } from 'rea
 // import IniciarConsultaModal from '../../modalConsulta/IniciarConsultaModal';
 import CadastroFuncionarioModal from '../../modalConsulta/MarcacaoConsultaModal'
 import { toast} from 'react-toastify'
+import { notificarResponsavel } from '@/src/service/agendamento/agendamento.service'
 
 function AutocompleteInput({ lista, valor, onChange, placeholder, icone }) {
   const [query, setQuery] = useState(valor || "");
@@ -95,10 +96,13 @@ const FilterBar = ({
   areas = [], 
   funcionarios = [],
   pacientes = [],
-  onApplyFilters
+  onApplyFilters,
+  currentDate,
 }) => {
   const [inputType, setInputType] = useState("text");
   const [modal, setModal] = useState(false);
+  const [confirmarNotificacao, setConfirmarNotificacao] = useState(false);
+  const [enviandoNotificacao, setEnviandoNotificacao] = useState(false);
   const [modo, setModo] = useState("profissional");
 
   const [tempArea, setTempArea] = useState("");
@@ -130,6 +134,32 @@ const FilterBar = ({
       paciente: tempPaciente,
     });
     toast.success("Filtros aplicados com sucesso!")
+  };
+
+  const selectedPacienteObj = useMemo(() => {
+    if (!tempPaciente || !pacientes.length) return null;
+    return pacientes.find(p => p.nome === tempPaciente) ?? null;
+  }, [tempPaciente, pacientes]);
+
+  const toISODate = (date) => {
+    const d = new Date(date);
+    d.setHours(12, 0, 0, 0);
+    return d.toISOString().split('T')[0];
+  };
+
+  const handleEnviarNotificacao = async () => {
+    if (!selectedPacienteObj) return;
+    setEnviandoNotificacao(true);
+    try {
+      const dataRef = currentDate ? toISODate(currentDate) : toISODate(new Date());
+      await notificarResponsavel(selectedPacienteObj.id, dataRef);
+      toast.success("Notificação enviada com sucesso!");
+      setConfirmarNotificacao(false);
+    } catch (error) {
+      toast.error("Erro ao enviar notificação.");
+    } finally {
+      setEnviandoNotificacao(false);
+    }
   };
 
 return (
@@ -252,6 +282,21 @@ return (
       </button>
     </div>
 
+    {/* Botão Enviar Notificação (só no modo paciente com paciente selecionado) */}
+    {modo === "paciente" && selectedPacienteObj && (
+      <div className="w-full sm:w-auto">
+        <button
+          onClick={() => setConfirmarNotificacao(true)}
+          className="bg-[#F59E0B] hover:bg-[#D97706] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+          </svg>
+          Enviar notificação
+        </button>
+      </div>
+    )}
+
     {/* Botão Nova Consulta */}
     <div className="w-full sm:w-auto">
       <button onClick={()=> setModal(true)} className="bg-[#00D2A0] hover:bg-[#00C092] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap" >
@@ -264,6 +309,57 @@ return (
       isOpen={modal} onClose={() => setModal(false)} 
       />
     </div>
+
+    {/* Modal de confirmação de notificação */}
+    {confirmarNotificacao && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#FEF3C7]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#F59E0B" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+              </svg>
+            </div>
+            <h3 className="text-[16px] font-semibold text-slate-800">Confirmar envio de notificação</h3>
+          </div>
+          <div className="bg-[#F8FAFC] rounded-xl p-4 mb-5 space-y-2">
+            <p className="text-[13px] text-slate-600">
+              <span className="font-medium text-slate-700">Paciente:</span> {selectedPacienteObj?.nome}
+            </p>
+            <p className="text-[13px] text-slate-600">
+              <span className="font-medium text-slate-700">Data de referência:</span> {currentDate ? toISODate(currentDate) : toISODate(new Date())}
+            </p>
+            <p className="text-[13px] text-slate-500 mt-2">
+              O responsável pelo paciente será notificado sobre as consultas agendadas.
+            </p>
+          </div>
+          <div className="flex items-center justify-end gap-3">
+            <button
+              onClick={() => setConfirmarNotificacao(false)}
+              disabled={enviandoNotificacao}
+              className="px-4 py-2 rounded-xl text-[13px] font-medium text-slate-600 bg-[#F4F4F5] hover:bg-[#e4e4e7] transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleEnviarNotificacao}
+              disabled={enviandoNotificacao}
+              className="px-4 py-2 rounded-xl text-[13px] font-medium text-white bg-[#F59E0B] hover:bg-[#D97706] transition-colors flex items-center gap-2"
+            >
+              {enviandoNotificacao ? (
+                <>
+                  <svg className="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  Enviando...
+                </>
+              ) : 'Confirmar envio'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
 );};
 
