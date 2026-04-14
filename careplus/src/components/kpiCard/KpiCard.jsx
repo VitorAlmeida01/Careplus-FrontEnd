@@ -16,6 +16,10 @@ export default function KpiCards({titulo, texto, valor}) {
                 <p className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-[#4fc3f7] to-[#5fcb9f] bg-clip-text text-transparent">{valor}</p>
                 {/* <p className="text-sm text-gray-500 mt-3">pacientes ativos</p> */}
                 {/* comiti aleatorio, só para subir a dash */}
+
+
+
+                
             </div>
         </div>
     );
