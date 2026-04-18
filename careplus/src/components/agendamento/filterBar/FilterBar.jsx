@@ -98,6 +98,7 @@ const FilterBar = ({
   pacientes = [],
   onApplyFilters,
   currentDate,
+  tiposDeConsulta = [],
 }) => {
   const [inputType, setInputType] = useState("text");
   const [modal, setModal] = useState(false);
@@ -306,7 +307,8 @@ return (
         Nova Consulta
       </button>
       <CadastroFuncionarioModal 
-      isOpen={modal} onClose={() => setModal(false)} 
+      isOpen={modal} onClose={() => setModal(false)}
+      tiposDeConsulta={tiposDeConsulta}
       />
     </div>
 

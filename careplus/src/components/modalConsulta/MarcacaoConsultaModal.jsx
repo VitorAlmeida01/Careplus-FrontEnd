@@ -130,10 +130,26 @@ export default function CadastroFuncionarioModal({
   }, [nome, isOpen])
 
   const resetForm = () => {
-    setNome('')
-    setPacienteSelecionado(null)
-    setSugestoes([])
-    setProfissionais([criarLinhaProfissional()])
+    if (!pacientePreSelecionado) {
+      setNome('')
+      setPacienteSelecionado(null)
+      setSugestoes([])
+    }
+    if (profissionalPreSelecionado?.id) {
+      const func = funcionarios.find(f => f.id === profissionalPreSelecionado.id)
+      if (func) {
+        setProfissionais([{
+          uid: crypto.randomUUID(),
+          area: func.especialidade || '',
+          funcionarioId: String(func.id),
+          funcionarioNome: func.nome,
+        }])
+      } else {
+        setProfissionais([criarLinhaProfissional()])
+      }
+    } else {
+      setProfissionais([criarLinhaProfissional()])
+    }
     setHorario('')
     setHorarioFim('')
     setTipoSelecionado('')
@@ -382,7 +398,8 @@ export default function CadastroFuncionarioModal({
                   setNome(e.target.value)
                   if (pacienteSelecionado) setPacienteSelecionado(null)
                 }}
-                className={fieldClass}
+                disabled={!!pacientePreSelecionado}
+                className={`${fieldClass} ${pacientePreSelecionado ? 'opacity-60 cursor-not-allowed bg-gray-50' : ''}`}
               />
               {sugestoes.length > 0 && (
                 <ul className="absolute left-0 top-[calc(100%+2px)] z-50 w-full bg-white border border-gray-200 rounded-xl shadow-xl max-h-48 overflow-y-auto">
@@ -414,14 +431,17 @@ export default function CadastroFuncionarioModal({
                 Profissionais
               </label>
               <div className="flex flex-col gap-2">
-                {profissionais.map((prof) => (
+                {profissionais.map((prof, index) => {
+                  const isPreSelecionado = index === 0 && !!profissionalPreSelecionado?.id && prof.funcionarioId === String(profissionalPreSelecionado.id)
+                  return (
                   <div key={prof.uid} className="flex gap-2 items-center">
                     {/* Área */}
                     <div className="relative flex-1">
                       <select
                         value={prof.area}
                         onChange={(e) => handleProfissionalAreaChange(prof.uid, e.target.value)}
-                        className={`${fieldClass} appearance-none pr-8`}
+                        disabled={isPreSelecionado}
+                        className={`${fieldClass} appearance-none pr-8 ${isPreSelecionado ? 'opacity-60 cursor-not-allowed bg-gray-50' : ''}`}
                       >
                         <option value="">Área</option>
                         {areas.map((a, i) => <option key={i} value={a}>{a}</option>)}
@@ -437,8 +457,8 @@ export default function CadastroFuncionarioModal({
                       <select
                         value={prof.funcionarioId}
                         onChange={(e) => handleProfissionalFuncChange(prof.uid, e.target.value)}
-                        disabled={!prof.area}
-                        className={`${fieldClass} appearance-none pr-8 disabled:opacity-50 disabled:cursor-not-allowed`}
+                        disabled={!prof.area || isPreSelecionado}
+                        className={`${fieldClass} appearance-none pr-8 ${isPreSelecionado ? 'opacity-60 cursor-not-allowed bg-gray-50' : 'disabled:opacity-50 disabled:cursor-not-allowed'}`}
                       >
                         <option value="">Profissional</option>
                         {funcionarios.filter(f => f.especialidade === prof.area).map(f => (
@@ -451,8 +471,8 @@ export default function CadastroFuncionarioModal({
                         </svg>
                       </div>
                     </div>
-                    {/* Remover linha (só quando há mais de 1) */}
-                    {profissionais.length > 1 && (
+                    {/* Remover linha (só quando há mais de 1 e não é pré-selecionado) */}
+                    {profissionais.length > 1 && !isPreSelecionado && (
                       <button
                         type="button"
                         onClick={() => handleRemoveProfissional(prof.uid)}
@@ -465,7 +485,8 @@ export default function CadastroFuncionarioModal({
                       </button>
                     )}
                   </div>
-                ))}
+                  )
+                })}
                 <button
                   type="button"
                   onClick={handleAddProfissional}

@@ -28,6 +28,7 @@ const CalendarApp = ({
   filterMode = 'profissional',
   funcionarios = [],
   pacientes = [],
+  onTiposChange,
 }) => {
   const [view, setView] = useState('week');
   const [events, setEvents] = useState({});
@@ -100,6 +101,10 @@ const CalendarApp = ({
     Object.values(events || {}).flat().forEach(c => { if (c?.tipo) tipos.add(c.tipo); });
     return Array.from(tipos);
   }, [events]);
+
+  React.useEffect(() => {
+    if (onTiposChange) onTiposChange(tiposDeConsultaUnicos);
+  }, [tiposDeConsultaUnicos]);
 
   const handleNavigate = (direction) => {
     const newDate = new Date(currentDate.getTime());

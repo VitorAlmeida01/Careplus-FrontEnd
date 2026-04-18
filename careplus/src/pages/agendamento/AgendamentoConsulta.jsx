@@ -21,6 +21,8 @@ function App() {
     modo: 'profissional'
   });
 
+  const [tiposDeConsulta, setTiposDeConsulta] = useState([]);
+
   useEffect(() => {
     listarFuncionariosConsulta().then((response) => {
       setFuncionarios(response.data);
@@ -58,6 +60,7 @@ function App() {
               funcionarios={funcionarios}
               pacientes={pacientes}
               onApplyFilters={(filtros) => setAppliedFilters(filtros)}
+              tiposDeConsulta={tiposDeConsulta}
             />
           </div>
 
@@ -77,6 +80,7 @@ function App() {
               filterMode={appliedFilters.modo}
               funcionarios={funcionarios}
               pacientes={pacientes}
+              onTiposChange={setTiposDeConsulta}
             />
           </div>
 
