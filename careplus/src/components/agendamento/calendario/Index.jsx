@@ -64,7 +64,10 @@ const CalendarApp = ({
     const dataRef = toISODate(currentDate);
     if (view === 'week') {
       listarAgendaSemanal(id, tipo, dataRef)
-        .then(lista => setEvents(normalizarConsultas(lista)))
+        .then(lista => {
+          setEvents(normalizarConsultas(lista))
+          console.log(normalizarConsultas(lista))
+        })
         .catch(console.error);
     } else if (view === 'day') {
       listarAgendaDiaria(id, tipo, dataRef)

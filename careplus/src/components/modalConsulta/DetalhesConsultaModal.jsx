@@ -23,18 +23,15 @@ function formatarHorario(inicio, fim) {
 }
 
 export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
-  if (!consulta) return null
-
-  const pacienteNome = consulta.paciente?.nome ?? '—'
+  const pacienteNome = consulta?.paciente?.nome ?? '—'
   const funcionarios = (() => {
-    if (consulta.funcionarios?.length) return consulta.funcionarios
-    if (consulta.consultaFuncionarios?.length)
+    if (consulta?.funcionarios?.length) return consulta.funcionarios
+    if (consulta?.consultaFuncionarios?.length)
       return consulta.consultaFuncionarios.map(cf => cf.funcionario ?? cf)
-    if (consulta.funcionario) return [consulta.funcionario]
+    if (consulta?.funcionario) return [consulta.funcionario]
     return []
   })()
-  const tipo = consulta.tipo
-  console.log(consulta)
+  const tipo = consulta?.tipo
 
   return (
     <Modal
@@ -44,6 +41,7 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
       overlayClassName="modal-overlay"
       contentLabel="Detalhes da Consulta"
     >
+      {consulta && (
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
 
         {/* Header */}
@@ -152,6 +150,7 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
           </button>
         </div>
       </div>
+      )}
     </Modal>
   )
 }

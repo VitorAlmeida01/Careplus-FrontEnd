@@ -1,7 +1,7 @@
 import React from 'react';
 import { daysOfWeek, getDaysInMonth, getFirstDayOfMonth, isSameDate } from './utils';
 
-export const MonthView = ({ currentDate, events, onAddEvent, onDragStart, onDragOver, onDrop, onEventClick }) => {
+export const MonthView = ({ currentDate, events, onAddEvent, onDragOver, onDrop, onEventClick }) => {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const daysInMonth = getDaysInMonth(year, month);
@@ -42,9 +42,9 @@ export const MonthView = ({ currentDate, events, onAddEvent, onDragStart, onDrag
                 <div
                   key={event.id}
                   draggable
-                  onDragStart={(e) => onDragStart(e, event)}
-                  onClick={(e) => onEventClick(e, event)}
-                  className={`${event.color} text-white text-xs p-1.5 rounded shadow-sm cursor-move truncate hover:opacity-90 active:scale-95 transition-all`}
+                  // onDragStart={(e) => onDragStart(e, event)}
+                  onClick={(e) => { e.stopPropagation();   onEventClick(e, event)}}
+                  className={`${event.color} text-white text-xs p-1.5 rounded shadow-sm cursor-pointer truncate hover:opacity-90 active:scale-95 transition-all`}
                 >
                   {event.title}
                 </div>
