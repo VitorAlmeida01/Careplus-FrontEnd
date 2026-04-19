@@ -1,13 +1,38 @@
 import React from 'react';
-import { daysOfWeek, isSameDate } from './utils';
+import { daysOfWeek, isSameDate, formatEventTime } from './utils';
 
-export const WeekView = ({ currentDate, events, onAddEvent, onDragStart, onDragOver, onDrop, onEventClick }) => {
-  // Pega os 7 dias da semana atual com base no currentDate
+const HOUR_HEIGHT = 64; // px por hora
+const START_HOUR = 7;
+const END_HOUR = 20;
+const TOTAL_HOURS = END_HOUR - START_HOUR;
+const hours = Array.from({ length: TOTAL_HOURS }, (_, i) => START_HOUR + i);
+
+function timeStrToMinutes(timeStr) {
+  if (!timeStr) return null;
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function getEventStyle(horarioInicio, horarioFim) {
+  const startMin = timeStrToMinutes(horarioInicio);
+  if (startMin === null) return null;
+  const startOffset = startMin - START_HOUR * 60;
+  if (startOffset < 0 || startOffset >= TOTAL_HOURS * 60) return null;
+  const top = (startOffset / 60) * HOUR_HEIGHT;
+  let height;
+  if (horarioFim) {
+    const endMin = timeStrToMinutes(horarioFim);
+    height = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, 22);
+  } else {
+    height = HOUR_HEIGHT;
+  }
+  return { top, height };
+}
+
+export const WeekView = ({ currentDate, events, onAddEvent, onEventClick }) => {
   const getDaysOfCurrentWeek = (date) => {
     const startOfWeek = new Date(date);
-    // Ajusta para o domingo da semana atual
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); 
-    
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(startOfWeek);
       d.setDate(startOfWeek.getDate() + i);
@@ -15,82 +40,102 @@ export const WeekView = ({ currentDate, events, onAddEvent, onDragStart, onDragO
     });
   };
 
-  // Array de horários de 08:00 às 18:00
-  const timeSlots = Array.from({ length: 11 }, (_, i) => {
-    const hour = 8 + i;
-    return `${hour.toString().padStart(2, '0')}:00`;
-  });
-
   const weekDays = getDaysOfCurrentWeek(currentDate);
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
-      {/* Grid com 8 colunas: 1 para horários + 7 para dias */}
-      <div className="grid grid-cols-8 gap-0">
-        {/* Célula vazia no canto superior esquerdo */}
-        <div className="bg-gray-100 border-b border-r border-gray-200"></div>
-        
-        {/* Cabeçalho com os dias da semana */}
-        {weekDays.map((day, index) => {
+    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white flex flex-col">
+      {/* Cabeçalho fixo */}
+      <div className="flex border-b border-gray-200 bg-gray-100 sticky top-0 z-10">
+        <div className="w-16 shrink-0 border-r border-gray-200" />
+        {weekDays.map((day, i) => {
           const isToday = isSameDate(day, new Date());
           return (
-            <div key={`header-${index}`} className="bg-gray-100 p-2 text-center font-semibold text-sm text-gray-700 border-b border-gray-200">
-              <div>{daysOfWeek[index]}</div>
-              <div className={`mt-1 ${isToday ? 'text-blue-600 font-bold' : ''}`}>
-                {isToday ? <span className="bg-blue-100 px-2 py-0.5 rounded-full text-xs">{day.getDate()}</span> : day.getDate()}
+            <div key={i} className="flex-1 p-2 text-center font-semibold text-sm text-gray-700 border-l border-gray-200 first:border-l-0">
+              <div className="text-xs text-gray-500">{daysOfWeek[i]}</div>
+              <div className={`text-base mt-0.5 ${isToday ? 'text-blue-600 font-bold' : ''}`}>
+                {isToday
+                  ? <span className="bg-blue-500 text-white w-7 h-7 rounded-full inline-flex items-center justify-center text-sm">{day.getDate()}</span>
+                  : day.getDate()}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Grid de horários e eventos */}
-      <div className="grid grid-cols-8 gap-0">
-        {timeSlots.map((time, timeIndex) => (
-          <React.Fragment key={`time-${timeIndex}`}>
-            {/* Coluna de horários */}
-            <div className="bg-gray-50 p-2 text-center text-xs font-medium text-gray-600 border-r border-b border-gray-200">
-              {time}
-            </div>
-            
-            {/* Células dos dias para cada horário */}
-            {weekDays.map((day, dayIndex) => {
-              const dateKey = day.toISOString().split('T')[0];
-              const dayEvents = events[dateKey] || [];
-              const isToday = isSameDate(day, new Date());
+      {/* Corpo com scroll */}
+      <div className="overflow-y-auto" style={{ maxHeight: 600 }}>
+        <div className="flex">
+          {/* Coluna de horas */}
+          <div className="w-16 shrink-0">
+            {hours.map(h => (
+              <div
+                key={h}
+                style={{ height: HOUR_HEIGHT }}
+                className="border-b border-gray-100 flex items-start justify-end pr-2 pt-1"
+              >
+                <span className="text-[11px] text-gray-400">
+                  {`${h.toString().padStart(2, '0')}:00`}
+                </span>
+              </div>
+            ))}
+          </div>
 
-              return (
-                <div
-                  key={`cell-${timeIndex}-${dayIndex}`}
-                  className={`min-h-[60px] p-1 hover:bg-gray-50 transition-colors cursor-pointer border-r border-b border-gray-100 last:border-r-0 ${isToday ? 'bg-blue-50/30' : ''}`}
-                  onDragOver={onDragOver}
-                  onDrop={(e) => onDrop(e, day)}
-                  onClick={() => onAddEvent(day)}
-                >
-                  {/* Mostra eventos apenas na primeira linha (simplificado) */}
-                  {timeIndex === 0 && (
-                    <div className="space-y-1">
-                      {dayEvents.map(event => (
-                        <div
-                          key={event.id}
-                          draggable
-                          onDragStart={(e) => onDragStart(e, event)}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEventClick(e, event);
-                          }}
-                          className={`${event.color} text-white text-xs p-1.5 rounded shadow-sm cursor-move truncate hover:opacity-90 active:scale-95 transition-all mb-1`}
-                        >
-                          {event.title}
+          {/* Colunas dos dias */}
+          {weekDays.map((day, dayIndex) => {
+            const dateKey = day.toISOString().split('T')[0];
+            const dayEvents = events[dateKey] || [];
+            const isToday = isSameDate(day, new Date());
+
+            return (
+              <div
+                key={dayIndex}
+                className={`flex-1 relative border-l border-gray-200 ${isToday ? 'bg-blue-50/20' : ''}`}
+                style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}
+              >
+                {/* Linhas de hora */}
+                {hours.map(h => (
+                  <div
+                    key={h}
+                    className="absolute left-0 right-0 border-b border-gray-100 cursor-pointer hover:bg-gray-50/80"
+                    style={{ top: (h - START_HOUR) * HOUR_HEIGHT, height: HOUR_HEIGHT }}
+                    onClick={() => onAddEvent(day, h)}
+                  />
+                ))}
+
+                {/* Linha meia hora */}
+                {hours.map(h => (
+                  <div
+                    key={`half-${h}`}
+                    className="absolute left-0 right-0 border-b border-gray-50"
+                    style={{ top: (h - START_HOUR) * HOUR_HEIGHT + HOUR_HEIGHT / 2, height: 0 }}
+                  />
+                ))}
+
+                {/* Eventos posicionados absolutamente */}
+                {dayEvents.map(event => {
+                  const style = getEventStyle(event.horarioInicio, event.horarioFim);
+                  if (!style) return null;
+                  return (
+                    <div
+                      key={event.id}
+                      onClick={(e) => { e.stopPropagation(); onEventClick(e, event); }}
+                      className={`${event.color} text-white text-xs rounded-md shadow cursor-pointer hover:opacity-90 active:scale-[0.98] transition-all absolute overflow-hidden px-2 py-1`}
+                      style={{ top: style.top + 1, height: style.height - 2, left: 2, right: 2 }}
+                    >
+                      <div className="font-semibold leading-tight truncate">{event.title}</div>
+                      {style.height > 28 && (
+                        <div className="opacity-85 leading-tight">
+                          {formatEventTime(event.horarioInicio)}
+                          {event.horarioFim ? ` – ${formatEventTime(event.horarioFim)}` : ''}
                         </div>
-                      ))}
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </React.Fragment>
-        ))}
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
