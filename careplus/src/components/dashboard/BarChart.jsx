@@ -1,20 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactEcharts from 'echarts-for-react';
-
-
-const categorias = ['Fonoaudologia', 'Psicologia', 'Nutricionista', 'Fisioterapia']; 
-const objeto = [
-  { Setor: 'Fonoaudiologia', Fun1cionarios: 13, Pacientes: 76 },
-  { Setor: 'Psicologia', Fun1cionarios: 8, Pacientes: 44 },
-  { Setor: 'Nutricionista', Fun1cionarios: 6, Pacientes: 25 },
-  { Setor: 'Fisioterapia', Fun1cionarios: 6, Pacientes: 24 },
-];
-
-const dataFunccionarios = objeto.map(item => item.Fun1cionarios);
-const dataPacientes = objeto.map(item => item.Pacientes);
+import {buscarFuncionariosEPacientesPorArea} from '@/src/service/dashboard/dash.service';
 
 
 export default function BarraAlinhada(props) {
+  const [dados, setDados] = useState([]);
+
+  useEffect(() => {
+    const carregarDados = async () => {
+      try {
+        const resultado = await buscarFuncionariosEPacientesPorArea();
+        setDados(resultado);
+      } catch (error) {
+        console.error('Erro ao carregar dados do gráfico:', error);
+      }
+    };
+
+    carregarDados();
+  }, []);
+
+  const categorias = dados.map(item => item.setor);
+  const dataFuncionarios = dados.map(item => item.totalFuncionarios);
+  const dataPacientes = dados.map(item => item.totalPacientes);
+
+
      const option = {
     // title: {
     //   text: 'Gráfico de Barras',
@@ -82,7 +91,7 @@ export default function BarraAlinhada(props) {
         name: "Funcionários", 
         type: 'bar',
         barWidth: '40%',
-        data: dataFunccionarios,
+        data: dataFuncionarios,
         itemStyle:{
           color: '#60A5FA',
           borderRadius: [10, 10, 0, 0] 
