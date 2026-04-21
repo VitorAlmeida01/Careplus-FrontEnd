@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Modal from 'react-modal'
+import { toast } from 'react-toastify'
+import { editarConsulta, deletarConsulta, deletarRecorrencia } from '@/src/service/agendamento/agendamento.service'
 import './ConsultaModal.css'
 
 Modal.setAppElement('#root')
 
-const DIAS = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira']
+const DIAS = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 
 function formatarData(dateStr) {
@@ -22,7 +24,11 @@ function formatarHorario(inicio, fim) {
   return '—'
 }
 
-export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
+export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpdate, allFuncionarios = [], tiposDeConsulta = [] }) {
+  const [modo, setModo] = useState('view') // 'view' | 'edit' | 'confirm-delete'
+  const [salvando, setSalvando] = useState(false)
+  const [form, setForm] = useState({ data: '', horarioInicio: '', horarioFim: '', tipo: '', funcionarioId: '' })
+
   const pacienteNome = consulta?.paciente?.nome ?? '—'
   const funcionarios = (() => {
     if (consulta?.funcionarios?.length) return consulta.funcionarios
@@ -33,10 +39,96 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
   })()
   const tipo = consulta?.tipo
 
+  // Sync form when consulta changes or modal opens
+  useEffect(() => {
+    if (consulta && isOpen) {
+      const funcs = (() => {
+        if (consulta.funcionarios?.length) return consulta.funcionarios
+        if (consulta.consultaFuncionarios?.length)
+          return consulta.consultaFuncionarios.map(cf => cf.funcionario ?? cf)
+        if (consulta.funcionario) return [consulta.funcionario]
+        return []
+      })()
+      const primeiroFunc = funcs[0]
+      setForm({
+        data: consulta.data ?? '',
+        horarioInicio: consulta.horarioInicio ? consulta.horarioInicio.substring(0, 5) : '',
+        horarioFim: consulta.horarioFim ? consulta.horarioFim.substring(0, 5) : '',
+        tipo: consulta.tipo ?? '',
+        funcionarioId: primeiroFunc?.id ? String(primeiroFunc.id) : '',
+      })
+      setModo('view')
+    }
+  }, [consulta, isOpen])
+
+  function handleFormChange(e) {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  async function handleSalvarEdicao() {
+    if (!form.data || !form.horarioInicio) {
+      toast.error('Data e horário de início são obrigatórios.')
+      return
+    }
+    setSalvando(true)
+    try {
+      const body = {
+        pacienteId: consulta.paciente?.id,
+        funcionarioId: form.funcionarioId ? Number(form.funcionarioId) : undefined,
+        data: form.data,
+        horarioInicio: form.horarioInicio.length === 5 ? form.horarioInicio + ':00' : form.horarioInicio,
+        horarioFim: form.horarioFim ? (form.horarioFim.length === 5 ? form.horarioFim + ':00' : form.horarioFim) : null,
+        tipo: form.tipo || undefined,
+      }
+      await editarConsulta(consulta.id, body)
+      toast.success('Consulta atualizada com sucesso!')
+      onUpdate?.()
+      onClose()
+    } catch {
+      toast.error('Erro ao atualizar consulta.')
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  async function handleConfirmarDelete() {
+    setSalvando(true)
+    try {
+      await deletarConsulta(consulta.id)
+      toast.success('Consulta removida com sucesso!')
+      onUpdate?.()
+      onClose()
+    } catch {
+      toast.error('Erro ao remover consulta.')
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  async function handleConfirmarDeleteRecorrencia() {
+    setSalvando(true)
+    try {
+      await deletarRecorrencia(consulta.recorrenciaId)
+      toast.success('Recorrência removida com sucesso!')
+      onUpdate?.()
+      onClose()
+    } catch {
+      toast.error('Erro ao remover recorrência.')
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  function handleClose() {
+    setModo('view')
+    onClose()
+  }
+
   return (
     <Modal
       isOpen={isOpen}
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
       className="fixed inset-0 flex items-center justify-center p-4"
       overlayClassName="modal-overlay"
       contentLabel="Detalhes da Consulta"
@@ -52,9 +144,11 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
               </svg>
             </div>
-            <h2 className="text-[16px] font-semibold text-slate-800">Detalhes da Consulta</h2>
+            <h2 className="text-[16px] font-semibold text-slate-800">
+              {modo === 'edit' ? 'Editar Consulta' : modo === 'confirm-delete' ? 'Remover Consulta' : 'Detalhes da Consulta'}
+            </h2>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+          <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -62,92 +156,267 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-4">
+        {modo === 'view' && (
+          <div className="px-6 py-5 space-y-4">
+            <div className="flex items-center gap-2">
+              {tipo && (
+                <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  {tipo}
+                </span>
+              )}
+            </div>
 
-          {/* Status badge */}
-          <div className="flex items-center gap-2">
-            {tipo && (
-              <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                {tipo}
-              </span>
+            {/* Paciente */}
+            <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#2B8BFF" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[11px] text-slate-400 font-medium mb-0.5">Paciente</p>
+                <p className="text-[14px] font-semibold text-slate-800">{pacienteNome}</p>
+              </div>
+            </div>
+
+            {/* Data e Horário */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25" />
+                  </svg>
+                  <p className="text-[11px] text-slate-400 font-medium">Data</p>
+                </div>
+                <p className="text-[13px] font-semibold text-slate-800">{formatarData(consulta.data)}</p>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p className="text-[11px] text-slate-400 font-medium">Horário</p>
+                </div>
+                <p className="text-[13px] font-semibold text-slate-800">{formatarHorario(consulta.horarioInicio, consulta.horarioFim)}</p>
+              </div>
+            </div>
+
+            {/* Profissionais */}
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex items-center gap-1.5 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                </svg>
+                <p className="text-[11px] text-slate-400 font-medium">
+                  {funcionarios.length > 1 ? 'Profissionais' : 'Profissional'}
+                </p>
+              </div>
+              {funcionarios.length === 0 ? (
+                <p className="text-[13px] text-slate-500">—</p>
+              ) : (
+                <div className="flex flex-col gap-1.5">
+                  {funcionarios.map((f, i) => (
+                    <div key={f.id ?? i} className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+                        {f.nome?.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-semibold text-slate-800 leading-tight">{f.nome}</p>
+                        <p className="text-[11px] text-slate-400 leading-tight">
+                          {[f.cargo, f.especialidade].filter(Boolean).join(' · ')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Edit Form */}
+        {modo === 'edit' && (
+          <div className="px-6 py-5 space-y-4">
+            {/* Paciente (read-only) */}
+            <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <div>
+                <p className="text-[11px] text-slate-400 font-medium mb-0.5">Paciente</p>
+                <p className="text-[14px] font-semibold text-slate-800">{pacienteNome}</p>
+              </div>
+            </div>
+
+            {/* Profissional */}
+            {allFuncionarios.length > 0 && (
+              <div>
+                <label className="block text-[12px] font-medium text-slate-500 mb-1">Profissional</label>
+                <select
+                  name="funcionarioId"
+                  value={form.funcionarioId}
+                  onChange={handleFormChange}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                >
+                  <option value="">Selecionar profissional</option>
+                  {allFuncionarios.map(f => (
+                    <option key={f.id} value={f.id}>{f.nome}{f.especialidade ? ` – ${f.especialidade}` : ''}</option>
+                  ))}
+                </select>
+              </div>
             )}
-          </div>
 
-          {/* Paciente */}
-          <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#2B8BFF" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-              </svg>
-            </div>
+            {/* Data */}
             <div>
-              <p className="text-[11px] text-slate-400 font-medium mb-0.5">Paciente</p>
-              <p className="text-[14px] font-semibold text-slate-800">{pacienteNome}</p>
+              <label className="block text-[12px] font-medium text-slate-500 mb-1">Data</label>
+              <input
+                type="date"
+                name="data"
+                value={form.data}
+                onChange={handleFormChange}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+            </div>
+
+            {/* Horários */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[12px] font-medium text-slate-500 mb-1">Início</label>
+                <input
+                  type="time"
+                  name="horarioInicio"
+                  value={form.horarioInicio}
+                  onChange={handleFormChange}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+              <div>
+                <label className="block text-[12px] font-medium text-slate-500 mb-1">Fim</label>
+                <input
+                  type="time"
+                  name="horarioFim"
+                  value={form.horarioFim}
+                  onChange={handleFormChange}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+            </div>
+
+            {/* Tipo */}
+            <div>
+              <label className="block text-[12px] font-medium text-slate-500 mb-1">Tipo</label>
+              {tiposDeConsulta.length > 0 ? (
+                <select
+                  name="tipo"
+                  value={form.tipo}
+                  onChange={handleFormChange}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                >
+                  <option value="">Selecionar tipo</option>
+                  {tiposDeConsulta.map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  name="tipo"
+                  value={form.tipo}
+                  onChange={handleFormChange}
+                  placeholder="Ex: Consulta, Retorno..."
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+              )}
             </div>
           </div>
+        )}
 
-          {/* Data e Horário */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-              <div className="flex items-center gap-1.5 mb-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25" />
-                </svg>
-                <p className="text-[11px] text-slate-400 font-medium">Data</p>
-              </div>
-              <p className="text-[13px] font-semibold text-slate-800">{formatarData(consulta.data)}</p>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-              <div className="flex items-center gap-1.5 mb-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <p className="text-[11px] text-slate-400 font-medium">Horário</p>
-              </div>
-              <p className="text-[13px] font-semibold text-slate-800">{formatarHorario(consulta.horarioInicio, consulta.horarioFim)}</p>
-            </div>
-          </div>
-
-          {/* Profissionais */}
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <div className="flex items-center gap-1.5 mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-              </svg>
-              <p className="text-[11px] text-slate-400 font-medium">
-                {funcionarios.length > 1 ? 'Profissionais' : 'Profissional'}
+        {/* Delete Confirmation */}
+        {modo === 'confirm-delete' && (
+          <div className="px-6 py-5 space-y-3">
+            <div className="p-4 bg-red-50 rounded-xl border border-red-100 text-center">
+              <p className="text-[14px] font-semibold text-red-700 mb-1">Remover consulta?</p>
+              <p className="text-[12px] text-red-500">
+                A consulta de <span className="font-semibold">{pacienteNome}</span> em{' '}
+                <span className="font-semibold">{formatarData(consulta.data)}</span> será removida permanentemente.
               </p>
             </div>
-            {funcionarios.length === 0 ? (
-              <p className="text-[13px] text-slate-500">—</p>
-            ) : (
-              <div className="flex flex-col gap-1.5">
-                {funcionarios.map((f, i) => (
-                  <div key={f.id ?? i} className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
-                      {f.nome?.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-[13px] font-semibold text-slate-800 leading-tight">{f.nome}</p>
-                      <p className="text-[11px] text-slate-400 leading-tight">
-                        {[f.cargo, f.especialidade].filter(Boolean).join(' · ')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+
+            {consulta.recorrenciaId && (
+              <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
+                <p className="text-[11px] font-semibold text-amber-700 mb-0.5">Esta consulta faz parte de uma recorrência</p>
+                <p className="text-[11px] text-amber-600">Você pode remover apenas esta ou toda a série.</p>
               </div>
             )}
           </div>
-        </div>
+        )}
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-100">
-          <button
-            onClick={onClose}
-            className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer"
-          >
-            Fechar
-          </button>
+        <div className="px-6 py-4 border-t border-gray-100 flex gap-2">
+          {modo === 'view' && (
+            <>
+              <button
+                onClick={() => setModo('confirm-delete')}
+                className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 font-medium text-[14px] rounded-xl transition-colors cursor-pointer border border-red-100"
+              >
+                Apagar
+              </button>
+              <button
+                onClick={() => setModo('edit')}
+                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer"
+              >
+                Editar
+              </button>
+              <button
+                onClick={handleClose}
+                className="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer"
+              >
+                Fechar
+              </button>
+            </>
+          )}
+          {modo === 'edit' && (
+            <>
+              <button
+                onClick={() => setModo('view')}
+                disabled={salvando}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-[14px] rounded-xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSalvarEdicao}
+                disabled={salvando}
+                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer disabled:opacity-60"
+              >
+                {salvando ? 'Salvando...' : 'Salvar'}
+              </button>
+            </>
+          )}
+          {modo === 'confirm-delete' && (
+            <>
+              <button
+                onClick={() => setModo('view')}
+                disabled={salvando}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-[14px] rounded-xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmarDelete}
+                disabled={salvando}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer disabled:opacity-60"
+              >
+                {salvando ? 'Removendo...' : 'Só esta'}
+              </button>
+              {consulta.recorrenciaId && (
+                <button
+                  onClick={handleConfirmarDeleteRecorrencia}
+                  disabled={salvando}
+                  className="flex-1 py-2.5 bg-red-800 hover:bg-red-900 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer disabled:opacity-60"
+                >
+                  {salvando ? 'Removendo...' : 'Toda a série'}
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
       )}

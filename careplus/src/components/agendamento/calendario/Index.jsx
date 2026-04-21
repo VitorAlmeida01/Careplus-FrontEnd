@@ -212,6 +212,9 @@ const CalendarApp = ({
         isOpen={detalhesModal.isOpen}
         onClose={() => setDetalhesModal({ isOpen: false, consulta: null })}
         consulta={detalhesModal.consulta}
+        onUpdate={() => { setDetalhesModal({ isOpen: false, consulta: null }); setTimeout(() => fetchEventos(), 200); }}
+        allFuncionarios={funcionarios}
+        tiposDeConsulta={tiposDeConsultaUnicos}
       />
     </div>
   );

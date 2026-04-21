@@ -117,3 +117,31 @@ export async function listarFuncionariosConsulta() {
         console.error("Erro ao listar Funcionarios: ", error)
     }
 }
+
+export async function editarConsulta(id, body) {
+    try {
+        const response = await api.put(`/consultas-prontuario/${id}`, body);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao editar consulta: ", error);
+        throw error;
+    }
+}
+
+export async function deletarConsulta(id) {
+    try {
+        await api.delete(`/consultas-prontuario`, { params: { id } });
+    } catch (error) {
+        console.error("Erro ao deletar consulta: ", error);
+        throw error;
+    }
+}
+
+export async function deletarRecorrencia(recorrenciaId) {
+    try {
+        await api.delete(`/consultas-prontuario/recorrencia/${recorrenciaId}`);
+    } catch (error) {
+        console.error("Erro ao deletar recorrência: ", error);
+        throw error;
+    }
+}
