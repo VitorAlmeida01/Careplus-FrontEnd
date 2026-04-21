@@ -13,6 +13,32 @@ export async function listarPacitentes(pagina) {
     }
 }
 
+export async function listarPacitentesPorNome(nome) {
+    try{
+        const response = await api.get(`/pacientes/por-nome?nome=${nome}`)
+
+        if(response.status === 200){
+            const dados = response.data
+            return dados
+        }
+    }catch(error){
+        console.log(error)
+    }
+}
+
+export async function buscarPacientes(query) {
+    try {
+        const isEmail = query.includes('@');
+        const isCpf = /\d/.test(query);
+        const params = isEmail ? { email: query } : isCpf ? { cpf: query } : { nome: query };
+        const response = await api.get('/pacientes/buscar', { params });
+        if (response.status === 200) return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+    return [];
+}
+
 export async function cadastrarPaciente(paciente){
     try{
         const formData = new FormData()

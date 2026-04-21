@@ -4,20 +4,24 @@ import CadastroFuncionarioModal from '../../modalConsulta/MarcacaoConsultaModal'
 import { toast} from 'react-toastify'
 import { notificarResponsavel } from '@/src/service/agendamento/agendamento.service'
 
-function AutocompleteInput({ lista, valor, onChange, placeholder, icone }) {
+function AutocompleteInput({ lista, valor, onChange, onQueryChange, placeholder, icone }) {
   const [query, setQuery] = useState(valor || "");
   const [aberto, setAberto] = useState(false);
   const containerRef = useRef(null);
 
   const sugestoes = useMemo(() => {
     if (query.length < 2) return [];
+    const q = query.toLowerCase();
     return lista.filter(item =>
-      item.nome.toLowerCase().includes(query.toLowerCase())
+      (item.nome && item.nome.toLowerCase().includes(q)) ||
+      (item.email && item.email.toLowerCase().includes(q)) ||
+      (item.documento && item.documento.toLowerCase().includes(q)) ||
+      (item.cpf && item.cpf.toLowerCase().includes(q))
     );
   }, [query, lista]);
 
   useEffectDOM(() => {
-    setQuery(valor || "");
+    if (valor) setQuery(valor);
   }, [valor]);
 
   useEffectDOM(() => {
@@ -40,6 +44,7 @@ function AutocompleteInput({ lista, valor, onChange, placeholder, icone }) {
     setQuery(e.target.value);
     onChange("");
     setAberto(true);
+    if (onQueryChange) onQueryChange(e.target.value);
   };
 
   const handleClear = () => {
@@ -76,7 +81,14 @@ function AutocompleteInput({ lista, valor, onChange, placeholder, icone }) {
               onMouseDown={() => handleSelect(item.nome)}
               className="px-3 py-2 text-[13px] text-slate-700 hover:bg-[#EEF4FF] cursor-pointer"
             >
-              {item.nome}
+                <p>{item.nome}</p>
+                <p className="text-gray-400">{item.email}</p>
+                {/* {
+                  item.cpf != null ? <p className="text-gray-400">{item.cpf}</p> : <p className="text-gray-400">{item.documento}</p>
+                } */}
+              
+
+              
             </li>
           ))}
         </ul>
@@ -97,6 +109,8 @@ const FilterBar = ({
   funcionarios = [],
   pacientes = [],
   onApplyFilters,
+  onFuncionarioSearch,
+  onPacienteSearch,
   currentDate,
   tiposDeConsulta = [],
 }) => {
@@ -249,6 +263,7 @@ return (
             lista={profissionaisFiltrados}
             valor={tempProfissional}
             onChange={setTempProfissional}
+            onQueryChange={(q) => onFuncionarioSearch && onFuncionarioSearch(q)}
             placeholder="Profissional"
             icone={
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -261,6 +276,7 @@ return (
             lista={pacientes}
             valor={tempPaciente}
             onChange={setTempPaciente}
+            onQueryChange={(q) => onPacienteSearch && onPacienteSearch(q)}
             placeholder="Paciente"
             icone={
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">

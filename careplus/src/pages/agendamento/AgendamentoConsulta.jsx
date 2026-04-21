@@ -4,7 +4,8 @@ import HintCard from '../../components/agendamento/tipes/HintCard';
 import Layout from '../../components/layout/Layout'
 import FilterBar from '../../components/agendamento/filterBar/FilterBar';
 import {listarFuncionariosConsulta} from '@/src/service/agendamento/agendamento.service'
-import { listarPacitentes } from '@/src/service/pacientes/pacientes.service'
+import { buscarPacientes } from '@/src/service/pacientes/pacientes.service'
+import { buscarFuncionarios } from '@/src/service/funcionarios/funcionarios.service'
 
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
 
   const [areas, setAreas] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
+  const [funcionariosBusca, setFuncionariosBusca] = useState([]);
   const [pacientes, setPacientes] = useState([]);
 
   const [appliedFilters, setAppliedFilters] = useState({
@@ -31,13 +33,31 @@ function App() {
     }).catch (error => {
       console.error('Erro ao buscar funcionários:', error);
     });
+  }, []);
 
-    listarPacitentes(0).then((response) => {
-      setPacientes(response.content ?? []);
+  const handleFuncionarioSearch = (query) => {
+    if (!query || query.length < 2) {
+      setFuncionariosBusca([]);
+      return;
+    }
+    buscarFuncionarios(query).then((data) => {
+      setFuncionariosBusca(Array.isArray(data) ? data : []);
+    }).catch(error => {
+      console.error('Erro ao buscar funcionários:', error);
+    });
+  };
+
+  const handlePacienteSearch = (query) => {
+    if (!query || query.length < 2) {
+      setPacientes([]);
+      return;
+    }
+    buscarPacientes(query).then((data) => {
+      setPacientes(Array.isArray(data) ? data : []);
     }).catch(error => {
       console.error('Erro ao buscar pacientes:', error);
     });
-  }, []);
+  };
 
   const handleFilterDateChange = (dateString) => {
     if (!dateString) return;
@@ -57,9 +77,11 @@ function App() {
               onDateChange={handleFilterDateChange}
               currentDate={currentDate}
               areas={areas}
-              funcionarios={funcionarios}
+              funcionarios={funcionariosBusca}
               pacientes={pacientes}
               onApplyFilters={(filtros) => setAppliedFilters(filtros)}
+              onFuncionarioSearch={handleFuncionarioSearch}
+              onPacienteSearch={handlePacienteSearch}
               tiposDeConsulta={tiposDeConsulta}
             />
           </div>
