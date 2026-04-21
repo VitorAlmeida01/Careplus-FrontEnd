@@ -39,3 +39,16 @@ export async function cadastrarFuncionario(formData) {
     })
     return response.data
 }
+
+export async function buscarFuncionarios(query) {
+    try {
+        const isEmail = query.includes('@');
+        const isDocumento = /^[\d.\-/]+$/.test(query);
+        const params = isEmail ? { email: query } : isDocumento ? { documento: query } : { nome: query };
+        const response = await api.get('/funcionarios/buscar', { params });
+        if (response.status === 200) return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+    return [];
+}

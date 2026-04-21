@@ -19,6 +19,10 @@ body {
   z-index: 9999;
 }
 
+.Toastify__toast-container {
+  z-index: 999999 !important;
+}
+
 .modal-card {
   width: 450px;
   background: #fff;

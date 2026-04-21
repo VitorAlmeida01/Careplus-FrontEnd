@@ -1,62 +1,104 @@
 import React from 'react';
-import { daysOfWeek, months, formatTime } from './utils';
+import { daysOfWeek, months, formatEventTime } from './utils';
 
-export const DayView = ({ currentDate, events, onAddEvent, onDragStart, onDragOver, onDrop, onEventClick }) => {
-  const hours = Array.from({ length: 24 }, (_, i) => i);
+const HOUR_HEIGHT = 64;
+const START_HOUR = 7;
+const END_HOUR = 20;
+const TOTAL_HOURS = END_HOUR - START_HOUR;
+const hours = Array.from({ length: TOTAL_HOURS }, (_, i) => START_HOUR + i);
+
+function timeStrToMinutes(timeStr) {
+  if (!timeStr) return null;
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function getEventStyle(horarioInicio, horarioFim) {
+  const startMin = timeStrToMinutes(horarioInicio);
+  if (startMin === null) return null;
+  const startOffset = startMin - START_HOUR * 60;
+  if (startOffset < 0 || startOffset >= TOTAL_HOURS * 60) return null;
+  const top = (startOffset / 60) * HOUR_HEIGHT;
+  let height;
+  if (horarioFim) {
+    const endMin = timeStrToMinutes(horarioFim);
+    height = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT, 22);
+  } else {
+    height = HOUR_HEIGHT;
+  }
+  return { top, height };
+}
+
+export const DayView = ({ currentDate, events, onAddEvent, onEventClick }) => {
   const dayDate = currentDate;
-
-  // Chave da data (ex: '2026-02-22')
   const dateKey = dayDate.toISOString().split('T')[0];
-  
-  // Pega apenas os eventos do dia
   const dayEvents = events[dateKey] || [];
 
   return (
-    <div className="flex flex-col h-150 overflow-auto border border-gray-200 rounded-lg bg-white">
-      {/* Header do Dia */}
+    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white flex flex-col">
+      {/* Header */}
       <div className="p-4 border-b border-gray-200 text-center sticky top-0 bg-white z-10 shadow-sm">
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className="text-xl font-bold text-gray-800">
           {daysOfWeek[dayDate.getDay()]}, {dayDate.getDate()} de {months[dayDate.getMonth()]}
         </h2>
       </div>
-      
-      {/* Lista de Horários */}
-      <div className="relative">
-         {hours.map(h => {
-           // Armazena apenas os eventos que pertecem a hora do dia.
-           const slotEvents = dayEvents.filter(e => e.date && e.date.getHours() === h);
 
-           return (
-             <div 
-                key={h} 
-                className="flex border-b border-gray-200 min-h-20 group hover:bg-gray-50 cursor-pointer transition-colors"
-                onDragOver={onDragOver}
-                onDrop={(e) => onDrop(e, dayDate, h)}
+      {/* Corpo com scroll */}
+      <div className="overflow-y-auto" style={{ maxHeight: 600 }}>
+        <div className="flex">
+          {/* Coluna de horas */}
+          <div className="w-20 shrink-0 bg-gray-50 border-r border-gray-200">
+            {hours.map(h => (
+              <div
+                key={h}
+                style={{ height: HOUR_HEIGHT }}
+                className="border-b border-gray-100 flex items-start justify-end pr-3 pt-1"
+              >
+                <span className="text-xs text-gray-400">
+                  {`${h.toString().padStart(2, '0')}:00`}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Coluna de eventos */}
+          <div
+            className="flex-1 relative"
+            style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}
+          >
+            {/* Linhas de hora */}
+            {hours.map(h => (
+              <div
+                key={h}
+                className="absolute left-0 right-0 border-b border-gray-100 cursor-pointer hover:bg-gray-50/80"
+                style={{ top: (h - START_HOUR) * HOUR_HEIGHT, height: HOUR_HEIGHT }}
                 onClick={() => onAddEvent(dayDate, h)}
-             >
-               <div className="w-20 border-r border-gray-200 p-2 text-right text-gray-500 text-sm bg-gray-50">
-                 {formatTime(h)}
-               </div>
-               <div className="flex-1 p-2 relative">
-                  {slotEvents.map(event => (
-                    <div
-                      key={event.id}
-                      draggable
-                      onDragStart={(e) => onDragStart(e, event)}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onEventClick(e, event);
-                      }}
-                      className={`${event.color} text-white p-2 rounded mb-1 cursor-move shadow-md hover:opacity-90 active:scale-95 transition-all`}
-                    >
-                       <div className="font-bold text-sm">{event.title}</div>
-                       <div className="text-xs opacity-90">Das {formatTime(h)} às {formatTime(h+1)}</div>
+              />
+            ))}
+
+            {/* Eventos posicionados absolutamente */}
+            {dayEvents.map(event => {
+              const style = getEventStyle(event.horarioInicio, event.horarioFim);
+              if (!style) return null;
+              return (
+                <div
+                  key={event.id}
+                  onClick={(e) => { e.stopPropagation(); onEventClick(e, event); }}
+                  className={`${event.color} text-white rounded-md shadow-md cursor-pointer hover:opacity-90 active:scale-[0.98] transition-all absolute overflow-hidden px-3 py-1.5`}
+                  style={{ top: style.top + 1, height: style.height - 2, left: 6, right: 6 }}
+                >
+                  <div className="font-bold text-sm leading-tight truncate">{event.title}</div>
+                  {style.height > 30 && (
+                    <div className="text-xs opacity-90 leading-tight">
+                      {formatEventTime(event.horarioInicio)}
+                      {event.horarioFim ? ` – ${formatEventTime(event.horarioFim)}` : ''}
                     </div>
-                  ))}
-               </div>
-             </div>
-           )
-         })}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
