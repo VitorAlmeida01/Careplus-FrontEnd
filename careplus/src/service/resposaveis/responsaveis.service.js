@@ -1,8 +1,8 @@
 import { api } from "../api";
 
-async function listarTodosResponsaveis(){
+async function listarTodosResponsaveis(pagina){
     try{
-        const response = await api.get(`/responsaveis`)
+        const response = await api.get(`/responsaveis?pagina=${pagina}`)
 
         if(response.status === 200){
             const dados = response.data

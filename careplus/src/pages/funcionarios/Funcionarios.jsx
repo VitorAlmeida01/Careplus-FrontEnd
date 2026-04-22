@@ -36,9 +36,10 @@ export default function Funcionarios() {
       <Layout>
         <div className="flex justify-end items-center h-[7%] mx-[1%]">
           <BarraPesquisa />
+          <BotaoCadastro name={"Pesquisar"}/>
         </div>
         <div className="w-[90%] flex my-[1%] mx-[4%] justify-end">
-          <BotaoCadastro onClick={() => setModalAberto(true)} />
+          <BotaoCadastro onClick={() => setModalAberto(true)} name={"Cadastrar"}/>
         </div>
 
         {loading ? (
@@ -47,7 +48,7 @@ export default function Funcionarios() {
           <TabelaFuncionario funcionarios={funcionarios} />
         )}
         
-        <Paginacao page={page} setPage={setPage} />
+        <Paginacao page={page} setPage={setPage} fetchTotalPages={listarFuncionarios} />
       </Layout>
       <CadastroFuncionarioModal
         isOpen={modalAberto}

@@ -1,17 +1,15 @@
 import {
     Pagination,
     PaginationContent,
-    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
-import { listarFuncionarios } from "@/src/service/funcionarios/funcionarios.service"
 
 import { useEffect, useState, useMemo } from "react"
 
-export function Paginacao({ page, setPage }) {
+export function Paginacao({ page, setPage, fetchTotalPages }) {
 
     const [totalPaginas, setTotalPaginas] = useState(0)
     
@@ -19,14 +17,10 @@ export function Paginacao({ page, setPage }) {
         return [page - 1, page, page + 1].filter(p => p >= 0 && p < totalPaginas)
     }, [page, totalPaginas])
 
-    async function getPaginas(pagina) {
-        listarFuncionarios(pagina).then((response) => {
+    useEffect(() => {
+        fetchTotalPages(page).then((response) => {
             setTotalPaginas(response.totalPages)
         })
-    }
-
-    useEffect(() => {
-        getPaginas(page)
     }, [page])
 
     return (

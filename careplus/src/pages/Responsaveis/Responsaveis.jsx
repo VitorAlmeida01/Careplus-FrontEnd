@@ -5,17 +5,20 @@ import TabelaResponsavel from "../../components/tabelaResponsaveis/TabelaRespons
 import { listarTodosResponsaveis } from "../../service/resposaveis/responsaveis.service"
 import { toast } from 'react-toastify'
 import Loading from "../../components/loading/Loading"
+import { Paginacao } from "@/src/components/Paginacao/Paginacao"
 
 
 
 export default function Responsaveis() {
   const [responsaveis, setResponsaveis] = useState([])
   const [loading, setLoading] = useState(true)
+    const [page, setPage] = useState(0)
+
 
   const recarregarResponsaveis = useCallback(() => {
     setLoading(true)
-    listarTodosResponsaveis().then((response) =>{
-      const resposta = Array.isArray(response) ? response : []
+    listarTodosResponsaveis(page).then((response) =>{
+      const resposta = response.content
       setResponsaveis(resposta)
     }).catch((error=>{
       console.error(error)
@@ -23,11 +26,11 @@ export default function Responsaveis() {
     })).finally(() => {
       setLoading(false)
     })
-  }, [])
+  }, [page])
 
   useEffect(() =>{
     recarregarResponsaveis()
-  }, [recarregarResponsaveis])
+  }, [page, recarregarResponsaveis])
 
 
 
@@ -43,6 +46,7 @@ export default function Responsaveis() {
         ) : (
           <TabelaResponsavel responsaveis={responsaveis}/>
         )}
+        <Paginacao page={page} setPage={setPage} fetchTotalPages={listarTodosResponsaveis} />
       </Layout>
     </>
   )

@@ -7,7 +7,7 @@ import CadastroPacienteModal from "../../components/modalCadastro/Pacientes/Cada
 import TabelaPaciente from "../../components/tabelaPaciente/TabelaPaciente"
 import { listarPacitentes } from "../../service/pacientes/pacientes.service"
 import { toast } from 'react-toastify'
-import { PaginacaoPacientes } from "@/src/components/Paginacao/PaginacaoPacientes"
+import { Paginacao } from "@/src/components/Paginacao/Paginacao"
 import Loading from "../../components/loading/Loading"
 
 
@@ -43,9 +43,10 @@ export default function Pacientes() {
       <Layout>
         <div className="flex justify-end items-center h-[7%] mx-[1%]">
           <BarraPesquisa />
+          <BotaoCadastro name={"Pesquisar"}/>
         </div>
         <div className="w-[90%] flex my-[1%] mx-[4%] justify-end">
-          <BotaoCadastro onClick={() => navigate("/pacientes/cadastrar")} />
+          <BotaoCadastro onClick={() => navigate("/pacientes/cadastrar")} name={"Cadastrar"}/>
 
         </div>
 
@@ -55,7 +56,7 @@ export default function Pacientes() {
           <TabelaPaciente pacientes={pacientes}/>
         )}
         
-        <PaginacaoPacientes page={page} setPage={setPage} />
+        <Paginacao page={page} setPage={setPage} fetchTotalPages={listarPacitentes} />
       </Layout>
       <CadastroPacienteModal
         isOpen={modalAberto}
