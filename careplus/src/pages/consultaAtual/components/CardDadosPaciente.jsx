@@ -4,10 +4,8 @@ export default function CardDadosPaciente({
   nome,
   contato,
   idade,
-  cid,
   desfraldado,
   hiperfocoAtual,
-  medicacoes,
   diagnostico,
   atendimentoEspecial 
 }) {
@@ -21,10 +19,9 @@ export default function CardDadosPaciente({
       <div className="flex flex-col gap-4 w-[95%]">
 
       <LinhaInformacao tipo1="Nome" dado1={nome} tipo2="Contato" dado2={contato} />
-      <LinhaInformacao tipo1="Idade" dado1={idade} tipo2="CID" dado2={cid} />
       <LinhaInformacao tipo1="Desfraldado" dado1={desfraldado} tipo2="Hiperfoco Atual" dado2={hiperfocoAtual} />
-      <LinhaInformacao tipo1="Medicações" dado1={medicacoes} tipo2="Diagnóstico" dado2={diagnostico} />
-      <LinhaInformacao tipo1="Atendimento Especial" dado1={atendimentoEspecial} tipo2=" " dado2=" " />
+      <LinhaInformacao tipo1="Diagnóstico" dado1={diagnostico} tipo2="Atendimento Especial" dado2={atendimentoEspecial} />
+      <LinhaInformacao tipo1="Idade" dado1={idade} tipo2="" dado2="" />
         
       </div>
     </div>

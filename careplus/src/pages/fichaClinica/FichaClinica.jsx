@@ -5,19 +5,18 @@ import Layout from "../../components/layout/Layout"
 import CardPerfil from "../../components/cardPerfil/CardPerfil"
 import BotaoLayout from "../../components/botaoLayout/BotaoLayout"
 import EditarFichaClinicaModal from "../../components/modalFichaClinica/EditarFichaClinicaModal"
-import EditarObservacoesModal from "../../components/modalFichaClinica/EditarObservacoesModal"
-import EditarObservacoesComportamentaisModal from "../../components/modalFichaClinica/EditarObservacoesComportamentaisModal"
+import EditarMedicacoesModal from "../../components/modalFichaClinica/EditarMedicacoesModal"
 import ProximaConsultaModal from "../../components/modalFichaClinica/ProximaConsultaModal"
 import InformacoesContatoModal from "../../components/modalFichaClinica/InformacoesContatoModal"
 import { fichaClinicaPorPaciente } from "@/src/service/fichaClinica/fichaClinica.service"
-import {responsavelPorId} from "@/src/service/fichaClinica/fichaClinica.service"
+import { contatoCuidadorPorPaciente } from "@/src/service/fichaClinica/fichaClinica.service"
+import { proximaConsultaPorPaciente } from "@/src/service/fichaClinica/fichaClinica.service"
+import { detalhesConsultaPorId } from "@/src/service/fichaClinica/fichaClinica.service"
 
 export default function FichaClinica() {
   const navigate = useNavigate()
   const [modalFichaClinica, setModalFichaClinica] = useState(false)
-  const [modalObservacoes, setModalObservacoes] = useState(false)
-  const [modalObservacoesComportamentais, setModalObservacoesComportamentais] =
-    useState(false)
+  const [modalMedicacoes, setModalMedicacoes] = useState(false)
   const [modalProximaConsulta, setModalProximaConsulta] = useState(false)
   const [modalContato, setModalContato] = useState(false)
 
@@ -37,26 +36,25 @@ export default function FichaClinica() {
   const [fichaClinica, setFichaClinica] = useState({})
 
   const [fichaClinicaEdit, setFichaClinicaEdit] = useState({
-    id: undefined,
-    idade: undefined,
+    idFicha: undefined,
+    idPaciente: undefined,
+    convenio: undefined,
+    hiperfoco: undefined,
+    desfraldado: undefined,
+    atendimentoEspecial: undefined,
+    resumoClinico: undefined,
     anamnese: undefined,
     diagnostico: undefined,
-    planoTerapeutico: undefined
+    nivelAgressividade: undefined,
   })
 
   const [responsavel, setResponsavel] = useState({})
-  const [observacoes, setObservacoes] = useState({
-    cid: undefined,
-    medicacao: undefined,
-    atendimentoEspecial: undefined,
-    desfraldada: undefined,
-    hiperfoco: undefined,
-  })
-  const [observacoesComportamentais, setObservacoesComportamentais] = useState(undefined)
 
   const [ultimaConsulta, setUltimaConsulta] = useState({
+    consultaId: undefined,
     data: undefined,
-    materiais: undefined,
+    especialidade: undefined,
+    nomeFuncionario: undefined,
   })
   const [progresso, setProgresso] = useState({
     percentual: undefined,
@@ -70,25 +68,23 @@ export default function FichaClinica() {
   useEffect(() => {
 
     setFichaClinicaEdit({
-      id: fichaClinica?.fichaClinica?.id,
-      nome: fichaClinica?.nome,
-      idade: fichaClinica?.fichaClinica?.idade,
+      idFicha: fichaClinica?.fichaClinica?.id,
+      idPaciente: fichaClinica?.pacienteId,
+      convenio: fichaClinica?.fichaClinica?.planoTerapeutico,
+      hiperfoco: fichaClinica?.fichaClinica?.hiperfoco,
+      desfraldado: fichaClinica?.fichaClinica?.desfraldada,
+      atendimentoEspecial: fichaClinica?.fichaClinica?.atendimentoEspecial,
+      resumoClinico: fichaClinica?.fichaClinica?.observacoesComportamentais,
       anamnese: fichaClinica?.fichaClinica?.anamnese,
       diagnostico: fichaClinica?.fichaClinica?.diagnostico,
-      planoTerapeutico: fichaClinica?.fichaClinica?.planoTerapeutico,
+      nivelAgressividade: fichaClinica?.fichaClinica?.atendimentoEspecial,
     })
 
-    setObservacoes({
-      cid: fichaClinica?.observacoes?.cid,
-      medicacao: fichaClinica?.observacoes?.medicacao,
-      atendimentoEspecial: fichaClinica?.observacoes?.atendimentoEspecial,
-      desfraldada: fichaClinica?.observacoes?.desfraldada,
-      hiperfoco: fichaClinica?.observacoes?.hiperfoco,
-    })
-    setObservacoesComportamentais(fichaClinica?.observacoesComportamentais)
     setUltimaConsulta({
+      consultaId: fichaClinica?.ultimaConsulta?.consultaId,
       data: fichaClinica?.ultimaConsulta?.data,
-      materiais: fichaClinica?.ultimaConsulta?.materiais,
+      especialidade: fichaClinica?.ultimaConsulta?.especialidade,
+      nomeFuncionario: fichaClinica?.ultimaConsulta?.nomeFuncionario,
     })
     setProgresso({
       percentual: fichaClinica?.progresso?.percentual,
@@ -104,12 +100,50 @@ export default function FichaClinica() {
       setFichaClinica(resposta)
     })
 
-    responsavelPorId(idPaciente).then((response) =>{
-      const resposta = response
-      setResponsavel(resposta)
-    })
-
   }, [idPaciente])
+
+  const abrirModalContato = async () => {
+    try {
+      const response = await contatoCuidadorPorPaciente(idPaciente)
+      const contato = Array.isArray(response) ? response[0] : response
+      setResponsavel(contato || {})
+    } catch (error) {
+      console.error("Erro ao buscar contato do cuidador:", error)
+      setResponsavel({})
+    } finally {
+      setModalContato(true)
+    }
+  }
+
+  const abrirModalProximaConsulta = async () => {
+    try {
+      const response = await proximaConsultaPorPaciente(idPaciente)
+      setProximaConsulta(response || null)
+    } catch (error) {
+      console.error("Erro ao buscar proxima consulta:", error)
+      setProximaConsulta(null)
+    } finally {
+      setModalProximaConsulta(true)
+    }
+  }
+
+  const realizarAnotacoesProximaConsulta = async (consultaId) => {
+    try {
+      if (consultaId) {
+        const detalhes = await detalhesConsultaPorId(consultaId)
+        sessionStorage.setItem("consultaAtualDetalhes", JSON.stringify(detalhes))
+      }
+    } catch (error) {
+      console.error("Erro ao buscar detalhes da consulta:", error)
+    } finally {
+      setModalProximaConsulta(false)
+      if (consultaId) {
+        navigate(`/pacientes/consulta-atual?idConsulta=${consultaId}`)
+      } else {
+        navigate("/pacientes/consulta-atual")
+      }
+    }
+  }
 
   useEffect(() => {
     exibirFichaClinica()
@@ -135,11 +169,6 @@ export default function FichaClinica() {
     return valor
   }
 
-  const materiaisUltimaConsulta = fichaClinica?.ultimaConsulta?.materiais
-    ? fichaClinica.ultimaConsulta.materiais
-    : "-"
-
-
   return (
     <>
       <Layout>
@@ -147,15 +176,16 @@ export default function FichaClinica() {
           <section>
             <section className="w-full">
               <CardPerfil
-                onContatoClick={() => setModalContato(true)}
-                onProximaConsultaClick={() => setModalProximaConsulta(true)}
+                onContatoClick={abrirModalContato}
+                onProximaConsultaClick={abrirModalProximaConsulta}
                 fichaClinica={fichaClinica}
+                onCidUpdated={exibirFichaClinica}
               />
             </section>
           </section>
-          <section className="flex flex-wrap sm:h-fit">
-            <section className="flex gap-2 w-full flex-wrap md:flex-nowrap ">
-              <CardFichaClinica estilo="h-auto md:h-full">
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:h-fit">
+            <section className="md:col-span-2">
+              <CardFichaClinica estilo="h-auto md:h-full w-full">
                 <CardFichaClinica.Header>
                   <section className="flex justify-between mb-[10px]">
                     <h2>Ficha Clinica</h2>
@@ -166,128 +196,105 @@ export default function FichaClinica() {
                   </section>
                 </CardFichaClinica.Header>
                 <CardFichaClinica.Body>
-                  <section>
-                    <label>Nome:</label>
-                    <p>
-                      <b>{exibirValor(fichaClinica?.nome)}</b>
-                    </p>
+                  <section className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                    <section>
+                      <label>Diagnóstico:</label>
+                      <p>
+                        <b>
+                          {exibirValor(fichaClinica?.fichaClinica?.diagnostico)}
+                        </b>
+                      </p>
+                    </section>
+                    <section>
+                      <label>Convênio:</label>
+                      <p>
+                        <b>
+                          {exibirValor(
+                            fichaClinica?.fichaClinica?.planoTerapeutico,
+                          )}
+                        </b>
+                      </p>
+                    </section>
+                    <section>
+                      <label>Hiperfoco:</label>
+                      <p>
+                        <b>{exibirValor(fichaClinica?.fichaClinica?.hiperfoco)}</b>
+                      </p>
+                    </section>
+                    <section>
+                      <label>Desfraldada:</label>
+                      <p>
+                        <b>{formatarBoolean(fichaClinica?.fichaClinica?.desfraldada)}</b>
+                      </p>
+                    </section>
+                    <section>
+                      <label>Atendimento Especial:</label>
+                      <p>
+                        <b>
+                          {exibirValor(fichaClinica?.fichaClinica?.atendimentoEspecial)}
+                        </b>
+                      </p>
+                    </section>
                   </section>
-                  <section>
-                    <label>Idade:</label>
-                    <p>
-                      <b>
-                        {exibirValor(fichaClinica?.fichaClinica?.idade)} Anos
-                      </b>
-                    </p>
-                  </section>
+
+                  <div className="border-t border-gray-200 my-4" />
+
                   <section>
                     <label>Anamnese:</label>
                     <p>
                       <b>{exibirValor(fichaClinica?.fichaClinica?.anamnese)}</b>
                     </p>
                   </section>
+
+                  <div className="border-t border-gray-200 my-4" />
+
                   <section>
-                    <label>Diagnóstico</label>
-                    <p>
-                      <b>
-                        {exibirValor(fichaClinica?.fichaClinica?.diagnostico)}
-                      </b>
-                    </p>
-                  </section>
-                  <section>
-                    <label>Plano terapêutico</label>
+                    <label>Observações Comportamentais:</label>
                     <p>
                       <b>
                         {exibirValor(
-                          fichaClinica?.fichaClinica?.planoTerapeutico,
+                          fichaClinica?.fichaClinica?.observacoesComportamentais,
                         )}
                       </b>
                     </p>
                   </section>
                 </CardFichaClinica.Body>
               </CardFichaClinica>
+            </section>
 
-              <CardFichaClinica estilo="h-auto md:h-full">
+            <section className="md:col-span-1 flex flex-col gap-4">
+              <CardFichaClinica estilo="h-auto md:h-full w-full">
                 <CardFichaClinica.Header>
                   <section className="flex justify-between mb-[10px]">
-                    <h2>Observações Comportamentais</h2>
+                    <h2>Medicações</h2>
                     <BotaoLayout
                       nome="Editar"
-                      onClick={() => setModalObservacoesComportamentais(true)}
+                      onClick={() => setModalMedicacoes(true)}
                     />
                   </section>
                 </CardFichaClinica.Header>
                 <CardFichaClinica.Body>
-                  <p>{exibirValor(fichaClinica?.observacoesComportamentais)}</p>
+                  {Array.isArray(fichaClinica?.medicacoes) &&
+                  fichaClinica.medicacoes.length > 0 ? (
+                    <section className="flex flex-col gap-2">
+                      {fichaClinica.medicacoes.map((medicacao) => (
+                        <div key={medicacao.idMedicacao}>
+                          <label>{exibirValor(medicacao.nomeMedicacao)}:</label>
+                          <p>
+                            <b>
+                              Inicio: {formatarData(medicacao.dataInicio)} | Fim: {formatarData(medicacao.dataFim)} | Ativo: {medicacao?.ativo ? "Sim" : "Não"}
+                            </b>
+                          </p>
+                        </div>
+                      ))}
+                    </section>
+                  ) : (
+                    <p>-</p>
+                  )}
                 </CardFichaClinica.Body>
               </CardFichaClinica>
-            </section>
-            <section className="mt-5 flex gap-10 w-full flex-wrap md:flex-nowrap">
-              <CardFichaClinica estilo="h-auto md:h-full">
-                <CardFichaClinica.Header>
-                  <section className="flex justify-between mb-1.25">
-                    <h2>Observações</h2>
-                    <BotaoLayout
-                      nome="Editar"
-                      onClick={() => setModalObservacoes(true)}
-                    />
-                  </section>
-                </CardFichaClinica.Header>
-                <CardFichaClinica.Body>
-                  <section className="flex md:flex-nowrap justify-between">
-                    <section className="flex flex-col gap-2">
-                      <div>
-                        <label>CID:</label>
-                        <p>
-                          <b>{exibirValor(fichaClinica?.observacoes?.cid)}</b>
-                        </p>
-                      </div>
 
-                      <div>
-                        <label>Medicação:</label>
-                        <p>
-                          <b>
-                            {exibirValor(fichaClinica?.observacoes?.medicacao)}
-                          </b>
-                        </p>
-                      </div>
-
-                      <section>
-                        <label>Atendimento Especial:</label>
-                        <p>
-                          <b>
-                            {exibirValor(
-                              fichaClinica?.observacoes?.atendimentoEspecial,
-                            )}
-                          </b>
-                        </p>
-                      </section>
-                    </section>
-                    <section className="flex flex-col gap-2">
-                      <div>
-                        <label>Hiperfoco:</label>
-                        <p>
-                          <b>
-                            {exibirValor(fichaClinica?.observacoes?.hiperfoco)}
-                          </b>
-                        </p>
-                      </div>
-
-                      <div>
-                        <label>Desfraldada:</label>
-                        <p>
-                          <b>
-                            {formatarBoolean(
-                              fichaClinica?.observacoes?.desfraldada,
-                            )}
-                          </b>
-                        </p>
-                      </div>
-                    </section>
-                  </section>
-                </CardFichaClinica.Body>
-              </CardFichaClinica>
-              <CardFichaClinica estilo="h-auto md:h-full">
+              <CardFichaClinica estilo="h-auto md:h-full w-full">
                 <CardFichaClinica.Header>
                   <section className="flex justify-between mb-1.25">
                     <h2>Última consulta</h2>
@@ -310,9 +317,16 @@ export default function FichaClinica() {
                       </div>
 
                       <div>
-                        <label>Materiais:</label>
+                        <label>Especialidade:</label>
                         <p>
-                          <b>{materiaisUltimaConsulta}</b>
+                          <b>{exibirValor(fichaClinica?.ultimaConsulta?.especialidade)}</b>
+                        </p>
+                      </div>
+
+                      <div>
+                        <label>Funcionário:</label>
+                        <p>
+                          <b>{exibirValor(fichaClinica?.ultimaConsulta?.nomeFuncionario)}</b>
                         </p>
                       </div>
                     </section>
@@ -328,21 +342,20 @@ export default function FichaClinica() {
       <EditarFichaClinicaModal
         isOpen={modalFichaClinica}
         dados={fichaClinicaEdit}
+        onSaved={exibirFichaClinica}
         onClose={() => setModalFichaClinica(false)}
       />
-      <EditarObservacoesModal
-        isOpen={modalObservacoes}
-        dados={observacoes}
-        onClose={() => setModalObservacoes(false)}
-      />
-      <EditarObservacoesComportamentaisModal
-        isOpen={modalObservacoesComportamentais}
-        dados={observacoesComportamentais}
-        onClose={() => setModalObservacoesComportamentais(false)}
+      <EditarMedicacoesModal
+        isOpen={modalMedicacoes}
+        onClose={() => setModalMedicacoes(false)}
+        medicacoes={fichaClinica?.medicacoes}
+        idProntuario={fichaClinica?.fichaClinica?.id}
+        onMedicacoesUpdated={exibirFichaClinica}
       />
       <ProximaConsultaModal
         isOpen={modalProximaConsulta}
         dados={proximaConsulta}
+        onRealizarAnotacoes={realizarAnotacoesProximaConsulta}
         onClose={() => setModalProximaConsulta(false)}
       />
       <InformacoesContatoModal

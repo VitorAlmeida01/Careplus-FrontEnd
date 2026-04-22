@@ -1,42 +1,45 @@
 import {useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import ModalBase from "./ModalBase"
 
-export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
-  const navigate = useNavigate()
+export default function ProximaConsultaModal({
+  isOpen,
+  onClose,
+  dados,
+  onRealizarAnotacoes,
+}) {
 
   const [proximaConsulta, setProximaConsulta] = useState({})
 
-  const consultaData = {
-    data: dados?.data || "15 de Novembro de 2025",
-    horario: dados?.horario || "14:00 - 15:00",
-    tipo: dados?.tipo || "Retorno",
-    profissional: dados?.profissional || "Dr. Ana",
-    tratamento: dados?.tratamento || "Voz",
-  }
-
   useEffect(() =>{
-    console.log(dados)
-    let dataCompleta =  typeof dados === "string" ? dados.split("T")[0] : ""
-    let horarioCompleto =  typeof dados === "string" ? dados.split("T")[1] : ""
+    const formatarData = (dataIso) => {
+      if (!dataIso || !String(dataIso).includes("-")) return "-"
+      const partes = String(dataIso).split("-")
+      return `${partes[2]}/${partes[1]}/${partes[0]}`
+    }
 
-    let dataFormatada = "-"
-
-     if (dataCompleta && dataCompleta.includes("-")) {
-    const ano = dataCompleta.split("-")
-    dataFormatada = `${ano[2]}/${ano[1]}/${ano[0]}`
-  }
-
+    const formatarHorario = (inicio, fim) => {
+      const inicioFormatado = inicio ? String(inicio).slice(0, 5) : "-"
+      const fimFormatado = fim ? String(fim).slice(0, 5) : "-"
+      return `${inicioFormatado} - ${fimFormatado}`
+    }
 
     setProximaConsulta({
-    data: dataFormatada,
-    horario: horarioCompleto
+      consultaId: dados?.consultaId,
+      data: formatarData(dados?.data),
+      horario: formatarHorario(dados?.horarioInicio, dados?.horarioFim),
+      tipo: dados?.tipo || "-",
+      profissional: dados?.nomeProfissional || "-",
+      tratamento: dados?.tratamento || "-",
     })
   }, [dados])
 
   const handleRealizarAnotacoes = () => {
+    if (onRealizarAnotacoes) {
+      onRealizarAnotacoes(proximaConsulta?.consultaId)
+      return
+    }
+
     onClose()
-    navigate("/consulta-atual")
   }
 
   return (
@@ -75,29 +78,28 @@ export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
           </div>
         </div>
 
-        {/* Informações adicionais - grid */}
-        {/* <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-2 gap-6 mb-6">
           <div className="bg-gray-50 rounded-xl p-4">
             <p className="text-sm text-gray-600 mb-1">Tipo</p>
             <p className="text-base font-semibold text-gray-800">
-              {consultaData.tipo}
+              {proximaConsulta?.tipo || "-"}
             </p>
           </div>
 
           <div className="bg-gray-50 rounded-xl p-4">
             <p className="text-sm text-gray-600 mb-1">Profissional</p>
             <p className="text-base font-semibold text-gray-800">
-              {consultaData.profissional}
+              {proximaConsulta?.profissional || "-"}
             </p>
           </div>
-        </div> */}
+        </div>
 
-        {/* <div className="bg-gray-50 rounded-xl p-4 mb-6">
+        <div className="bg-gray-50 rounded-xl p-4 mb-6">
           <p className="text-sm text-gray-600 mb-1">Tratamento</p>
           <p className="text-base font-semibold text-gray-800">
-            {consultaData.tratamento}
+            {proximaConsulta?.tratamento || "-"}
           </p>
-        </div> */}
+        </div>
 
         {/* Botões */}
         <div className="flex gap-3 mt-6">
@@ -110,11 +112,7 @@ export default function ProximaConsultaModal({ isOpen, onClose, dados }) {
           </button>
           <button
             type="button"
-            onClick={() =>{
-              handleRealizarAnotacoes()
-
-              navigate("/pacientes/consulta-atual")
-            }}
+            onClick={handleRealizarAnotacoes}
             className="flex-1 p-3 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-xl font-medium hover:opacity-90 transition-opacity cursor-pointer"
           >
             Realizar anotações

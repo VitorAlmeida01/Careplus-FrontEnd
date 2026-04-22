@@ -3,29 +3,33 @@ import ModalBase from "./ModalBase"
 
 export default function InformacoesContatoModal({ isOpen, onClose, dados }) {
 const [formData, setFormData] = useState({
-    nome: dados?.nome || "Maria de Oliveira Santos",
-    // parentesco: dados?.parentesco || "Mãe",
-    telefone: dados?.telefone || "(11) 98765-4321",
-    email: dados?.email || "maria.santos@email.com",
+    nome: dados?.nome || "",
+    parentesco: dados?.parentesco || "",
+    telefone: dados?.telefone || "",
+    email: dados?.email || "",
   endereco: {
-    rua: dados?.logradouro || "Rua das Flores, 123 - Apto 45",
-    bairro: dados?.bairro || "Jardim Paulista",
-    cidade: dados?.cidade || "São Paulo",
-    cep: dados?.cep || "01234-567",
+    rua: dados?.endereco?.logradouro || "",
+    numero: dados?.endereco?.numero || "",
+    complemento: dados?.endereco?.complemento || "",
+    bairro: dados?.endereco?.bairro || "",
+    cidade: dados?.endereco?.cidade || "",
+    cep: dados?.endereco?.cep || "",
   }
 })
 
   useEffect(() =>{
     setFormData({
-      nome: dados?.nome || "Maria de Oliveira Santos",
-      // parentesco: dados?.parentesco || "Mãe",
-      telefone: dados?.telefone || "(11) 98765-4321",
-      email: dados?.email || "maria.santos@email.com",
+      nome: dados?.nome || "",
+      parentesco: dados?.parentesco || "",
+      telefone: dados?.telefone || "",
+      email: dados?.email || "",
     endereco: {
-      rua: dados?.logradouro || "Rua das Flores, 123 - Apto 45",
-      bairro: dados?.bairro || "Jardim Paulista",
-      cidade: dados?.cidade || "São Paulo",
-      cep: dados?.cep || "01234-567",
+      rua: dados?.endereco?.logradouro || "",
+      numero: dados?.endereco?.numero || "",
+      complemento: dados?.endereco?.complemento || "",
+      bairro: dados?.endereco?.bairro || "",
+      cidade: dados?.endereco?.cidade || "",
+      cep: dados?.endereco?.cep || "",
     }
   })
   }, [dados])
@@ -66,10 +70,7 @@ const [formData, setFormData] = useState({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  responsavelPrincipal: {
-                    ...formData.responsavelPrincipal,
-                    nome: e.target.value,
-                  },
+                  nome: e.target.value,
                 })
               }
               className={inputClassName}
@@ -83,10 +84,7 @@ const [formData, setFormData] = useState({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  responsavelPrincipal: {
-                    ...formData.responsavelPrincipal,
-                    parentesco: e.target.value,
-                  },
+                  parentesco: e.target.value,
                 })
               }
               className={inputClassName}
@@ -103,10 +101,7 @@ const [formData, setFormData] = useState({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  responsavelPrincipal: {
-                    ...formData.responsavelPrincipal,
-                    telefone: e.target.value,
-                  },
+                  telefone: e.target.value,
                 })
               }
               className={inputClassName}
@@ -120,10 +115,7 @@ const [formData, setFormData] = useState({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  responsavelPrincipal: {
-                    ...formData.responsavelPrincipal,
-                    email: e.target.value,
-                  },
+                  email: e.target.value,
                 })
               }
               className={inputClassName}
@@ -148,6 +140,37 @@ const [formData, setFormData] = useState({
             }
             className={inputClassName}
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <label className={labelClassName}>Número:</label>
+            <input
+              type="text"
+              value={formData.endereco.numero}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  endereco: { ...formData.endereco, numero: e.target.value },
+                })
+              }
+              className={inputClassName}
+            />
+          </div>
+          <div>
+            <label className={labelClassName}>Complemento:</label>
+            <input
+              type="text"
+              value={formData.endereco.complemento}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  endereco: { ...formData.endereco, complemento: e.target.value },
+                })
+              }
+              className={inputClassName}
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4 mb-4">
