@@ -29,9 +29,15 @@ function getEventStyle(horarioInicio, horarioFim) {
   return { top, height };
 }
 
+const toLocalDateKey = (date) => {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
 export const WeekView = ({ currentDate, events, onAddEvent, onEventClick }) => {
   const getDaysOfCurrentWeek = (date) => {
     const startOfWeek = new Date(date);
+    startOfWeek.setHours(12, 0, 0, 0);
     startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(startOfWeek);
@@ -82,7 +88,7 @@ export const WeekView = ({ currentDate, events, onAddEvent, onEventClick }) => {
 
           {/* Colunas dos dias */}
           {weekDays.map((day, dayIndex) => {
-            const dateKey = day.toISOString().split('T')[0];
+            const dateKey = toLocalDateKey(day);
             const dayEvents = events[dateKey] || [];
             const isToday = isSameDate(day, new Date());
 

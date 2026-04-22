@@ -120,31 +120,18 @@ const FilterBar = ({
   const [enviandoNotificacao, setEnviandoNotificacao] = useState(false);
   const [modo, setModo] = useState("profissional");
 
-  const [tempArea, setTempArea] = useState("");
   const [tempProfissional, setTempProfissional] = useState("");
   const [tempPaciente, setTempPaciente] = useState("");
-
-  const profissionaisFiltrados = useMemo(() => {
-    if (!tempArea) return funcionarios;
-    return funcionarios.filter(func => func.especialidade === tempArea);
-  }, [funcionarios, tempArea]);
-
-  const handleAreaChange = (e) => {
-    setTempArea(e.target.value);
-    setTempProfissional("");
-  };
 
   const handleModoChange = (novoModo) => {
     setModo(novoModo);
     setTempProfissional("");
     setTempPaciente("");
-    setTempArea("");
   };
 
   const handleApplyClick = () => {
     onApplyFilters({
       modo,
-      area: tempArea,
       profissional: tempProfissional,
       paciente: tempPaciente,
     });
@@ -242,25 +229,10 @@ return (
           />
         </div>
 
-        {/* Seletor de Área (sempre visível) */}
-        <div className="relative w-full sm:flex-1 sm:min-w-110px">
-          <select value={tempArea} onChange={handleAreaChange} className="w-full appearance-none bg-[#F4F4F5] hover:bg-[#e4e4e7] text-slate-600 px-3 py-2 rounded-xl text-[13px] outline-none cursor-pointer pr-8">
-            <option value="">Área</option>
-            {areas.map((area) => (
-              <option key={area} value={area}>{area}</option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-            </svg>
-          </div>
-        </div>
-
         {/* Input dinâmico: Profissional ou Paciente */}
         {modo === "profissional" ? (
           <AutocompleteInput
-            lista={profissionaisFiltrados}
+            lista={funcionarios}
             valor={tempProfissional}
             onChange={setTempProfissional}
             onQueryChange={(q) => onFuncionarioSearch && onFuncionarioSearch(q)}
