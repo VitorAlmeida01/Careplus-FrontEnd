@@ -1,26 +1,57 @@
 import React, { useEffect, useState } from "react"
 import ModalBase from "./ModalBase"
+import { atualizarFichaClinica } from "@/src/service/fichaClinica/fichaClinica.service"
 
-export default function EditarFichaClinicaModal({ isOpen, onClose, dados }) {
+export default function EditarFichaClinicaModal({
+  isOpen,
+  onClose,
+  dados,
+  onSaved,
+}) {
   const [formData, setFormData] = useState({})
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() =>{
       setFormData({
-    nome: dados?.nome || "",
-    idade: dados?.idade || "",
+    idFicha: dados?.idFicha,
+    idPaciente: dados?.idPaciente,
+    convenio: dados?.convenio || "",
+    hiperfoco: dados?.hiperfoco || "",
+    desfraldado: dados?.desfraldado ?? false,
+    atendimentoEspecial: dados?.atendimentoEspecial ?? "",
+    resumoClinico: dados?.resumoClinico || "",
     anamnese: dados?.anamnese || "",
     diagnostico: dados?.diagnostico || "",
-    planoTerapeutico: dados?.planoTerapeutico || "",
+    nivelAgressividade: dados?.nivelAgressividade ?? 0,
   })
-
-  console.log(formData)
     }, [dados])
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("Ficha clínica atualizada:", formData)
-    onClose()
+
+    try {
+      setIsSaving(true)
+      await atualizarFichaClinica(formData.idFicha, {
+        idPaciente: formData.idPaciente,
+        desfraldado: Boolean(formData.desfraldado),
+        hiperfoco: formData.hiperfoco,
+        anamnese: formData.anamnese,
+        diagnostico: formData.diagnostico,
+        resumoClinico: formData.resumoClinico,
+        nivelAgressividade: Number(formData.nivelAgressividade || 0),
+      })
+
+      if (onSaved) {
+        await onSaved()
+      }
+
+      onClose()
+    } catch (error) {
+      console.error("Erro ao atualizar ficha clínica:", error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const inputClassName =
@@ -41,13 +72,8 @@ export default function EditarFichaClinicaModal({ isOpen, onClose, dados }) {
     >
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className={labelClassName}>Nome:</label>
-          <p className={inputClassName}>{formData.nome}</p>
-        </div>
-
-        <div className="mb-4">
-          <label className={labelClassName}>Idade:</label>
-          <p className={inputClassName}>{formData.idade}</p>
+          <label className={labelClassName}>Convênio:</label>
+          <p className={inputClassName}>{formData.convenio || "-"}</p>
         </div>
 
         <div className="mb-4">
@@ -77,15 +103,65 @@ export default function EditarFichaClinicaModal({ isOpen, onClose, dados }) {
         </div>
 
         <div className="mb-4">
-          <label className={labelClassName}>Plano Terapêutico:</label>
-          <textarea
-            value={formData.planoTerapeutico}
+          <label className={labelClassName}>Hiperfoco:</label>
+          <input
+            type="text"
+            value={formData.hiperfoco}
             onChange={(e) =>
-              setFormData({ ...formData, planoTerapeutico: e.target.value })
+              setFormData({ ...formData, hiperfoco: e.target.value })
+            }
+            className={inputClassName}
+            placeholder="Ex: Brinquedos"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className={labelClassName}>Desfraldada:</label>
+          <select
+            value={String(formData.desfraldado)}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                desfraldado: e.target.value === "true",
+              })
+            }
+            className={inputClassName}
+          >
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label className={labelClassName}>Atendimento Especial:</label>
+          <input
+            type="number"
+            value={formData.nivelAgressividade}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                nivelAgressividade: e.target.value,
+                atendimentoEspecial: e.target.value,
+              })
+            }
+            className={inputClassName}
+            min="0"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className={labelClassName}>Observações Comportamentais:</label>
+          <textarea
+            value={formData.resumoClinico}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                resumoClinico: e.target.value,
+              })
             }
             className={textareaClassName}
-            rows="3"
-            placeholder="Descreva o plano terapêutico"
+            rows="4"
+            placeholder="Descreva as observações comportamentais"
           />
         </div>
 
@@ -100,9 +176,10 @@ export default function EditarFichaClinicaModal({ isOpen, onClose, dados }) {
           </button>
           <button
             type="submit"
+            disabled={isSaving}
             className="flex-1 p-3 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
           >
-            Salvar
+            {isSaving ? "Salvando..." : "Salvar"}
           </button>
         </div>
       </form>
