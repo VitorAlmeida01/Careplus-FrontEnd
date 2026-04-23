@@ -6,6 +6,7 @@ import FilterBar from '../../components/agendamento/filterBar/FilterBar';
 import {listarFuncionariosConsulta} from '@/src/service/agendamento/agendamento.service'
 import { buscarPacientes } from '@/src/service/pacientes/pacientes.service'
 import { buscarFuncionarios } from '@/src/service/funcionarios/funcionarios.service'
+import useDebouncedValue from '@/src/service/searchEngine/useDebounceValue'
 
 
 function App() {
@@ -15,6 +16,11 @@ function App() {
   const [funcionarios, setFuncionarios] = useState([]);
   const [funcionariosBusca, setFuncionariosBusca] = useState([]);
   const [pacientes, setPacientes] = useState([]);
+
+  const [queryFuncionario, setQueryFuncionario] = useState('');
+  const [queryPaciente, setQueryPaciente] = useState('');
+  const debouncedQueryFuncionario = useDebouncedValue(queryFuncionario, 300);
+  const debouncedQueryPaciente = useDebouncedValue(queryPaciente, 300);
 
   const [appliedFilters, setAppliedFilters] = useState({
     area: '',
@@ -36,28 +42,36 @@ function App() {
   }, []);
 
   const handleFuncionarioSearch = (query) => {
-    if (!query || query.length < 2) {
+    setQueryFuncionario(query);
+  };
+
+  useEffect(() => {
+    if (!debouncedQueryFuncionario || debouncedQueryFuncionario.length < 2) {
       setFuncionariosBusca([]);
       return;
     }
-    buscarFuncionarios(query).then((data) => {
+    buscarFuncionarios(debouncedQueryFuncionario).then((data) => {
       setFuncionariosBusca(Array.isArray(data) ? data : []);
     }).catch(error => {
       console.error('Erro ao buscar funcionários:', error);
     });
-  };
+  }, [debouncedQueryFuncionario]);
 
   const handlePacienteSearch = (query) => {
-    if (!query || query.length < 2) {
+    setQueryPaciente(query);
+  };
+
+  useEffect(() => {
+    if (!debouncedQueryPaciente || debouncedQueryPaciente.length < 2) {
       setPacientes([]);
       return;
     }
-    buscarPacientes(query).then((data) => {
+    buscarPacientes(debouncedQueryPaciente).then((data) => {
       setPacientes(Array.isArray(data) ? data : []);
     }).catch(error => {
       console.error('Erro ao buscar pacientes:', error);
     });
-  };
+  }, [debouncedQueryPaciente]);
 
   const handleFilterDateChange = (dateString) => {
     if (!dateString) return;
