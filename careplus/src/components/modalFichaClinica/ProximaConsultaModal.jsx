@@ -94,13 +94,6 @@ export default function ProximaConsultaModal({
           </div>
         </div>
 
-        <div className="bg-gray-50 rounded-xl p-4 mb-6">
-          <p className="text-sm text-gray-600 mb-1">Tratamento</p>
-          <p className="text-base font-semibold text-gray-800">
-            {proximaConsulta?.tratamento || "-"}
-          </p>
-        </div>
-
         {/* Botões */}
         <div className="flex gap-3 mt-6">
           <button

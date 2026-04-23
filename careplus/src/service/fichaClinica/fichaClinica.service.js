@@ -2,7 +2,7 @@ import { api } from "../api"
 
 async function fichaClinicaPorPaciente(idPaciente) {
   try {
-    const response = await api.get("/detalhes-pacientes/detalhes-completos", {
+    const response = await api.get("/detalhes-pacientes/detalhes-completo", {
       params: {
         idPaciente,
       },
