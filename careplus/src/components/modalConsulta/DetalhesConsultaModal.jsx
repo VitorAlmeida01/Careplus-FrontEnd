@@ -4,7 +4,7 @@ import './ConsultaModal.css'
 
 Modal.setAppElement('#root')
 
-const DIAS = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira']
+const DIAS = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
 const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
 
 function formatarData(dateStr) {
@@ -22,15 +22,28 @@ function formatarHorario(inicio, fim) {
   return '—'
 }
 
-export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
-  const pacienteNome = consulta?.paciente?.nome ?? '—'
+export default function DetalhesConsultaModal({
+  isOpen,
+  onClose,
+  consulta,
+  mostrarObservacoesNoLugarProfissional = false,
+}) {
+  const pacienteNome = consulta?.dadosPaciente?.nome ?? consulta?.paciente?.nome ?? '—'
   const funcionarios = (() => {
     if (consulta?.funcionarios?.length) return consulta.funcionarios
     if (consulta?.consultaFuncionarios?.length)
       return consulta.consultaFuncionarios.map(cf => cf.funcionario ?? cf)
     if (consulta?.funcionario) return [consulta.funcionario]
+    if (consulta?.nomeProfissional)
+      return [{ nome: consulta.nomeProfissional, cargo: consulta?.cargo }]
     return []
   })()
+  const observacoesComportamentais =
+    consulta?.observacoesComportamentais ??
+    consulta?.dadosPaciente?.observacoesComportamentais ??
+    consulta?.fichaClinica?.observacoesComportamentais ??
+    consulta?.observacoes ??
+    '—'
   const tipo = consulta?.tipo
 
   return (
@@ -42,7 +55,7 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
       contentLabel="Detalhes da Consulta"
     >
       {consulta && (
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+      <div className="w-full max-w-md min-h-[640px] max-h-[88vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
@@ -62,7 +75,7 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-4">
+        <div className="px-6 py-5 space-y-4 flex-1 overflow-y-auto">
 
           {/* Status badge */}
           <div className="flex items-center gap-2">
@@ -108,36 +121,51 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta }) {
             </div>
           </div>
 
-          {/* Profissionais */}
-          <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
-            <div className="flex items-center gap-1.5 mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-              </svg>
-              <p className="text-[11px] text-slate-400 font-medium">
-                {funcionarios.length > 1 ? 'Profissionais' : 'Profissional'}
-              </p>
-            </div>
-            {funcionarios.length === 0 ? (
-              <p className="text-[13px] text-slate-500">—</p>
-            ) : (
-              <div className="flex flex-col gap-1.5">
-                {funcionarios.map((f, i) => (
-                  <div key={f.id ?? i} className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
-                      {f.nome?.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-[13px] font-semibold text-slate-800 leading-tight">{f.nome}</p>
-                      <p className="text-[11px] text-slate-400 leading-tight">
-                        {[f.cargo, f.especialidade].filter(Boolean).join(' · ')}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+          {mostrarObservacoesNoLugarProfissional ? (
+            <>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 min-h-[210px] flex flex-col">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3h6m-6 3h9m3-10.5A2.25 2.25 0 0018.75 1.5h-13.5A2.25 2.25 0 003 3.75v16.5A2.25 2.25 0 005.25 22.5h13.5A2.25 2.25 0 0021 20.25V3.75z" />
+                  </svg>
+                  <p className="text-[11px] text-slate-400 font-medium">Observações Comportamentais</p>
+                </div>
+                <p className="text-[13px] text-slate-700 whitespace-pre-line break-words flex-1 overflow-y-auto pr-1">
+                  {observacoesComportamentais}
+                </p>
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <div className="flex items-center gap-1.5 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#64748b" className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                </svg>
+                <p className="text-[11px] text-slate-400 font-medium">
+                  {funcionarios.length > 1 ? 'Profissionais' : 'Profissional'}
+                </p>
+              </div>
+              {funcionarios.length === 0 ? (
+                <p className="text-[13px] text-slate-500">—</p>
+              ) : (
+                <div className="flex flex-col gap-1.5">
+                  {funcionarios.map((f, i) => (
+                    <div key={f.id ?? i} className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+                        {f.nome?.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-semibold text-slate-800 leading-tight">{f.nome}</p>
+                        <p className="text-[11px] text-slate-400 leading-tight">
+                          {[f.cargo].filter(Boolean).join(' · ')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Footer */}

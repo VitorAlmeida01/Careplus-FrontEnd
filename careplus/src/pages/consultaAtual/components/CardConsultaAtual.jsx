@@ -5,8 +5,7 @@ export default function CardConsultaAtual({
   horario,
   tipo,
   especialidade,
-  profissional,
-  tratamentoAtual
+  profissional
 }) {
   return (
     <div className="flex w-full items-center justify-center bg-white rounded-[10px] sm:w-[50vw]">
@@ -27,7 +26,7 @@ export default function CardConsultaAtual({
 
         <LinhaInformacao tipo1="Data" dado1={data} tipo2="Horário" dado2={horario} />
         <LinhaInformacao tipo1="Tipo" dado1={tipo} tipo2="Especialidade" dado2={especialidade} />
-        <LinhaInformacao tipo1="Profissional" dado1={profissional} tipo2="Tratamento atual" dado2={tratamentoAtual} />
+        <LinhaInformacao tipo1="Profissional" dado1={profissional} tipo2="" dado2="" />
 
 
         <div className="mt-[10px]">

@@ -9,6 +9,7 @@ import { listarPacitentes } from "../../service/pacientes/pacientes.service"
 import { toast } from 'react-toastify'
 import { PaginacaoPacientes } from "@/src/components/Paginacao/PaginacaoPacientes"
 import Loading from "../../components/loading/Loading"
+import { getFuncionarioId } from "../../service/login/jwtDecoder"
 
 
 
@@ -18,19 +19,20 @@ export default function Pacientes() {
   const [pacientes, setPacientes] = useState([])
   const [page, setPage] = useState(0)
   const [loading, setLoading] = useState(true)
+  const idFuncionario = getFuncionarioId()
 
   const recarregarPacientes = useCallback(() => {
     setLoading(true)
-    listarPacitentes(page).then((response) =>{
+    listarPacitentes(page, idFuncionario).then((response) =>{
       const resposta = response.content
       setPacientes(resposta)
     }).catch((error=>{
       console.error(error)
-      toast.error('Não foi possível listar os pacientes')
+      toast.error(error.message || 'Não foi possível listar os pacientes')
     })).finally(() => {
       setLoading(false)
     })
-  }, [page])
+  }, [page, idFuncionario])
 
   useEffect(() =>{
     recarregarPacientes()

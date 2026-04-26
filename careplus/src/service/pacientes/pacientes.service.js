@@ -1,8 +1,18 @@
 import { api } from "../api";
+import { getFuncionarioId } from "../login/jwtDecoder";
 
-export async function listarPacitentes(pagina) {
+export async function listarPacitentes(pagina, idFuncionario = getFuncionarioId()) {
     try{
-        const response = await api.get(`/pacientes/todos-pacientes?pagina=${pagina}`)
+        if (!Number.isFinite(Number(idFuncionario))) {
+            throw new Error("Id do funcionário não encontrado na sessão")
+        }
+
+        const response = await api.get("/pacientes/todos-pacientes-funcionario", {
+            params: {
+                pagina,
+                idFuncionario,
+            },
+        })
 
         if(response.status === 200){
             const dados = response.data

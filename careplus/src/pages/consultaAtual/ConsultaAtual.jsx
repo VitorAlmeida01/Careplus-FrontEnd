@@ -73,7 +73,6 @@ export default function ConsultaAtual() {
           tipo={detalhesConsulta?.tipo || "-"}
           especialidade={detalhesConsulta?.especialidade || "-"}
           profissional={detalhesConsulta?.nomeProfissional || "-"}
-          tratamentoAtual={detalhesConsulta?.tratamentoAtual || "-"}
         />
 
         <ColunaDireita

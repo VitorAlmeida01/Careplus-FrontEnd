@@ -22,3 +22,41 @@ export function getUserRoles() {
   const payload = getTokenData();
   return payload?.roles || [];
 }
+
+export function getFuncionarioId() {
+  const payload = getTokenData();
+  if (!payload) return null;
+
+  const chavesPreferenciais = [
+    "idFuncionario",
+    "funcionarioId",
+    "idfuncionario",
+    "id_usuario",
+    "idUsuario",
+    "usuarioId",
+    "id",
+    "sub",
+  ];
+
+  for (const chave of chavesPreferenciais) {
+    const valor = payload[chave];
+    const idConvertido = Number(valor);
+
+    if (Number.isFinite(idConvertido)) {
+      return idConvertido;
+    }
+  }
+
+  const chavesComId = Object.keys(payload).filter((chave) => /id/i.test(chave));
+
+  for (const chave of chavesComId) {
+    const valor = payload[chave];
+    const idConvertido = Number(valor);
+
+    if (Number.isFinite(idConvertido)) {
+      return idConvertido;
+    }
+  }
+
+  return null;
+}

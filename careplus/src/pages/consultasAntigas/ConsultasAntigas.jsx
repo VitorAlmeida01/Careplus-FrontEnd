@@ -1,81 +1,138 @@
 import { ChevronLeft } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
 import Layout from "../../components/layout/Layout"
 import ConsultaAntiga from "../../components/ConsultaAntigaComponent/ConsultaAntiga"
 import DetalhesConsultaModal from "../../components/modalConsulta/DetalhesConsultaModal"
+import {
+  detalhesConsultaPorId,
+  ultimasConsultasPorPacienteFuncionario,
+} from "../../service/fichaClinica/fichaClinica.service"
+import { getFuncionarioId } from "../../service/login/jwtDecoder"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 export default function ConsultasAntigas() {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const idPaciente = Number(searchParams.get("idPaciente"))
+  const paginaInicial = Number(searchParams.get("pagina"))
+
+  const [page, setPage] = useState(
+    Number.isFinite(paginaInicial) && paginaInicial >= 0 ? paginaInicial : 0,
+  )
+  const idFuncionario = getFuncionarioId()
+
+  const [consultas, setConsultas] = useState([])
+  const [totalPaginas, setTotalPaginas] = useState(0)
+
   const [modalAberto, setModalAberto] = useState(false)
   const [consultaSelecionada, setConsultaSelecionada] = useState(null)
 
-  const consultas = [
-    {
-      id: 1,
-      titulo: "Retorno - Fonoaudiologia",
-      data: "02/09/2025",
-      horario: "16:00 - 17:00",
-      profissional: "Marcos Ribeiro",
-      tratamento: "Fonoaudiologia",
-      especialidade: "Fonoaudiologia",
-      tipo: "Retorno",
-      materiais: "Brinquedos de encaixe, Livro de histórias",
-      observacoes: "Mostrou-se colaborativo com as atividades propostas. Buscou contato visual.\n\nSolicitou o fone abafador quando um barulho alto ocorreu no corredor. Comunicou suas vontades através de frases curtas."
-    },
-    {
-      id: 2,
-      titulo: "Retorno - Fonoaudiologia",
-      data: "29/08/2025",
-      horario: "15:00 - 16:00",
-      profissional: "Marcos Ribeiro",
-      tratamento: "Fonoaudiologia",
-      especialidade: "Fonoaudiologia",
-      tipo: "Retorno",
-      materiais: "Cartões com imagens, Espelho",
-      observacoes: "Participou ativamente dos exercícios articulatórios. Demonstrou boa evolução na pronúncia dos fonemas trabalhados."
-    },
-    {
-      id: 3,
-      titulo: "Consulta - Fonoaudiologia",
-      data: "19/08/2025",
-      horario: "16:00 - 17:00",
-      profissional: "Marcos Ribeiro",
-      tratamento: "Fonoaudiologia",
-      especialidade: "Fonoaudiologia",
-      tipo: "Consulta",
-      materiais: "Jogos educativos, Material de apoio visual",
-      observacoes: "Manteve-se concentrado durante toda a sessão. Apresentou dificuldade inicial, mas superou com incentivo."
-    },
-    {
-      id: 4,
-      titulo: "Avaliação - Fonoaudiologia",
-      data: "12/08/2025",
-      horario: "14:30 - 15:30",
-      profissional: "Marcos Ribeiro",
-      tratamento: "Fonoaudiologia",
-      especialidade: "Fonoaudiologia",
-      tipo: "Avaliação",
-      materiais: "Protocolos de avaliação, Materiais diversos",
-      observacoes: "Avaliação inicial realizada. Identificadas áreas de desenvolvimento prioritárias para o tratamento."
-    },
-    {
-      id: 5,
-      titulo: "Triagem - Fonoaudiologia",
-      data: "05/08/2025",
-      horario: "16:00 - 17:00",
-      profissional: "Marcos Ribeiro",
-      tratamento: "Fonoaudiologia",
-      especialidade: "Fonoaudiologia",
-      tipo: "Triagem",
-      materiais: "Questionário de triagem",
-      observacoes: "Primeiro contato. Paciente mostrou-se tímido, mas receptivo. Pais colaborativos durante a anamnese."
-    },
-  ]
+  useEffect(() => {
+    if (!Number.isFinite(idPaciente) || !Number.isFinite(idFuncionario)) {
+      setConsultas([])
+      setTotalPaginas(0)
+      return
+    }
 
-  const abrirDetalhes = (consulta) => {
+    ultimasConsultasPorPacienteFuncionario({
+      idPaciente,
+      pagina: page,
+      idFuncionario,
+    })
+      .then((response) => {
+        setConsultas(response?.content || [])
+        setTotalPaginas(response?.totalPages || 0)
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar últimas consultas:", error)
+        setConsultas([])
+        setTotalPaginas(0)
+      })
+  }, [idPaciente, idFuncionario, page])
+
+  const paginasAtuais = useMemo(() => {
+    return [page - 1, page, page + 1].filter(
+      (pagina) => pagina >= 0 && pagina < totalPaginas,
+    )
+  }, [page, totalPaginas])
+
+  const formatarData = (valor) => {
+    if (!valor) return "-"
+
+    const dataTexto = String(valor)
+    const dataBase = dataTexto.includes("T") ? dataTexto.split("T")[0] : dataTexto
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dataBase)) {
+      const [ano, mes, dia] = dataBase.split("-")
+      return `${dia}/${mes}/${ano}`
+    }
+
+    const data = new Date(dataTexto)
+    if (Number.isNaN(data.getTime())) return "-"
+
+    return data.toLocaleDateString("pt-BR")
+  }
+
+  const formatarHorario = (inicio, fim) => {
+    const horarioInicio = inicio ? String(inicio).slice(0, 5) : "-"
+    const horarioFim = fim ? String(fim).slice(0, 5) : "-"
+    return `${horarioInicio} - ${horarioFim}`
+  }
+
+  const formatarEspecialidades = (consulta) => {
+    const especialidades = Array.from(
+      new Set((consulta?.funcionarios || []).map((f) => f?.especialidade).filter(Boolean)),
+    )
+
+    if (especialidades.length > 0) {
+      return especialidades.join(" · ")
+    }
+
+    return consulta?.especialidade || consulta?.tipo || "Consulta"
+  }
+
+  const mudarPagina = (novaPagina) => {
+    setPage(novaPagina)
+
+    const novosParams = new URLSearchParams(searchParams)
+    novosParams.set("pagina", String(novaPagina))
+
+    if (Number.isFinite(idPaciente)) {
+      novosParams.set("idPaciente", String(idPaciente))
+    }
+
+    setSearchParams(novosParams)
+  }
+
+  const nomePacienteCabecalho =
+    consultas?.[0]?.paciente?.nome ||
+    consultas?.[0]?.dadosPaciente?.nome ||
+    consultas?.[0]?.nomePaciente ||
+    (Number.isFinite(idPaciente) ? `Paciente #${idPaciente}` : "Paciente")
+
+  const abrirDetalhes = async (consulta) => {
     setConsultaSelecionada(consulta)
     setModalAberto(true)
+
+    const idConsulta = consulta?.consultaId || consulta?.id
+    if (!idConsulta) return
+
+    try {
+      const response = await detalhesConsultaPorId(idConsulta)
+      setConsultaSelecionada(response || consulta)
+    } catch (error) {
+      console.error("Erro ao carregar detalhes da consulta:", error)
+    }
   }
 
   const fecharModal = () => {
@@ -96,7 +153,7 @@ export default function ConsultasAntigas() {
             <ChevronLeft size={24} className="text-gray-700" />
           </button>
           <h1 className="text-base md:text-xl font-medium text-gray-900">
-            Últimas Consultas - Gabriel de Oliveira Santos
+            Últimas Consultas - {nomePacienteCabecalho}
           </h1>
         </div>
 
@@ -104,15 +161,69 @@ export default function ConsultasAntigas() {
         <div className="space-y-3 md:space-y-4 mx-auto">
           {consultas.map((consulta) => (
             <ConsultaAntiga
-              key={consulta.id}
-              titulo={consulta.titulo}
-              data={consulta.data}
-              horario={consulta.horario}
-              profissional={consulta.profissional}
-              tratamento={consulta.tratamento}
+              key={consulta.consultaId || consulta.id}
+              titulo={formatarEspecialidades(consulta)}
+              data={formatarData(consulta?.data)}
+              horario={formatarHorario(consulta?.horarioInicio, consulta?.horarioFim)}
+              profissional={
+                consulta?.funcionarios?.[0]?.nome ||
+                consulta?.nomeProfissional ||
+                consulta?.nomeFuncionarioUltimaConsulta ||
+                "-"
+              }
+              tratamento={null}
               onVerDetalhes={() => abrirDetalhes(consulta)}
             />
           ))}
+        </div>
+
+        <div className="mt-6">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href={`?idPaciente=${idPaciente}&pagina=${page - 1}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    if (page > 0) {
+                      mudarPagina(page - 1)
+                    }
+                  }}
+                />
+              </PaginationItem>
+
+              {paginasAtuais.map((pagina, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    href={`?idPaciente=${idPaciente}&pagina=${pagina}`}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      mudarPagina(pagina)
+                    }}
+                    isActive={page === pagina}
+                  >
+                    {pagina + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationNext
+                  href={`?idPaciente=${idPaciente}&pagina=${page + 1}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    if (page < totalPaginas - 1) {
+                      mudarPagina(page + 1)
+                    }
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
 
         {/* Modal de Detalhes */}
@@ -121,6 +232,7 @@ export default function ConsultasAntigas() {
             isOpen={modalAberto}
             onClose={fecharModal}
             consulta={consultaSelecionada}
+            mostrarObservacoesNoLugarProfissional
           />
         )}
       </div>

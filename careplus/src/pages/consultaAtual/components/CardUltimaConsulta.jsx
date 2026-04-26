@@ -1,11 +1,46 @@
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import DetalhesConsultaModal from "../../../components/modalConsulta/DetalhesConsultaModal"
+import { detalhesConsultaPorId } from "@/src/service/fichaClinica/fichaClinica.service"
 
 export default function CardUltimaConsulta({
+  consultaId,
   data,
-  tratamento
+  nomeFuncionario
 }) {
   const [modalAberto, setModalAberto] = useState(false)
+  const [consultaDetalhes, setConsultaDetalhes] = useState(null)
+
+  const consultaFallback = useMemo(() => ({
+    data: data,
+    horarioInicio: null,
+    horarioFim: null,
+    tipo: 'Retorno',
+    nomeProfissional: nomeFuncionario,
+    dadosPaciente: null,
+  }), [data, nomeFuncionario])
+
+  useEffect(() => {
+    if (!modalAberto || !consultaId) return
+
+    let cancelado = false
+
+    detalhesConsultaPorId(consultaId)
+      .then((response) => {
+        if (!cancelado) {
+          setConsultaDetalhes(response || null)
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar detalhes da última consulta:", error)
+        if (!cancelado) {
+          setConsultaDetalhes(null)
+        }
+      })
+
+    return () => {
+      cancelado = true
+    }
+  }, [modalAberto, consultaId])
 
   const abrirModal = () => {
     setModalAberto(true)
@@ -13,17 +48,6 @@ export default function CardUltimaConsulta({
 
   const fecharModal = () => {
     setModalAberto(false)
-  }
-
-  const consultaData = {
-    data: data,
-    tratamento: tratamento,
-    horario: '14:00 - 15:00',
-    especialidade: tratamento,
-    profissional: 'Dra. Mariana Costa Silva',
-    tipo: 'Retorno',
-    materiais: 'Brinquedos de encaixe, Livro de histórias, Cartões ilustrativos, Material sensorial',
-    observacoes: 'Paciente demonstrou boa evolução desde a última sessão. Manteve-se concentrado durante as atividades propostas e mostrou-se colaborativo.\n\nConseguiu realizar os exercícios com maior autonomia, necessitando menos intervenções diretas. Respondeu bem aos estímulos visuais.\n\nRecomenda-se continuidade do tratamento com as mesmas estratégias, incrementando gradualmente o nível de complexidade das atividades.'
   }
 
   return (
@@ -51,8 +75,8 @@ export default function CardUltimaConsulta({
           <span className="text-sm text-[#333] font-normal">{data}</span>
         </div>
         <div className="flex-1 flex flex-col gap-[5px]">
-          <span className="text-[13px] text-[#666] font-medium">Tratamento:</span>
-          <span className="text-sm text-[#333] font-normal">{tratamento}</span>
+          <span className="text-[13px] text-[#666] font-medium">Funcionário:</span>
+          <span className="text-sm text-[#333] font-normal">{nomeFuncionario}</span>
         </div>
       </div>
     </div>
@@ -60,7 +84,8 @@ export default function CardUltimaConsulta({
       <DetalhesConsultaModal
         isOpen={modalAberto}
         onClose={fecharModal}
-        consulta={consultaData}
+        consulta={consultaDetalhes || consultaFallback}
+        mostrarObservacoesNoLugarProfissional
       />
     </>
   )

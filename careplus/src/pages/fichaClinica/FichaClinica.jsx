@@ -158,7 +158,15 @@ export default function FichaClinica() {
   const formatarData = (valor) => {
     if (!valor) return "-"
 
-    const data = new Date(valor)
+    const dataTexto = String(valor)
+    const dataBase = dataTexto.includes("T") ? dataTexto.split("T")[0] : dataTexto
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dataBase)) {
+      const [ano, mes, dia] = dataBase.split("-")
+      return `${dia}/${mes}/${ano}`
+    }
+
+    const data = new Date(dataTexto)
     if (Number.isNaN(data.getTime())) return "-"
 
     return data.toLocaleDateString("pt-BR")
@@ -300,7 +308,9 @@ export default function FichaClinica() {
                     <h2>Última consulta</h2>
                     <BotaoLayout
                       nome="Visualizar"
-                      onClick={() => navigate("/pacientes/consultas-antigas")}
+                      onClick={() =>
+                        navigate(`/pacientes/consultas-antigas?idPaciente=${idPaciente}&pagina=0`)
+                      }
                     />
                   </section>
                 </CardFichaClinica.Header>

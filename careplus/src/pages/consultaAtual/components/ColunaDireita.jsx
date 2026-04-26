@@ -44,8 +44,13 @@ export default function ColunaDireita({ dadosPaciente, ultimaConsulta }) {
       />
 
       <CardUltimaConsulta
+       consultaId={ultimaConsulta?.consultaId}
        data={formatarData(ultimaConsulta?.data)}
-       tratamento={ultimaConsulta?.tratamento || "-"}
+        nomeFuncionario={
+          ultimaConsulta?.nomeFuncionarioUltimaConsulta ||
+          ultimaConsulta?.nomeFuncionario ||
+          "-"
+        }
       />
 
       <CardReforcadores />

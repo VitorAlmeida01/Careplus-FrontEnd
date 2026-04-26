@@ -8,20 +8,24 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination"
 import { listarPacitentes } from "@/src/service/pacientes/pacientes.service"
+import { getFuncionarioId } from "@/src/service/login/jwtDecoder"
 
 import { useEffect, useState, useMemo } from "react"
 
 export function PaginacaoPacientes({ page, setPage }) {
 
     const [totalPaginas, setTotalPaginas] = useState(0)
+    const idFuncionario = getFuncionarioId()
     
     const paginasAtuais = useMemo(() => {
         return [page - 1, page, page + 1].filter(p => p >= 0 && p < totalPaginas)
     }, [page, totalPaginas])
 
     async function getPaginas(pagina) {
-        listarPacitentes(pagina).then((response) => {
+        listarPacitentes(pagina, idFuncionario).then((response) => {
             setTotalPaginas(response.totalPages)
+        }).catch(() => {
+            setTotalPaginas(0)
         })
     }
 
