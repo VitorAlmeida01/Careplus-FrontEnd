@@ -13,6 +13,15 @@ export async function listarPacitentes(pagina) {
     }
 }
 
+export async function listarPacientesInativos(pagina) {
+    try {
+        const response = await api.get(`/pacientes/inativos?pagina=${pagina}`)
+        if (response.status === 200) return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export async function listarPacitentesPorNome(nome) {
     try{
         const response = await api.get(`/pacientes/por-nome?nome=${nome}`)
@@ -24,6 +33,16 @@ export async function listarPacitentesPorNome(nome) {
     }catch(error){
         console.log(error)
     }
+}
+
+export async function deletarPaciente(id) {
+    const response = await api.delete(`/pacientes?id=${id}`)
+    return response.data
+}
+
+export async function reativarPaciente(id) {
+    const response = await api.patch(`/pacientes/reativar?id=${id}`)
+    return response.data
 }
 
 export async function buscarPacientes(query) {

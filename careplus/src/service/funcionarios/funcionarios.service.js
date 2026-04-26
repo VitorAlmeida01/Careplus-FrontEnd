@@ -13,6 +13,15 @@ async function listarFuncionarios(pagina){
     }
 }
 
+export async function listarFuncionariosInativos(pagina) {
+    try {
+        const response = await api.get(`/funcionarios/inativos?pagina=${pagina}`)
+        if (response.status === 200) return response.data
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 
 export { listarFuncionarios}
 
@@ -37,6 +46,16 @@ export async function cadastrarFuncionario(formData) {
     const response = await api.post("/funcionarios", formData, {
         headers: { "Content-Type": "multipart/form-data" }
     })
+    return response.data
+}
+
+export async function deletarFuncionario(id) {
+    const response = await api.delete(`/funcionarios?id=${id}`)
+    return response.data
+}
+
+export async function reativarFuncionario(id) {
+    const response = await api.patch(`/funcionarios/reativar?id=${id}`)
     return response.data
 }
 

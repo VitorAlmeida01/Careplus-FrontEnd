@@ -1,24 +1,27 @@
 import {
-  Pencil,
   Trash2,
   User,
   FileText,
   UserCheck,
   Calendar,
   Phone,
-  Eye
+  Eye,
+  RotateCcw
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
-
+import { deletarPaciente, reativarPaciente } from "../../service/pacientes/pacientes.service"
+import { toast } from "react-toastify"
 import { useEffect, useState } from "react"
 
-export default function TabelaPaciente({pacientes}) {
+export default function TabelaPaciente({ pacientes, mostrandoInativos = false }) {
   const navigate = useNavigate()
 
   const [pacientesData, setPacientesData] = useState(pacientes)
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false)
   const [pacienteParaExcluir, setPacienteParaExcluir] = useState(null)
+  const [modalReativacaoAberto, setModalReativacaoAberto] = useState(false)
+  const [pacienteParaReativar, setPacienteParaReativar] = useState(null)
 
   useEffect(() => {
     setPacientesData(pacientes)
@@ -29,16 +32,37 @@ export default function TabelaPaciente({pacientes}) {
     setModalExclusaoAberto(true)
   }
 
-  const confirmarExclusao = () => {
-    console.log("Paciente excluído:", pacienteParaExcluir)
-    // Aqui você pode fazer a chamada à API para excluir o paciente
-    // Exemplo: api.delete(`/pacientes/${pacienteParaExcluir.id}`)
-    setPacienteParaExcluir(null)
+  const confirmarExclusao = async () => {
+    try {
+      await deletarPaciente(pacienteParaExcluir.id)
+      setPacientesData(prev => prev.filter(p => p.id !== pacienteParaExcluir.id))
+      toast.success(`Paciente ${pacienteParaExcluir.nome} inativado com sucesso`)
+    } catch (error) {
+      toast.error('Não foi possível inativar o paciente')
+    } finally {
+      setPacienteParaExcluir(null)
+    }
+  }
+
+  const abrirModalReativacao = (paciente) => {
+    setPacienteParaReativar(paciente)
+    setModalReativacaoAberto(true)
+  }
+
+  const confirmarReativacao = async () => {
+    try {
+      await reativarPaciente(pacienteParaReativar.id)
+      setPacientesData(prev => prev.filter(p => p.id !== pacienteParaReativar.id))
+      toast.success(`Paciente ${pacienteParaReativar.nome} reativado com sucesso`)
+    } catch (error) {
+      toast.error('Não foi possível reativar o paciente')
+    } finally {
+      setPacienteParaReativar(null)
+    }
   }
 
   function fichaClinicaPaciente(id){
     navigate(`/pacientes/ficha-clinica?idPaciente=${id}`)
-    console.log('ID do paciente: ', id)
   }
 
   return (
@@ -101,11 +125,11 @@ export default function TabelaPaciente({pacientes}) {
                   <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500" onClick={() => fichaClinicaPaciente(paciente.id)}>
                     <Eye size={18} />
                   </td>
-                  <td 
-                    className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-red-500"
-                    onClick={() => abrirModalExclusao(paciente)}
+                  <td
+                    className={`p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer ${mostrandoInativos ? 'hover:text-green-500' : 'hover:text-red-500'}`}
+                    onClick={() => mostrandoInativos ? abrirModalReativacao(paciente) : abrirModalExclusao(paciente)}
                   >
-                    <Trash2 size={18} />
+                    {mostrandoInativos ? <RotateCcw size={18} /> : <Trash2 size={18} />}
                   </td>
                 </tr>
               )
@@ -159,20 +183,30 @@ export default function TabelaPaciente({pacientes}) {
 
             {/* Ações */}
             <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
-              <button 
-                onClick={() => navigate(`/pacientes/ficha-clinica`)}
+              <button
+                onClick={() => fichaClinicaPaciente(paciente.id)}
                 className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
               >
-                <Pencil size={16} />
-                <span className="text-sm font-medium">Editar</span>
+                <Eye size={16} />
+                <span className="text-sm font-medium">Ver ficha</span>
               </button>
-              <button 
-                onClick={() => abrirModalExclusao(paciente)}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
-              >
-                <Trash2 size={16} />
-                <span className="text-sm font-medium">Excluir</span>
-              </button>
+              {mostrandoInativos ? (
+                <button
+                  onClick={() => abrirModalReativacao(paciente)}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors"
+                >
+                  <RotateCcw size={16} />
+                  <span className="text-sm font-medium">Reativar</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => abrirModalExclusao(paciente)}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                >
+                  <Trash2 size={16} />
+                  <span className="text-sm font-medium">Excluir</span>
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -183,9 +217,20 @@ export default function TabelaPaciente({pacientes}) {
         isOpen={modalExclusaoAberto}
         onClose={() => setModalExclusaoAberto(false)}
         onConfirm={confirmarExclusao}
-        titulo="Excluir Paciente"
-        mensagem={`Tem certeza que deseja excluir o paciente ${pacienteParaExcluir?.nome}? Esta ação não pode ser desfeita.`}
-        textoBotaoConfirmar="Excluir"
+        titulo="Inativar Paciente"
+        mensagem={`Tem certeza que deseja inativar o paciente ${pacienteParaExcluir?.nome}?`}
+        textoBotaoConfirmar="Inativar"
+        textoBotaoCancelar="Cancelar"
+      />
+
+      {/* Modal de Confirmação de Reativação */}
+      <ConfirmacaoModal
+        isOpen={modalReativacaoAberto}
+        onClose={() => setModalReativacaoAberto(false)}
+        onConfirm={confirmarReativacao}
+        titulo="Reativar Paciente"
+        mensagem={`Deseja reativar o paciente ${pacienteParaReativar?.nome}?`}
+        textoBotaoConfirmar="Reativar"
         textoBotaoCancelar="Cancelar"
       />
     </div>

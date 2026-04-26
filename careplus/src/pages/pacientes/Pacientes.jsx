@@ -5,7 +5,7 @@ import BarraPesquisa from "../../components/barraPesquisa"
 import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
 import CadastroPacienteModal from "../../components/modalCadastro/Pacientes/CadastroPacienteModal"
 import TabelaPaciente from "../../components/tabelaPaciente/TabelaPaciente"
-import { listarPacitentes, buscarPacientes } from "../../service/pacientes/pacientes.service"
+import { listarPacitentes, listarPacientesInativos, buscarPacientes } from "../../service/pacientes/pacientes.service"
 import { toast } from 'react-toastify'
 import { Paginacao } from "@/src/components/Paginacao/Paginacao"
 import Loading from "../../components/loading/Loading"
@@ -19,10 +19,13 @@ export default function Pacientes() {
   const [pacientes, setPacientes] = useState([])
   const [page, setPage] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [apenasAtivos, setApenasAtivos] = useState(true)
 
   const [query, setQuery] = useState('')
   const [sugestoes, setSugestoes] = useState([])
   const debouncedQuery = useDebouncedValue(query, 300)
+
+  const fetchPacientes = apenasAtivos ? listarPacitentes : listarPacientesInativos
 
   useEffect(() => {
     if (!debouncedQuery || debouncedQuery.length < 2) {
@@ -45,22 +48,26 @@ export default function Pacientes() {
 
   const recarregarPacientes = useCallback(() => {
     setLoading(true)
-    listarPacitentes(page).then((response) =>{
-      const resposta = response.content
-      setPacientes(resposta)
-    }).catch((error=>{
+    fetchPacientes(page).then((response) => {
+      setPacientes(response.content)
+    }).catch((error) => {
       console.error(error)
       toast.error('Não foi possível listar os pacientes')
-    })).finally(() => {
+    }).finally(() => {
       setLoading(false)
     })
-  }, [page])
+  }, [fetchPacientes, page])
 
-  useEffect(() =>{
+  useEffect(() => {
     if (!query) recarregarPacientes()
-  }, [page, query, recarregarPacientes])
+  }, [page, query, apenasAtivos, recarregarPacientes])
 
-
+  const handleToggle = (ativo) => {
+    setApenasAtivos(ativo)
+    setPage(0)
+    setQuery('')
+    setSugestoes([])
+  }
 
   return (
     <>
@@ -73,18 +80,41 @@ export default function Pacientes() {
             onSelect={handleSelect}
           />
         </div>
-        <div className="w-[90%] flex my-[1%] mx-[4%] justify-end">
+        <div className="w-[90%] flex my-[1%] mx-[4%] justify-between items-center">
+          <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
+            <button
+              onClick={() => handleToggle(true)}
+              className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                apenasAtivos
+                  ? 'text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              style={apenasAtivos ? { background: 'linear-gradient(135deg, #4fc3f7 0%, #5fcb9f 100%)' } : {}}
+            >
+              Ativos
+            </button>
+            <button
+              onClick={() => handleToggle(false)}
+              className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                !apenasAtivos
+                  ? 'text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              style={!apenasAtivos ? { background: 'linear-gradient(135deg, #4fc3f7 0%, #5fcb9f 100%)' } : {}}
+            >
+              Inativos
+            </button>
+          </div>
           <BotaoCadastro onClick={() => navigate("/pacientes/cadastrar")} name={"Cadastrar"}/>
-
         </div>
 
         {loading ? (
           <Loading message="Carregando pacientes..." />
         ) : (
-          <TabelaPaciente pacientes={pacientes}/>
+          <TabelaPaciente pacientes={pacientes} mostrandoInativos={!apenasAtivos} />
         )}
-        
-        {!query && <Paginacao page={page} setPage={setPage} fetchTotalPages={listarPacitentes} />}
+
+        {!query && <Paginacao page={page} setPage={setPage} fetchTotalPages={fetchPacientes} />}
       </Layout>
       <CadastroPacienteModal
         isOpen={modalAberto}

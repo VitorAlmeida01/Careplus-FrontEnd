@@ -1,14 +1,63 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { ChevronLeft, Upload, X } from "lucide-react"
+import { ChevronLeft, Upload, X, UserCheck } from "lucide-react"
 import Layout from "../../components/layout/Layout"
 import { toast } from "react-toastify"
 import { cadastrarPaciente } from "@/src/service/pacientes/pacientes.service"
+import { buscarResponsaveis } from "@/src/service/resposaveis/responsaveis.service"
+import useDebouncedValue from "@/src/service/searchEngine/useDebounceValue"
+import { FiSearch, FiX } from "react-icons/fi"
 
 export default function CadastroPaciente() {
   const navigate = useNavigate()
   const [fotoPaciente, setFotoPaciente] = useState(null)
   const [previewFoto, setPreviewFoto] = useState(null)
+
+  // Busca de responsável existente
+  const [queryResponsavel, setQueryResponsavel] = useState('')
+  const [sugestoesResponsavel, setSugestoesResponsavel] = useState([])
+  const [responsavelSelecionado, setResponsavelSelecionado] = useState(null)
+  const [buscaAberta, setBuscaAberta] = useState(false)
+  const debouncedQueryResponsavel = useDebouncedValue(queryResponsavel, 300)
+
+  useEffect(() => {
+    if (!debouncedQueryResponsavel || debouncedQueryResponsavel.length < 2) {
+      setSugestoesResponsavel([])
+      return
+    }
+    buscarResponsaveis(debouncedQueryResponsavel).then((data) => {
+      setSugestoesResponsavel(Array.isArray(data) ? data : [])
+    }).catch(console.error)
+  }, [debouncedQueryResponsavel])
+
+  const handleSelecionarResponsavel = (resp) => {
+    setResponsavelSelecionado(resp)
+    setQueryResponsavel('')
+    setSugestoesResponsavel([])
+    setBuscaAberta(false)
+    setFormData(prev => ({
+      ...prev,
+      nomeResponsavel: resp.nome || '',
+      emailResponsavel: resp.email || '',
+      telefoneResponsavel: resp.telefone || '',
+      cpfResponsavel: resp.cpf || '',
+      dtNascimentoResponsavel: resp.dtNascimento || '',
+    }))
+  }
+
+  const handleLimparResponsavel = () => {
+    setResponsavelSelecionado(null)
+    setQueryResponsavel('')
+    setSugestoesResponsavel([])
+    setFormData(prev => ({
+      ...prev,
+      nomeResponsavel: '',
+      emailResponsavel: '',
+      telefoneResponsavel: '',
+      cpfResponsavel: '',
+      dtNascimentoResponsavel: '',
+    }))
+  }
 
   const [formData, setFormData] = useState({
     // Dados do Paciente
@@ -310,7 +359,65 @@ export default function CadastroPaciente() {
             <h2 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">
               Dados do Responsável
             </h2>
-            
+
+            {/* Busca de responsável existente */}
+            {!responsavelSelecionado ? (
+              <div className="mb-5 relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Buscar responsável já cadastrado
+                </label>
+                <div className="relative">
+                  <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input
+                    type="text"
+                    value={queryResponsavel}
+                    onChange={e => { setQueryResponsavel(e.target.value); setBuscaAberta(true) }}
+                    onFocus={() => sugestoesResponsavel.length > 0 && setBuscaAberta(true)}
+                    onBlur={() => setTimeout(() => setBuscaAberta(false), 150)}
+                    placeholder="Pesquise por nome, CPF ou e-mail..."
+                    className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  />
+                  {queryResponsavel && (
+                    <button type="button" onClick={() => { setQueryResponsavel(''); setSugestoesResponsavel([]) }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      <FiX size={15} />
+                    </button>
+                  )}
+                </div>
+                {buscaAberta && sugestoesResponsavel.length > 0 && (
+                  <ul className="absolute z-50 w-full bg-white border border-gray-200 rounded-xl shadow-lg mt-1 max-h-52 overflow-y-auto">
+                    {sugestoesResponsavel.map(resp => (
+                      <li key={resp.id} onMouseDown={() => handleSelecionarResponsavel(resp)}
+                        className="px-4 py-2.5 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-0">
+                        <p className="font-medium text-sm text-gray-800">{resp.nome}</p>
+                        <p className="text-xs text-gray-400">{resp.email} · {resp.cpf}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {buscaAberta && queryResponsavel.length >= 2 && sugestoesResponsavel.length === 0 && (
+                  <div className="absolute z-50 w-full bg-white border border-gray-200 rounded-xl shadow-lg mt-1 px-4 py-3 text-sm text-gray-400">
+                    Nenhum responsável encontrado
+                  </div>
+                )}
+                <p className="text-xs text-gray-400 mt-1">Ou preencha os campos abaixo para cadastrar um novo responsável</p>
+              </div>
+            ) : (
+              <div className="mb-5 flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <UserCheck size={20} className="text-green-600 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-green-800">{responsavelSelecionado.nome}</p>
+                    <p className="text-xs text-green-600">{responsavelSelecionado.email} · {responsavelSelecionado.cpf}</p>
+                  </div>
+                </div>
+                <button type="button" onClick={handleLimparResponsavel}
+                  className="text-xs text-green-700 hover:text-green-900 underline shrink-0 ml-4">
+                  Alterar
+                </button>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -322,7 +429,8 @@ export default function CadastroPaciente() {
                   value={formData.nomeResponsavel}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  readOnly={!!responsavelSelecionado}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${responsavelSelecionado ? 'bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300'}`}
                   placeholder="Digite o nome completo"
                 />
               </div>
@@ -337,7 +445,8 @@ export default function CadastroPaciente() {
                   value={formData.emailResponsavel}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  readOnly={!!responsavelSelecionado}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${responsavelSelecionado ? 'bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300'}`}
                   placeholder="email@exemplo.com"
                 />
               </div>
@@ -352,7 +461,8 @@ export default function CadastroPaciente() {
                   value={formData.telefoneResponsavel}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  readOnly={!!responsavelSelecionado}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${responsavelSelecionado ? 'bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300'}`}
                   placeholder="(00) 00000-0000"
                 />
               </div>
@@ -367,7 +477,8 @@ export default function CadastroPaciente() {
                   value={formData.cpfResponsavel}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  readOnly={!!responsavelSelecionado}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${responsavelSelecionado ? 'bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300'}`}
                   placeholder="000.000.000-00"
                   maxLength="14"
                 />
@@ -383,7 +494,8 @@ export default function CadastroPaciente() {
                   value={formData.dtNascimentoResponsavel}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  readOnly={!!responsavelSelecionado}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${responsavelSelecionado ? 'bg-gray-50 border-gray-200 text-gray-500 cursor-not-allowed' : 'border-gray-300'}`}
                 />
               </div>
 
