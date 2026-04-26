@@ -8,15 +8,18 @@ import {
   Mail,
   MapPin,
   MapPinHouse,
-  SquarePenIcon
+  SquarePenIcon,
+  RotateCcw
 } from "lucide-react"
 import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
 import ModalBase from "../modalFichaClinica/ModalBase"
 import EditarResponsavelModal from "../modalCadastro/Responsaveis/EditarResponsavelModal"
+import { atualizarResponsavel, deletarResponsavel, reativarResponsavel } from "../../service/resposaveis/responsaveis.service"
+import { toast } from "react-toastify"
 
 import { useEffect, useState } from "react"
 
-export default function TabelaResponsavel({ responsaveis }) {
+export default function TabelaResponsavel({ responsaveis, mostrandoInativos = false }) {
   const [responsaveisData, setResponsaveisData] = useState(responsaveis)
   const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false)
   const [modalConfirmacaoEnderecoAberto, setModalConfirmacaoEnderecoAberto] = useState(false)
@@ -35,6 +38,8 @@ export default function TabelaResponsavel({ responsaveis }) {
     cidade: "",
     estado: "",
   })
+  const [modalReativacaoAberto, setModalReativacaoAberto] = useState(false)
+  const [responsavelParaReativar, setResponsavelParaReativar] = useState(null)
 
   useEffect(() => {
     setResponsaveisData(responsaveis)
@@ -43,6 +48,11 @@ export default function TabelaResponsavel({ responsaveis }) {
   const abrirModalExclusao = (responsavel) => {
     setResponsavelParaExcluir(responsavel)
     setModalExclusaoAberto(true)
+  }
+
+  const abrirModalReativacao = (responsavel) => {
+    setResponsavelParaReativar(responsavel)
+    setModalReativacaoAberto(true)
   }
 
   const abrirModalEndereco = (responsavel) => {
@@ -77,7 +87,6 @@ export default function TabelaResponsavel({ responsaveis }) {
           : item,
       ),
     )
-    console.log("Responsavel atualizado:", dadosAtualizados)
   }
 
   const handleChangeEndereco = (e) => {
@@ -88,34 +97,39 @@ export default function TabelaResponsavel({ responsaveis }) {
     }))
   }
 
-  const salvarEndereco = () => {
+  const salvarEndereco = async () => {
     setModalConfirmacaoEnderecoAberto(false)
 
     if (!responsavelEnderecoSelecionado) return
 
-    setResponsaveisData((dadosAnteriores) =>
-      dadosAnteriores.map((item) =>
-        item.id === responsavelEnderecoSelecionado.id
-          ? {
-              ...item,
-              endereco: {
-                ...item.endereco,
-                ...enderecoFormData,
-              },
-            }
-          : item,
-      ),
-    )
+    try {
+      await atualizarResponsavel(responsavelEnderecoSelecionado.id, {
+        nome: responsavelEnderecoSelecionado.nome,
+        email: responsavelEnderecoSelecionado.email,
+        telefone: responsavelEnderecoSelecionado.telefone,
+        dtNascimento: responsavelEnderecoSelecionado.dtNascimento,
+        cpf: responsavelEnderecoSelecionado.cpf,
+        endereco: enderecoFormData,
+      })
 
-    setResponsavelEnderecoSelecionado((anterior) => ({
-      ...anterior,
-      endereco: {
-        ...anterior?.endereco,
-        ...enderecoFormData,
-      },
-    }))
+      setResponsaveisData((dadosAnteriores) =>
+        dadosAnteriores.map((item) =>
+          item.id === responsavelEnderecoSelecionado.id
+            ? { ...item, endereco: { ...item.endereco, ...enderecoFormData } }
+            : item,
+        ),
+      )
 
-    console.log("Endereco atualizado:", enderecoFormData)
+      setResponsavelEnderecoSelecionado((anterior) => ({
+        ...anterior,
+        endereco: { ...anterior?.endereco, ...enderecoFormData },
+      }))
+
+      toast.success('Endereço atualizado com sucesso')
+    } catch {
+      toast.error('Erro ao atualizar endereço')
+    }
+
     setModalEnderecoAberto(false)
   }
 
@@ -123,11 +137,28 @@ export default function TabelaResponsavel({ responsaveis }) {
     setModalConfirmacaoEnderecoAberto(true)
   }
 
-  const confirmarExclusao = () => {
-    console.log("Responsavel excluido:", responsavelParaExcluir)
-    // Aqui voce pode fazer a chamada a API para excluir o responsavel.
-    // Exemplo: api.delete(`/responsaveis/${responsavelParaExcluir.id}`)
+  const confirmarExclusao = async () => {
+    try {
+      await deletarResponsavel(responsavelParaExcluir.id)
+      setResponsaveisData(prev => prev.filter(r => r.id !== responsavelParaExcluir.id))
+      toast.success('Responsável inativado com sucesso')
+    } catch {
+      toast.error('Erro ao inativar responsável')
+    }
+    setModalExclusaoAberto(false)
     setResponsavelParaExcluir(null)
+  }
+
+  const confirmarReativacao = async () => {
+    try {
+      await reativarResponsavel(responsavelParaReativar.id)
+      setResponsaveisData(prev => prev.filter(r => r.id !== responsavelParaReativar.id))
+      toast.success('Responsável reativado com sucesso')
+    } catch {
+      toast.error('Erro ao reativar responsável')
+    }
+    setModalReativacaoAberto(false)
+    setResponsavelParaReativar(null)
   }
 
   function visualizarResponsavel(id) {
@@ -215,19 +246,21 @@ export default function TabelaResponsavel({ responsaveis }) {
                     {responsavel.telefone}
                   </td>
                   <td
-                    className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500"
+                    className="p-4 font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500"
                     onClick={() => abrirModalEndereco(responsavel)}
                   >
-                    <MapPinHouse size={18} />
+                    <div className="flex justify-center">
+                      <MapPinHouse size={18} />
+                    </div>
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500" onClick={() => visualizarResponsavel(responsavel.id)}>
                     <SquarePenIcon size={18} />
                   </td>
-                  <td 
-                    className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-red-500"
-                    onClick={() => abrirModalExclusao(responsavel)}
+                  <td
+                    className={`p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer ${mostrandoInativos ? 'hover:text-green-500' : 'hover:text-red-500'}`}
+                    onClick={() => mostrandoInativos ? abrirModalReativacao(responsavel) : abrirModalExclusao(responsavel)}
                   >
-                    <Trash2 size={18} />
+                    {mostrandoInativos ? <RotateCcw size={18} /> : <Trash2 size={18} />}
                   </td>
                 </tr>
               )
@@ -239,7 +272,7 @@ export default function TabelaResponsavel({ responsaveis }) {
       {/* Visualização Mobile - Cards */}
       <div className="md:hidden p-4 space-y-4">
         {responsaveisData.map((responsavel) => (
-          <div 
+          <div
             key={responsavel.id}
             className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
           >
@@ -281,27 +314,37 @@ export default function TabelaResponsavel({ responsaveis }) {
 
             {/* Ações */}
             <div className="flex gap-2 mt-4 pt-3 border-t border-gray-200">
-              <button 
+              <button
                 onClick={() => abrirModalEdicao(responsavel)}
                 className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors"
               >
                 <Eye size={16} />
                 <span className="text-sm font-medium">Ver/Editar</span>
               </button>
-              <button 
+              <button
                 onClick={() => abrirModalEndereco(responsavel)}
                 className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
               >
                 <MapPin size={16} />
                 <span className="text-sm font-medium">Endereco</span>
               </button>
-              <button 
-                onClick={() => abrirModalExclusao(responsavel)}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
-              >
-                <Trash2 size={16} />
-                <span className="text-sm font-medium">Excluir</span>
-              </button>
+              {mostrandoInativos ? (
+                <button
+                  onClick={() => abrirModalReativacao(responsavel)}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors"
+                >
+                  <RotateCcw size={16} />
+                  <span className="text-sm font-medium">Reativar</span>
+                </button>
+              ) : (
+                <button
+                  onClick={() => abrirModalExclusao(responsavel)}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                >
+                  <Trash2 size={16} />
+                  <span className="text-sm font-medium">Excluir</span>
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -424,14 +467,23 @@ export default function TabelaResponsavel({ responsaveis }) {
         />
       )}
 
-      {/* Modal de Confirmação de Exclusão */}
       <ConfirmacaoModal
         isOpen={modalExclusaoAberto}
         onClose={() => setModalExclusaoAberto(false)}
         onConfirm={confirmarExclusao}
-        titulo="Excluir Responsavel"
-        mensagem={`Tem certeza que deseja excluir o responsavel ${responsavelParaExcluir?.nome}? Esta acao nao pode ser desfeita.`}
-        textoBotaoConfirmar="Excluir"
+        titulo="Inativar Responsavel"
+        mensagem={`Tem certeza que deseja inativar o responsavel ${responsavelParaExcluir?.nome}?`}
+        textoBotaoConfirmar="Inativar"
+        textoBotaoCancelar="Cancelar"
+      />
+
+      <ConfirmacaoModal
+        isOpen={modalReativacaoAberto}
+        onClose={() => setModalReativacaoAberto(false)}
+        onConfirm={confirmarReativacao}
+        titulo="Reativar Responsavel"
+        mensagem={`Deseja reativar o responsavel ${responsavelParaReativar?.nome}?`}
+        textoBotaoConfirmar="Reativar"
         textoBotaoCancelar="Cancelar"
       />
     </div>

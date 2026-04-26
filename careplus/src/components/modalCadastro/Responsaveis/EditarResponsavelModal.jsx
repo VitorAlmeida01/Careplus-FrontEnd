@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react"
 import Modal from "react-modal"
 import logo from "/src/assets/logo.png"
 import ConfirmacaoModal from "../../modalConfirmacao/ConfirmacaoModal"
+import { toast } from "react-toastify"
+import { atualizarResponsavel } from "../../../service/resposaveis/responsaveis.service"
 
 Modal.setAppElement("#root")
 
@@ -45,9 +47,16 @@ export default function EditarResponsavelModal({
     setModalConfirmacaoAberto(true)
   }
 
-  const confirmarSalvar = () => {
-    if (onSave) {
-      onSave(formData)
+  const confirmarSalvar = async () => {
+    try {
+      await atualizarResponsavel(responsavel.id, {
+        ...formData,
+        endereco: responsavel.endereco ?? null,
+      })
+      if (onSave) onSave(formData)
+      toast.success('Responsável atualizado com sucesso')
+    } catch {
+      toast.error('Erro ao atualizar responsável')
     }
     setModalConfirmacaoAberto(false)
     onClose()
