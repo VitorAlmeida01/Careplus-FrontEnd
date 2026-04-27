@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from "react"
 import EditarFuncionarioModal from "../modalCadastro/Funcionarios/EditarFuncionarioModal"
 import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
-import { deletarFuncionario, reativarFuncionario } from "../../service/funcionarios/funcionarios.service"
+import { deletarFuncionario, reativarFuncionario, atualizarFuncionario } from "../../service/funcionarios/funcionarios.service"
 import { toast } from "react-toastify"
 
 export default function TabelaFuncionario({ funcionarios, mostrandoInativos = false }) {
@@ -40,8 +40,14 @@ export default function TabelaFuncionario({ funcionarios, mostrandoInativos = fa
     setFuncionarioSelecionado(null)
   }
 
-  const salvarAlteracoes = (dadosAtualizados) => {
-    console.log("Dados atualizados:", dadosAtualizados)
+  const salvarAlteracoes = async (dadosAtualizados) => {
+    try {
+      const atualizado = await atualizarFuncionario(funcionarioSelecionado.id, dadosAtualizados)
+      setFuncionariosData(prev => prev.map(f => f.id === funcionarioSelecionado.id ? { ...f, ...atualizado } : f))
+      toast.success("Funcionário atualizado com sucesso!")
+    } catch (error) {
+      toast.error("Erro ao atualizar funcionário.")
+    }
   }
 
   const abrirModalExclusao = (funcionario) => {

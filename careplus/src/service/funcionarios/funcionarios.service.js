@@ -42,6 +42,21 @@ async function listarSupervisores(){
 
 export {listarSupervisores}
 
+export async function atualizarFuncionario(id, dados) {
+    const formData = new FormData()
+    formData.append("nome", dados.nome)
+    formData.append("email", dados.email)
+    formData.append("documento", dados.documento)
+    formData.append("cargo", dados.cargo)
+    if (dados.especialidade) formData.append("especialidade", dados.especialidade)
+    if (dados.telefone) formData.append("telefone", dados.telefone)
+    if (dados.supervisor) formData.append("supervisor.id", dados.supervisor)
+    const response = await api.put(`/funcionarios?idFuncionario=${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+    })
+    return response.data
+}
+
 export async function cadastrarFuncionario(formData) {
     const response = await api.post("/funcionarios", formData, {
         headers: { "Content-Type": "multipart/form-data" }

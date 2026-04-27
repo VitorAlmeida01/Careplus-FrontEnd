@@ -6,6 +6,19 @@ import { toast } from "react-toastify"
 
 Modal.setAppElement("#root")
 
+const CARGOS = ["Supervisor(a)", "Funcionário", "Estagiário", "Agendamento"]
+
+const ESPECIALIDADES = [
+  "Fonoaudiologia",
+  "Psicologia",
+  "Terapia Ocupacional",
+  "Psicopedagogia",
+  "Nutricionista",
+  "Fisioterapia",
+  "Psicomotricidade",
+  "Musicoterapia",
+]
+
 export default function CadastroFuncionarioModal({ isOpen, onClose }) {
   const [supervisores, setSupervisores] = useState([])
   const [loading, setLoading] = useState(false)
@@ -22,6 +35,8 @@ export default function CadastroFuncionarioModal({ isOpen, onClose }) {
     foto: null,
   })
 
+  const isAgendamento = form.cargo === "Agendamento"
+
   useEffect(() => {
     const response = async () => {
       const supervisores = await listarSupervisores()
@@ -34,6 +49,12 @@ export default function CadastroFuncionarioModal({ isOpen, onClose }) {
     const { name, value, files } = e.target
     if (name === "foto") {
       setForm((prev) => ({ ...prev, foto: files[0] }))
+    } else if (name === "cargo") {
+      setForm((prev) => ({
+        ...prev,
+        cargo: value,
+        especialidade: value === "Agendamento" ? "" : prev.especialidade,
+      }))
     } else {
       setForm((prev) => ({ ...prev, [name]: value }))
     }
@@ -51,7 +72,9 @@ export default function CadastroFuncionarioModal({ isOpen, onClose }) {
       formData.append("email", form.email)
       formData.append("senha", form.senha)
       formData.append("cargo", form.cargo)
-      formData.append("especialidade", form.especialidade)
+      if (!isAgendamento && form.especialidade) {
+        formData.append("especialidade", form.especialidade)
+      }
       formData.append("telefone", form.telefone)
       formData.append("documento", form.documento)
       formData.append("tipoAtendimento", form.tipoAtendimento)
@@ -75,10 +98,8 @@ export default function CadastroFuncionarioModal({ isOpen, onClose }) {
     }
   }
 
-  // const overlayClassName =
-  //   "fixed top-0 left-0 w-full h-full bg-black/45 flex justify-center items-center backdrop-blur-sm z-[9999]"
   const overlayClassName =
-  "fixed top-0 left-0 w-full h-full bg-black/60 flex justify-center items-center z-[9999]"
+    "fixed top-0 left-0 w-full h-full bg-black/60 flex justify-center items-center z-[9999]"
   const modalCardClassName =
     "w-[450px] max-h-[90vh] overflow-y-auto bg-white px-[35px] pt-[35px] pb-[45px] rounded-[25px] relative text-center shadow-2xl"
   const closeBtnClassName =
@@ -127,14 +148,30 @@ export default function CadastroFuncionarioModal({ isOpen, onClose }) {
 
       <div className={modalFieldClassName}>
         <label className={labelClassName}>Cargo *</label>
-        <input name="cargo" type="text" placeholder="Ex: Médico, Recepcionista"
-          className={inputClassName} value={form.cargo} onChange={handleChange} />
+        <select name="cargo" className={inputClassName} value={form.cargo} onChange={handleChange}>
+          <option value="">Selecione um cargo</option>
+          {CARGOS.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
       </div>
 
       <div className={modalFieldClassName}>
-        <label className={labelClassName}>Especialidade</label>
-        <input name="especialidade" type="text" placeholder="Ex: Fonoaudióloga"
-          className={inputClassName} value={form.especialidade} onChange={handleChange} />
+        <label className={labelClassName}>
+          Especialidade{isAgendamento ? " (não aplicável para Agendamento)" : ""}
+        </label>
+        <select
+          name="especialidade"
+          className={`${inputClassName} ${isAgendamento ? "opacity-50 cursor-not-allowed" : ""}`}
+          value={form.especialidade}
+          onChange={handleChange}
+          disabled={isAgendamento}
+        >
+          <option value="">Selecione uma especialidade</option>
+          {ESPECIALIDADES.map((e) => (
+            <option key={e} value={e}>{e}</option>
+          ))}
+        </select>
       </div>
 
       <div className={modalFieldClassName}>

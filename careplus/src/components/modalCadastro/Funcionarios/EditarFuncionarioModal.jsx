@@ -2,9 +2,22 @@ import React, { useState, useEffect } from "react"
 import Modal from "react-modal"
 import logo from "/src/assets/logo.png"
 import ConfirmacaoModal from "../../modalConfirmacao/ConfirmacaoModal"
+import { listarSupervisores } from '@/src/service/funcionarios/funcionarios.service'
 
-// Configuração para acessibilidade
 Modal.setAppElement("#root")
+
+const CARGOS = ["Supervisor(a)", "Funcionário", "Estagiário", "Agendamento"]
+
+const ESPECIALIDADES = [
+  "Fonoaudiologia",
+  "Psicologia",
+  "Terapia Ocupacional",
+  "Psicopedagogia",
+  "Nutricionista",
+  "Fisioterapia",
+  "Psicomotricidade",
+  "Musicoterapia",
+]
 
 export default function EditarFuncionarioModal({ isOpen, onClose, funcionario, onSave }) {
   const [formData, setFormData] = useState({
@@ -12,12 +25,19 @@ export default function EditarFuncionarioModal({ isOpen, onClose, funcionario, o
     email: "",
     documento: "",
     cargo: "",
+    especialidade: "",
     telefone: "",
     supervisor: ""
   })
+  const [supervisores, setSupervisores] = useState([])
   const [modalConfirmacaoAberto, setModalConfirmacaoAberto] = useState(false)
 
-  // Atualiza os dados do formulário quando o funcionário mudar
+  const isAgendamento = formData.cargo === "Agendamento"
+
+  useEffect(() => {
+    listarSupervisores().then(data => setSupervisores(data ?? []))
+  }, [])
+
   useEffect(() => {
     if (funcionario) {
       setFormData({
@@ -25,18 +45,24 @@ export default function EditarFuncionarioModal({ isOpen, onClose, funcionario, o
         email: funcionario.email || "",
         documento: funcionario.documento || "",
         cargo: funcionario.cargo || "",
+        especialidade: funcionario.especialidade || "",
         telefone: funcionario.telefone || "",
-        supervisor: funcionario.supervisor?.nome || ""
+        supervisor: funcionario.supervisor?.id ?? ""
       })
     }
   }, [funcionario])
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+    if (name === "cargo") {
+      setFormData(prev => ({
+        ...prev,
+        cargo: value,
+        especialidade: value === "Agendamento" ? "" : prev.especialidade,
+      }))
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleSubmit = (e) => {
@@ -52,27 +78,18 @@ export default function EditarFuncionarioModal({ isOpen, onClose, funcionario, o
     onClose()
   }
 
-  // Classes Tailwind
   const overlayClassName =
     "fixed top-0 left-0 w-full h-full bg-black/45 flex justify-center items-center backdrop-blur-sm z-[9999]"
-
   const modalCardClassName =
-    "w-[450px] bg-white px-[35px] pt-[35px] pb-[45px] rounded-[25px] relative text-center shadow-2xl"
-
+    "w-[450px] max-h-[90vh] overflow-y-auto bg-white px-[35px] pt-[35px] pb-[45px] rounded-[25px] relative text-center shadow-2xl"
   const closeBtnClassName =
     "absolute top-[18px] right-[18px] text-[28px] border-none bg-transparent cursor-pointer text-gray-500 hover:text-gray-700"
-
   const logoClassName = "w-[110px]"
-
   const h2ClassName = "font-medium mt-[15px] mb-[25px] text-gray-700"
-
   const modalFieldClassName = "mb-5 text-left flex flex-col"
-
   const labelClassName = "flex text-sm mb-1.5 text-gray-600 font-medium"
-
   const inputClassName =
     "w-full p-4 border border-gray-400 bg-gray-100 rounded-lg text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-400"
-
   const btnSubmitClassName =
     "w-full p-4 mt-2.5 rounded-xl cursor-pointer bg-gradient-to-r from-[#00a0ff] to-[#00d48c] text-white text-base font-medium hover:opacity-90 transition-opacity"
 
@@ -85,9 +102,7 @@ export default function EditarFuncionarioModal({ isOpen, onClose, funcionario, o
       overlayClassName={overlayClassName}
       contentLabel="Editar Funcionário"
     >
-      <button className={closeBtnClassName} onClick={onClose}>
-        ×
-      </button>
+      <button className={closeBtnClassName} onClick={onClose}>×</button>
 
       <div className="flex items-center justify-center">
         <img src={logo} alt="logo" className={logoClassName} />
@@ -97,76 +112,57 @@ export default function EditarFuncionarioModal({ isOpen, onClose, funcionario, o
       <form onSubmit={handleSubmit}>
         <div className={modalFieldClassName}>
           <label className={labelClassName}>Nome Completo</label>
-          <input
-            type="text"
-            name="nome"
-            value={formData.nome}
-            onChange={handleChange}
-            placeholder="Digite o nome completo"
-            className={inputClassName}
-          />
+          <input type="text" name="nome" value={formData.nome} onChange={handleChange}
+            placeholder="Digite o nome completo" className={inputClassName} />
         </div>
 
         <div className={modalFieldClassName}>
           <label className={labelClassName}>Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="email@exemplo.com"
-            className={inputClassName}
-          />
+          <input type="email" name="email" value={formData.email} onChange={handleChange}
+            placeholder="email@exemplo.com" className={inputClassName} />
         </div>
 
         <div className={modalFieldClassName}>
           <label className={labelClassName}>Documento</label>
-          <input
-            type="text"
-            name="documento"
-            value={formData.documento}
-            onChange={handleChange}
-            placeholder="CPF ou RG"
-            className={inputClassName}
-          />
+          <input type="text" name="documento" value={formData.documento} onChange={handleChange}
+            placeholder="CPF ou RG" className={inputClassName} />
         </div>
 
         <div className={modalFieldClassName}>
           <label className={labelClassName}>Cargo</label>
-          <input
-            type="text"
-            name="cargo"
-            value={formData.cargo}
+          <select name="cargo" value={formData.cargo} onChange={handleChange} className={inputClassName}>
+            <option value="">Selecione um cargo</option>
+            {CARGOS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+
+        <div className={modalFieldClassName}>
+          <label className={labelClassName}>
+            Especialidade{isAgendamento ? " (não aplicável para Agendamento)" : ""}
+          </label>
+          <select
+            name="especialidade"
+            value={formData.especialidade}
             onChange={handleChange}
-            placeholder="Ex: Médico, Recepcionista"
-            className={inputClassName}
-          />
+            disabled={isAgendamento}
+            className={`${inputClassName} ${isAgendamento ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            <option value="">Selecione uma especialidade</option>
+            {ESPECIALIDADES.map(e => <option key={e} value={e}>{e}</option>)}
+          </select>
         </div>
 
         <div className={modalFieldClassName}>
           <label className={labelClassName}>Telefone</label>
-          <input
-            type="text"
-            name="telefone"
-            value={formData.telefone}
-            onChange={handleChange}
-            placeholder="(00) 00000-0000"
-            className={inputClassName}
-          />
+          <input type="text" name="telefone" value={formData.telefone} onChange={handleChange}
+            placeholder="(00) 00000-0000" className={inputClassName} />
         </div>
 
         <div className={modalFieldClassName}>
           <label className={labelClassName}>Supervisor</label>
-          <select
-            name="supervisor"
-            value={formData.supervisor}
-            onChange={handleChange}
-            className={inputClassName}
-          >
+          <select name="supervisor" value={formData.supervisor} onChange={handleChange} className={inputClassName}>
             <option value="">Selecione um supervisor (opcional)</option>
-            <option value="Dr. João Silva">Dr. João Silva</option>
-            <option value="Dra. Maria Santos">Dra. Maria Santos</option>
-            <option value="Dr. Pedro Costa">Dr. Pedro Costa</option>
+            {supervisores.map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}
           </select>
         </div>
 
