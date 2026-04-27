@@ -2,9 +2,6 @@ import CardDadosPaciente from './CardDadosPaciente'
 import CardUltimaConsulta from './CardUltimaConsulta'
 import CardReforcadores from './CardReforcadores'
 
-// achei daora que dentro de um componente a gente pode usar outros componentes, 
-// isso deixa o código mais organizado e fácil de ler
-
 export default function ColunaDireita({ dadosPaciente, ultimaConsulta }) {
   const formatarBoolean = (valor) => {
     if (valor === true) return "Sim"
@@ -28,24 +25,29 @@ export default function ColunaDireita({ dadosPaciente, ultimaConsulta }) {
 
   return (
     <div className="flex w-full sm:w-[40%] mt-[5px] flex-col gap-[15px]">
-      
+
       <CardDadosPaciente
-      nome={dadosPaciente?.nome || "-"}
-      contato={dadosPaciente?.contato || "-"}
-      idade={
-        dadosPaciente?.idade !== null && dadosPaciente?.idade !== undefined
-          ? `${dadosPaciente.idade} anos`
-          : "-"
-      }
-      desfraldado={formatarBoolean(dadosPaciente?.desfraldado)}
-      hiperfocoAtual={dadosPaciente?.hiperfocoAtual || "-"}
-      diagnostico={dadosPaciente?.diagnostico || "-"}
-      atendimentoEspecial={dadosPaciente?.atendimentoEspecial || "-"}
+        nome={dadosPaciente?.nome || "-"}
+        contato={dadosPaciente?.contato || "-"}
+        idade={
+          dadosPaciente?.idade !== null && dadosPaciente?.idade !== undefined
+            ? `${dadosPaciente.idade} anos`
+            : "-"
+        }
+        desfraldado={formatarBoolean(dadosPaciente?.desfraldado)}
+        hiperfocoAtual={dadosPaciente?.hiperfocoAtual || "-"}
+        diagnostico={dadosPaciente?.diagnostico || "-"}
+        atendimentoEspecial={dadosPaciente?.atendimentoEspecial || "-"}
       />
 
       <CardUltimaConsulta
-       data={formatarData(ultimaConsulta?.data)}
-       tratamento={ultimaConsulta?.tratamento || "-"}
+        consultaId={ultimaConsulta?.consultaId}
+        data={formatarData(ultimaConsulta?.data)}
+        nomeFuncionario={
+          ultimaConsulta?.nomeFuncionarioUltimaConsulta ||
+          ultimaConsulta?.nomeFuncionario ||
+          "-"
+        }
       />
 
       <CardReforcadores />

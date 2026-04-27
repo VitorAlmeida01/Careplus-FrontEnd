@@ -1,5 +1,16 @@
 import { api } from "../api";
 
+export async function listarMeusPacientes(pagina, idFuncionario) {
+    try {
+        const response = await api.get("/pacientes/todos-pacientes-funcionario", {
+            params: { pagina, idFuncionario },
+        })
+        if (response.status === 200) return response.data
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export async function listarPacitentes(pagina) {
     try{
         const response = await api.get(`/pacientes/todos-pacientes?pagina=${pagina}`)

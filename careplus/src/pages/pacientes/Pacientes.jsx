@@ -5,13 +5,17 @@ import BarraPesquisa from "../../components/barraPesquisa"
 import BotaoCadastro from "../../components/botaoCadastro/BotaoCadastro"
 import CadastroPacienteModal from "../../components/modalCadastro/Pacientes/CadastroPacienteModal"
 import TabelaPaciente from "../../components/tabelaPaciente/TabelaPaciente"
-import { listarPacitentes, listarPacientesInativos, buscarPacientes } from "../../service/pacientes/pacientes.service"
+import {
+  listarPacitentes,
+  listarPacientesInativos,
+  listarMeusPacientes,
+  buscarPacientes,
+} from "../../service/pacientes/pacientes.service"
+import { getFuncionarioId } from "../../service/login/jwtDecoder"
 import { toast } from 'react-toastify'
 import { Paginacao } from "@/src/components/Paginacao/Paginacao"
 import Loading from "../../components/loading/Loading"
 import useDebouncedValue from "@/src/service/searchEngine/useDebounceValue"
-
-
 
 export default function Pacientes() {
   const navigate = useNavigate()
@@ -19,13 +23,19 @@ export default function Pacientes() {
   const [pacientes, setPacientes] = useState([])
   const [page, setPage] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [apenasAtivos, setApenasAtivos] = useState(true)
+  const [filtro, setFiltro] = useState('ativos') // 'ativos' | 'inativos' | 'meus'
+
+  const idFuncionario = getFuncionarioId()
 
   const [query, setQuery] = useState('')
   const [sugestoes, setSugestoes] = useState([])
   const debouncedQuery = useDebouncedValue(query, 300)
 
-  const fetchPacientes = apenasAtivos ? listarPacitentes : listarPacientesInativos
+  const fetchPacientes = useCallback((pagina) => {
+    if (filtro === 'inativos') return listarPacientesInativos(pagina)
+    if (filtro === 'meus') return listarMeusPacientes(pagina, idFuncionario)
+    return listarPacitentes(pagina)
+  }, [filtro, idFuncionario])
 
   useEffect(() => {
     if (!debouncedQuery || debouncedQuery.length < 2) {
@@ -60,14 +70,21 @@ export default function Pacientes() {
 
   useEffect(() => {
     if (!query) recarregarPacientes()
-  }, [page, query, apenasAtivos, recarregarPacientes])
+  }, [page, query, filtro, recarregarPacientes])
 
-  const handleToggle = (ativo) => {
-    setApenasAtivos(ativo)
+  const handleToggle = (novoFiltro) => {
+    setFiltro(novoFiltro)
     setPage(0)
     setQuery('')
     setSugestoes([])
   }
+
+  const btnClass = (ativo) =>
+    `px-5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+      ativo ? 'text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+    }`
+  const btnStyle = (ativo) =>
+    ativo ? { background: 'linear-gradient(135deg, #4fc3f7 0%, #5fcb9f 100%)' } : {}
 
   return (
     <>
@@ -83,35 +100,34 @@ export default function Pacientes() {
         <div className="w-[90%] flex my-[1%] mx-[4%] justify-between items-center">
           <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
             <button
-              onClick={() => handleToggle(true)}
-              className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                apenasAtivos
-                  ? 'text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              style={apenasAtivos ? { background: 'linear-gradient(135deg, #4fc3f7 0%, #5fcb9f 100%)' } : {}}
+              onClick={() => handleToggle('ativos')}
+              className={btnClass(filtro === 'ativos')}
+              style={btnStyle(filtro === 'ativos')}
             >
               Ativos
             </button>
             <button
-              onClick={() => handleToggle(false)}
-              className={`px-5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                !apenasAtivos
-                  ? 'text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-              style={!apenasAtivos ? { background: 'linear-gradient(135deg, #4fc3f7 0%, #5fcb9f 100%)' } : {}}
+              onClick={() => handleToggle('inativos')}
+              className={btnClass(filtro === 'inativos')}
+              style={btnStyle(filtro === 'inativos')}
             >
               Inativos
             </button>
+            <button
+              onClick={() => handleToggle('meus')}
+              className={btnClass(filtro === 'meus')}
+              style={btnStyle(filtro === 'meus')}
+            >
+              Meus Pacientes
+            </button>
           </div>
-          <BotaoCadastro onClick={() => navigate("/pacientes/cadastrar")} name={"Cadastrar"}/>
+          <BotaoCadastro onClick={() => navigate("/pacientes/cadastrar")} name={"Cadastrar"} />
         </div>
 
         {loading ? (
           <Loading message="Carregando pacientes..." />
         ) : (
-          <TabelaPaciente pacientes={pacientes} mostrandoInativos={!apenasAtivos} />
+          <TabelaPaciente pacientes={pacientes} mostrandoInativos={filtro === 'inativos'} />
         )}
 
         {!query && <Paginacao page={page} setPage={setPage} fetchTotalPages={fetchPacientes} />}
