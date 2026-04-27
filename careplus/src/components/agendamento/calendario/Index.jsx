@@ -134,10 +134,12 @@ const CalendarApp = ({
   };
 
   const openCreateModal = (date, hour = 9) => {
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(12, 0, 0, 0); // noon evita shift de timezone no toISOString()
     setModalState({
       isOpen: true,
       data: {
-        date,
+        date: normalizedDate,
         hour,
         pacientePreSelecionado: filterMode === 'paciente' ? selectedPacienteObj : null,
         profissionalPreSelecionado: filterMode === 'profissional' ? selectedFuncionario : null,

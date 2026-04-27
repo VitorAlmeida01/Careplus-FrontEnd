@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import "./ConsultaModal.css"
 import Modal from "react-modal"
 import { buscarPacientePorNome, marcarConsultaRecorrente } from '@/src/service/agendamento/consulta.service'
-import { listarFuncionariosConsulta } from '@/src/service/agendamento/agendamento.service'
+import { listarEspecialidades, listarFuncionariosPorEspecialidade } from '@/src/service/agendamento/agendamento.service'
 import { toast } from "react-toastify"
 
 Modal.setAppElement("#root")
@@ -59,7 +59,7 @@ export default function CadastroFuncionarioModal({
   const [nome, setNome] = useState('')
   const [sugestoes, setSugestoes] = useState([])
   const [areas, setAreas] = useState([])
-  const [funcionarios, setFuncionarios] = useState([])
+  const [funcionariosPorArea, setFuncionariosPorArea] = useState({})
   const [pacienteSelecionado, setPacienteSelecionado] = useState(null)
 
   // Lista de profissionais da consulta em elaboração
@@ -78,26 +78,26 @@ export default function CadastroFuncionarioModal({
 
   useEffect(() => {
     if (!isOpen) return
-    listarFuncionariosConsulta().then(res => {
-      const funcs = res.data
-      setFuncionarios(funcs)
-      const areasUnicas = [...new Set(funcs.map(f => f.especialidade).filter(Boolean))]
-      setAreas(areasUnicas)
+    listarEspecialidades().then(data => {
+      setAreas(data)
       setListaTipos(tiposCache)
-
-      // Pré-selecionar profissional quando vier do filtro
-      if (profissionalPreSelecionado?.id) {
-        const func = funcs.find(f => f.id === profissionalPreSelecionado.id)
-        if (func) {
-          setProfissionais([{
-            uid: crypto.randomUUID(),
-            area: func.especialidade || '',
-            funcionarioId: String(func.id),
-            funcionarioNome: func.nome,
-          }])
-        }
-      }
     }).catch(err => console.error(err))
+
+    if (profissionalPreSelecionado?.id) {
+      const area = profissionalPreSelecionado.especialidade || ''
+      setProfissionais([{
+        uid: crypto.randomUUID(),
+        area,
+        funcionarioId: String(profissionalPreSelecionado.id),
+        funcionarioNome: profissionalPreSelecionado.nome,
+      }])
+      if (area) {
+        setFuncionariosPorArea(prev => ({
+          ...prev,
+          [area]: [profissionalPreSelecionado],
+        }))
+      }
+    }
   }, [isOpen])
 
   // Pré-selecionar paciente quando vier do filtro
@@ -122,12 +122,12 @@ export default function CadastroFuncionarioModal({
   }, [tiposDeConsulta])
 
   useEffect(() => {
-    if (isOpen && nome?.length >= 2) {
+    if (isOpen && nome?.length >= 2 && !pacienteSelecionado) {
       buscarPacientePorNome(nome).then(dados => setSugestoes(dados || []))
     } else {
       setSugestoes([])
     }
-  }, [nome, isOpen])
+  }, [nome, isOpen, pacienteSelecionado])
 
   const resetForm = () => {
     if (!pacientePreSelecionado) {
@@ -136,17 +136,12 @@ export default function CadastroFuncionarioModal({
       setSugestoes([])
     }
     if (profissionalPreSelecionado?.id) {
-      const func = funcionarios.find(f => f.id === profissionalPreSelecionado.id)
-      if (func) {
-        setProfissionais([{
-          uid: crypto.randomUUID(),
-          area: func.especialidade || '',
-          funcionarioId: String(func.id),
-          funcionarioNome: func.nome,
-        }])
-      } else {
-        setProfissionais([criarLinhaProfissional()])
-      }
+      setProfissionais([{
+        uid: crypto.randomUUID(),
+        area: profissionalPreSelecionado.especialidade || '',
+        funcionarioId: String(profissionalPreSelecionado.id),
+        funcionarioNome: profissionalPreSelecionado.nome,
+      }])
     } else {
       setProfissionais([criarLinhaProfissional()])
     }
@@ -184,10 +179,16 @@ export default function CadastroFuncionarioModal({
     setProfissionais(prev => prev.map(p =>
       p.uid === uid ? { ...p, area: newArea, funcionarioId: '', funcionarioNome: '' } : p
     ))
+    if (newArea && !funcionariosPorArea[newArea]) {
+      listarFuncionariosPorEspecialidade(newArea).then(data => {
+        setFuncionariosPorArea(prev => ({ ...prev, [newArea]: data }))
+      }).catch(console.error)
+    }
   }
 
   const handleProfissionalFuncChange = (uid, funcionarioId) => {
-    const func = funcionarios.find(f => String(f.id) === funcionarioId)
+    const area = profissionais.find(p => p.uid === uid)?.area
+    const func = (funcionariosPorArea[area] || []).find(f => String(f.id) === funcionarioId)
     setProfissionais(prev => prev.map(p =>
       p.uid === uid ? { ...p, funcionarioId, funcionarioNome: func?.nome || '' } : p
     ))
@@ -461,7 +462,7 @@ export default function CadastroFuncionarioModal({
                         className={`${fieldClass} appearance-none pr-8 ${isPreSelecionado ? 'opacity-60 cursor-not-allowed bg-gray-50' : 'disabled:opacity-50 disabled:cursor-not-allowed'}`}
                       >
                         <option value="">Profissional</option>
-                        {funcionarios.filter(f => f.especialidade === prof.area).map(f => (
+                        {(funcionariosPorArea[prof.area] || []).map(f => (
                           <option key={f.id} value={f.id}>{f.nome}</option>
                         ))}
                       </select>
@@ -617,6 +618,7 @@ export default function CadastroFuncionarioModal({
                       String(d.getMonth() + 1).padStart(2, '0'),
                       String(d.getDate()).padStart(2, '0'),
                     ].join('-'));
+                    console.log("Estou na data: " + dataConsulta)
                   }}
                   className={fieldClass}
                 />

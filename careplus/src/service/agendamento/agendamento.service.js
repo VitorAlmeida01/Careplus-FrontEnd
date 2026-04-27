@@ -111,10 +111,29 @@ export async function listarConsultasPorPaciente(pacienteId) {
 export async function listarFuncionariosConsulta() {
     try{
         const response = await api.get(`/funcionarios`)
-
         return response;
     } catch(error){
         console.error("Erro ao listar Funcionarios: ", error)
+    }
+}
+
+export async function listarEspecialidades() {
+    try {
+        const response = await api.get('/funcionarios/especialidades')
+        return response.data ?? []
+    } catch (error) {
+        console.error("Erro ao listar especialidades: ", error)
+        return []
+    }
+}
+
+export async function listarFuncionariosPorEspecialidade(especialidade) {
+    try {
+        const response = await api.get('/funcionarios/nomesPorEspecialidade', { params: { especialidade } })
+        return response.data ?? []
+    } catch (error) {
+        console.error("Erro ao listar funcionários por especialidade: ", error)
+        return []
     }
 }
 
