@@ -19,6 +19,16 @@ const toISODate = (date) => {
   return d.toISOString().split('T')[0];
 };
 
+// Retorna a segunda-feira da semana que contém `date`
+const getMondayOf = (date) => {
+  const d = new Date(date);
+  d.setHours(12, 0, 0, 0);
+  const dow = d.getDay(); // 0=Dom … 6=Sáb
+  const diff = dow === 0 ? 1 : 1 - dow; // Dom → +1; outros → volta até segunda
+  d.setDate(d.getDate() + diff);
+  return d;
+};
+
 const CalendarApp = ({
   currentDate,
   setCurrentDate,
@@ -63,10 +73,10 @@ const CalendarApp = ({
     const tipo = filterMode === 'profissional' ? 'funcionario' : 'paciente';
     const dataRef = toISODate(currentDate);
     if (view === 'week') {
-      listarAgendaSemanal(id, tipo, dataRef)
+      const dataRefSemana = toISODate(getMondayOf(currentDate));
+      listarAgendaSemanal(id, tipo, dataRefSemana)
         .then(lista => {
           setEvents(normalizarConsultas(lista))
-          console.log(normalizarConsultas(lista))
         })
         .catch(console.error);
     } else if (view === 'day') {

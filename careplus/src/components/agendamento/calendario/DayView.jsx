@@ -31,7 +31,11 @@ function getEventStyle(horarioInicio, horarioFim) {
 
 export const DayView = ({ currentDate, events, onAddEvent, onEventClick }) => {
   const dayDate = currentDate;
-  const dateKey = dayDate.toISOString().split('T')[0];
+  const dateKey = [
+    dayDate.getFullYear(),
+    String(dayDate.getMonth() + 1).padStart(2, '0'),
+    String(dayDate.getDate()).padStart(2, '0'),
+  ].join('-');
   const dayEvents = events[dateKey] || [];
 
   return (

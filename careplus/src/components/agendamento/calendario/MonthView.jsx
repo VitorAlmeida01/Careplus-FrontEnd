@@ -22,17 +22,22 @@ export const MonthView = ({ currentDate, events, onAddEvent, onDragOver, onDrop,
         if (!day) return <div key={`blank-${idx}`} className="bg-gray-50 min-h-30"></div>;
 
         const cellDate = new Date(year, month, day);
-        const dateKey = cellDate.toISOString().split('T')[0];
+        const dateKey = [
+          cellDate.getFullYear(),
+          String(cellDate.getMonth() + 1).padStart(2, '0'),
+          String(cellDate.getDate()).padStart(2, '0'),
+        ].join('-');
         const dayEvents = events[dateKey] || [];
         const isToday = isSameDate(cellDate, new Date());
+        const isWeekend = cellDate.getDay() === 0 || cellDate.getDay() === 6;
 
         return (
           <div
             key={day}
-            className={`min-h-30 p-2 hover:bg-gray-50 transition-colors cursor-pointer border-t border-l border-gray-100 ${isToday ? 'bg-blue-50/30' : ''}`}
-            onDragOver={onDragOver}
-            onDrop={(e) => onDrop(e, cellDate)}
-            onClick={() => onAddEvent(cellDate)}
+            className={`min-h-30 p-2 transition-colors border-t border-l border-gray-100 ${isToday ? 'bg-blue-50/30' : ''} ${isWeekend ? 'bg-gray-100/80 opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'}`}
+            onDragOver={isWeekend ? undefined : onDragOver}
+            onDrop={isWeekend ? undefined : (e) => onDrop(e, cellDate)}
+            onClick={() => !isWeekend && onAddEvent(cellDate)}
           >
             <div className={`text-right mb-1 ${isToday ? 'text-blue-600 font-bold' : 'text-gray-500'}`}>
               {isToday ? <span className="bg-blue-100 px-2 py-0.5 rounded-full text-xs">{day}</span> : day}

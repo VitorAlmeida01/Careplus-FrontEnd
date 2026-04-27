@@ -29,6 +29,12 @@ function getEventStyle(horarioInicio, horarioFim) {
   return { top, height };
 }
 
+const localDateKey = (d) => [
+  d.getFullYear(),
+  String(d.getMonth() + 1).padStart(2, '0'),
+  String(d.getDate()).padStart(2, '0'),
+].join('-');
+
 export const WeekView = ({ currentDate, events, onAddEvent, onEventClick }) => {
   const getDaysOfCurrentWeek = (date) => {
     const startOfWeek = new Date(date);
@@ -49,9 +55,10 @@ export const WeekView = ({ currentDate, events, onAddEvent, onEventClick }) => {
         <div className="w-16 shrink-0 border-r border-gray-200" />
         {weekDays.map((day, i) => {
           const isToday = isSameDate(day, new Date());
+          const isWeekend = day.getDay() === 0 || day.getDay() === 6;
           return (
-            <div key={i} className="flex-1 p-2 text-center font-semibold text-sm text-gray-700 border-l border-gray-200 first:border-l-0">
-              <div className="text-xs text-gray-500">{daysOfWeek[i]}</div>
+            <div key={i} className={`flex-1 p-2 text-center font-semibold text-sm border-l border-gray-200 first:border-l-0 ${isWeekend ? 'text-gray-400 bg-gray-200/60' : 'text-gray-700'}`}>
+              <div className="text-xs">{daysOfWeek[i]}</div>
               <div className={`text-base mt-0.5 ${isToday ? 'text-blue-600 font-bold' : ''}`}>
                 {isToday
                   ? <span className="bg-blue-500 text-white w-7 h-7 rounded-full inline-flex items-center justify-center text-sm">{day.getDate()}</span>
@@ -82,23 +89,24 @@ export const WeekView = ({ currentDate, events, onAddEvent, onEventClick }) => {
 
           {/* Colunas dos dias */}
           {weekDays.map((day, dayIndex) => {
-            const dateKey = day.toISOString().split('T')[0];
+            const dateKey = localDateKey(day);
             const dayEvents = events[dateKey] || [];
             const isToday = isSameDate(day, new Date());
+            const isWeekend = day.getDay() === 0 || day.getDay() === 6;
 
             return (
               <div
                 key={dayIndex}
-                className={`flex-1 relative border-l border-gray-200 ${isToday ? 'bg-blue-50/20' : ''}`}
+                className={`flex-1 relative border-l border-gray-200 ${isToday ? 'bg-blue-50/20' : ''} ${isWeekend ? 'bg-gray-100/70 opacity-50' : ''}`}
                 style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}
               >
                 {/* Linhas de hora */}
                 {hours.map(h => (
                   <div
                     key={h}
-                    className="absolute left-0 right-0 border-b border-gray-100 cursor-pointer hover:bg-gray-50/80"
+                    className={`absolute left-0 right-0 border-b border-gray-100 ${isWeekend ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50/80'}`}
                     style={{ top: (h - START_HOUR) * HOUR_HEIGHT, height: HOUR_HEIGHT }}
-                    onClick={() => onAddEvent(day, h)}
+                    onClick={() => !isWeekend && onAddEvent(day, h)}
                   />
                 ))}
 

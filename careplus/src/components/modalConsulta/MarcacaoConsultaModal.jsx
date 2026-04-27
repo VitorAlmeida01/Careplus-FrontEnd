@@ -605,7 +605,19 @@ export default function CadastroFuncionarioModal({
                 <input
                   type="date"
                   value={dataConsulta}
-                  onChange={(e) => setDataConsulta(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (!val) { setDataConsulta(''); return; }
+                    const d = new Date(`${val}T12:00:00`);
+                    const dow = d.getDay();
+                    if (dow === 6) d.setDate(d.getDate() + 2); // sábado → segunda
+                    if (dow === 0) d.setDate(d.getDate() + 1); // domingo → segunda
+                    setDataConsulta([
+                      d.getFullYear(),
+                      String(d.getMonth() + 1).padStart(2, '0'),
+                      String(d.getDate()).padStart(2, '0'),
+                    ].join('-'));
+                  }}
                   className={fieldClass}
                 />
               </div>
