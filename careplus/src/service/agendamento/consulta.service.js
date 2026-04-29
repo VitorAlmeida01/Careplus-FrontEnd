@@ -65,3 +65,20 @@ export async function marcarConsultaRecorrente(payload){
         return null;
     }
 }
+
+export async function realizarAnotacoes(idConsulta, observacao){
+    if(!observacao){
+        console.warn("Realização de anotações cancelada: payload está indefinido.");
+        return null;
+    }
+
+    try {
+        const response = await api.put(`/consultas-prontuario/realizarObservacoes`, { observacao: observacao }, {
+    params: { idConsulta }
+})
+        return response.data;
+    } catch (error) {
+        console.error("Erro na requisição:", error);
+        return null;
+    }
+}

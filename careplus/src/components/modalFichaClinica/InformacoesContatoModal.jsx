@@ -221,9 +221,9 @@ const [formData, setFormData] = useState({
         {/* Botão de Enviar */}
         <button
           type="submit"
-          className="w-full mt-4 p-3 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
+          className="w-full mt-4 p-3 bg-white border-black-500 border-1 to-cyan-400 text-black rounded-xl font-medium hover:opacity-90 transition-opacity cursor-pointer"
         >
-          Enviar
+          Fechar
         </button>
       </form>
     </ModalBase>

@@ -1,6 +1,11 @@
+import { useEffect, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import LinhaInformacao from "./LinhaInformacao"
+import { realizarAnotacoes } from "@/src/service/agendamento/consulta.service"
+import { toast } from "react-toastify";
 
 export default function CardConsultaAtual({
+  observacoes,
   data,
   horario,
   tipo,
@@ -8,6 +13,27 @@ export default function CardConsultaAtual({
   profissional,
   tratamentoAtual
 }) {
+  const [searchParams] = useSearchParams();
+  const idConsulta = searchParams.get('idConsulta');
+  const [anotacoes, setAnotacoes] = useState(null)
+
+  useEffect(() =>{
+    console.log(data)
+    setAnotacoes(observacoes)
+  }, [data, observacoes])
+
+  const saveObservacoes = async () =>{
+      try{
+        console.log(anotacoes)
+        const response = await realizarAnotacoes(idConsulta, anotacoes)
+        toast.success("Observações salvas com sucesso!")
+      }catch(error){
+        console.error(error)
+      }
+  }
+
+
+
   return (
     <div className="flex w-full items-center justify-center bg-white rounded-[10px] sm:w-[50vw]">
       <div className="flex w-[95%]  h-[99%] justify-around items-center flex-col gap-3 p-4">
@@ -41,6 +67,10 @@ export default function CardConsultaAtual({
               w-full
               resize-none
             "
+            value={anotacoes ?? ""}
+            onChange={(e) => setAnotacoes(e.target.value)}
+
+
             placeholder="Descreva aqui"
           />
         </div>
@@ -61,6 +91,7 @@ export default function CardConsultaAtual({
           cursor-pointer
           mt-5
         "
+        onClick={() => saveObservacoes()}
         >
       Salvar
       </button>

@@ -61,7 +61,7 @@ export const menuConfig = [
     label: "Agendamento Consulta",
     path: "/agendamento-consulta",
     icon: Calendar,
-    roles: ["USER", "ADMIN", "SCHEDULER"],
+    roles: ["ADMIN", "SCHEDULER"],
   },
     {
     key: "responsaveis",

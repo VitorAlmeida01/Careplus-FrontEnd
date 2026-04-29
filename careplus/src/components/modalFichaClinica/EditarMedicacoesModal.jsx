@@ -5,6 +5,7 @@ import {
   atualizarMedicacao,
   removerMedicacao,
 } from "@/src/service/fichaClinica/fichaClinica.service"
+import { toast } from 'react-toastify'
 
 const formatarDataParaInput = (valor) => {
   if (!valor) return ""
@@ -72,8 +73,10 @@ export default function EditarMedicacoesModal({
         idProntuario,
       })
       await refreshDados()
+      toast.success("Medicação salva com sucesso")
     } catch (error) {
       console.error("Erro ao atualizar medicação:", error)
+      toast.error("Erro ao salvar medicação")
     } finally {
       setIsSaving(false)
     }
@@ -86,8 +89,11 @@ export default function EditarMedicacoesModal({
       setIsSaving(true)
       await removerMedicacao(idMedicacao)
       await refreshDados()
+      toast.success("Medicação removida com sucesso")
+
     } catch (error) {
       console.error("Erro ao remover medicação:", error)
+      toast.error("Erro ao remover medicação")
     } finally {
       setIsSaving(false)
     }
@@ -112,8 +118,10 @@ export default function EditarMedicacoesModal({
         ativo: true,
       })
       await refreshDados()
+      toast.success("Medicação adicionada com sucesso")
     } catch (error) {
       console.error("Erro ao adicionar medicação:", error)
+      toast.error("Erro ao adicionar medicação")
     } finally {
       setIsSaving(false)
     }
@@ -296,7 +304,7 @@ export default function EditarMedicacoesModal({
         <button
           type="button"
           onClick={onClose}
-          className="flex-1 p-3 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+          className="flex-1 p-3 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors cursor-pointer"
         >
           Fechar
         </button>

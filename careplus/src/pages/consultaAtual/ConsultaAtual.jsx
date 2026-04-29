@@ -31,6 +31,7 @@ export default function ConsultaAtual() {
         try {
           const dados = JSON.parse(consultaSession)
           setDetalhesConsulta(dados)
+          console.log(dados)
         } catch (error) {
           console.error("Erro ao ler dados da consulta na session:", error)
           setDetalhesConsulta(null)
@@ -65,6 +66,7 @@ export default function ConsultaAtual() {
     <Layout>
       <div className="flex ml-5 gap-5 w-[95%] p-4 sm:flex-nowrap flex-wrap">
         <CardConsultaAtual
+          observacoes={detalhesConsulta?.observacoesComportamentais}
           data={formatarData(detalhesConsulta?.data)}
           horario={formatarHorario(
             detalhesConsulta?.horarioInicio,

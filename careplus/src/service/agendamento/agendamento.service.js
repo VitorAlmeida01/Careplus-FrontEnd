@@ -1,6 +1,7 @@
 import {api} from "../api"
 
 const CORES_ESPECIALIDADE = {
+    'Fonoaudiologia':       'bg-purple-500',
     'Psicologia':           'bg-green-500',
     'Terapia Ocupacional':  'bg-blue-500',
     'Psicopedagogia':       'bg-pink-400',

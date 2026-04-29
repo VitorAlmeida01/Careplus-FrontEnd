@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import ModalBase from "./ModalBase"
 import { adicionarCid, removerCid } from "@/src/service/fichaClinica/fichaClinica.service"
+import { toast } from "react-toastify"
 
 export default function EditarCidModal({
   isOpen,
@@ -29,8 +30,10 @@ export default function EditarCidModal({
       if (onCidUpdated) {
         await onCidUpdated()
       }
+      toast.success("CID adicionado com sucesso")
     } catch (error) {
       console.error("Erro ao adicionar CID:", error)
+      toast.error("Erro ao adicionar CID")
     } finally {
       setIsSaving(false)
     }
@@ -45,8 +48,10 @@ export default function EditarCidModal({
       if (onCidUpdated) {
         await onCidUpdated()
       }
+      toast.success("CID removido com sucesso")
     } catch (error) {
       console.error("Erro ao remover CID:", error)
+      toast.error("Erro ao remover CID")
     } finally {
       setIsSaving(false)
     }
@@ -76,7 +81,7 @@ export default function EditarCidModal({
                   type="button"
                   onClick={() => handleRemoverCid(cidItem.id)}
                   disabled={isSaving}
-                  className="px-3 py-1 text-sm border border-red-200 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-60"
+                  className="px-3 py-1 text-sm border border-red-200 text-red-600 rounded-lg hover:bg-red-50 disabled:opacity-60 cursor-pointer"
                 >
                   Remover
                 </button>
@@ -102,7 +107,7 @@ export default function EditarCidModal({
             type="button"
             onClick={handleAdicionarCid}
             disabled={isSaving || !novoCid.trim() || !idProntuario}
-            className="px-4 py-2 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-60"
+            className="px-4 py-2 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-lg font-medium hover:opacity-90 disabled:opacity-60 cursor-pointer"
           >
             Adicionar
           </button>
@@ -113,7 +118,7 @@ export default function EditarCidModal({
         <button
           type="button"
           onClick={onClose}
-          className="flex-1 p-3 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+          className="flex-1 p-3 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors cursor-pointer"
         >
           Fechar
         </button>

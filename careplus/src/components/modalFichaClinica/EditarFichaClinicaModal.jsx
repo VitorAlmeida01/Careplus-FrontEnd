@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import ModalBase from "./ModalBase"
 import { atualizarFichaClinica } from "@/src/service/fichaClinica/fichaClinica.service"
+import { toast } from 'react-toastify'
 
 export default function EditarFichaClinicaModal({
   isOpen,
@@ -47,6 +48,7 @@ export default function EditarFichaClinicaModal({
       }
 
       onClose()
+      toast.success("Ficha clinica salva com sucesso")
     } catch (error) {
       console.error("Erro ao atualizar ficha clínica:", error)
     } finally {
@@ -170,14 +172,14 @@ export default function EditarFichaClinicaModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 p-3 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors"
+            className="flex-1 p-3 border border-gray-300 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={isSaving}
-            className="flex-1 p-3 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
+            className="flex-1 p-3 bg-linear-to-r from-blue-400 to-cyan-400 text-white rounded-xl font-medium hover:opacity-90 transition-opacity cursor-pointer"
           >
             {isSaving ? "Salvando..." : "Salvar"}
           </button>
