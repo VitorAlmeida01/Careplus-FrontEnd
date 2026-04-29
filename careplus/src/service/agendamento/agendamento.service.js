@@ -85,6 +85,18 @@ export async function listarAgendaMensal(id, tipo, dataReferencia) {
     }
 }
 
+export async function buscarResponsavelPorPaciente(idPaciente) {
+    try {
+        const response = await api.get(`/responsaveis/por-paciente`, {
+            params: { idPaciente }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar responsável: ", error);
+        throw error;
+    }
+}
+
 export async function notificarResponsavel(id, dataReferencia) {
     try {
         const response = await api.get(`/consultas-prontuario/notificar-responsavel`, {
