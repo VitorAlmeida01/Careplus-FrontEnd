@@ -165,3 +165,12 @@ export async function deletarRecorrencia(recorrenciaId) {
         throw error;
     }
 }
+
+export async function editarRecorrencia(recorrenciaId, body) {
+    try {
+        await api.put(`/consultas-prontuario/recorrencia/${recorrenciaId}`, body);
+    } catch (error) {
+        console.error("Erro ao editar recorrência: ", error);
+        throw error;
+    }
+}

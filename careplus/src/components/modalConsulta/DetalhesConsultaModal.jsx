@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Modal from 'react-modal'
 import { toast } from 'react-toastify'
-import { editarConsulta, deletarConsulta, deletarRecorrencia } from '@/src/service/agendamento/agendamento.service'
+import { editarConsulta, editarRecorrencia, deletarConsulta, deletarRecorrencia, listarEspecialidades, listarFuncionariosPorEspecialidade } from '@/src/service/agendamento/agendamento.service'
 import './ConsultaModal.css'
 
 Modal.setAppElement('#root')
@@ -24,10 +24,18 @@ function formatarHorario(inicio, fim) {
   return '—'
 }
 
-export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpdate, allFuncionarios = [], tiposDeConsulta = [] }) {
-  const [modo, setModo] = useState('view') // 'view' | 'edit' | 'confirm-delete'
+function criarLinhaProfissional() {
+  return { uid: crypto.randomUUID(), area: '', funcionarioId: '' }
+}
+
+export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpdate, tiposDeConsulta = [] }) {
+  const [modo, setModo] = useState('view') // 'view' | 'edit' | 'confirm-edit' | 'confirm-delete'
   const [salvando, setSalvando] = useState(false)
-  const [form, setForm] = useState({ data: '', horarioInicio: '', horarioFim: '', tipo: '', funcionarioId: '' })
+  const [form, setForm] = useState({ data: '', horarioInicio: '', horarioFim: '', tipo: '' })
+  const [pendingBody, setPendingBody] = useState(null)
+  const [profissionais, setProfissionais] = useState([criarLinhaProfissional()])
+  const [areas, setAreas] = useState([])
+  const [funcionariosPorArea, setFuncionariosPorArea] = useState({})
 
   const pacienteNome = consulta?.paciente?.nome ?? '—'
   const funcionarios = (() => {
@@ -39,6 +47,10 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpd
   })()
   const tipo = consulta?.tipo
 
+  useEffect(() => {
+    listarEspecialidades().then(setAreas).catch(console.error)
+  }, [])
+
   // Sync form when consulta changes or modal opens
   useEffect(() => {
     if (consulta && isOpen) {
@@ -49,13 +61,22 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpd
         if (consulta.funcionario) return [consulta.funcionario]
         return []
       })()
-      const primeiroFunc = funcs[0]
       setForm({
         data: consulta.data ?? '',
         horarioInicio: consulta.horarioInicio ? consulta.horarioInicio.substring(0, 5) : '',
         horarioFim: consulta.horarioFim ? consulta.horarioFim.substring(0, 5) : '',
         tipo: consulta.tipo ?? '',
-        funcionarioId: primeiroFunc?.id ? String(primeiroFunc.id) : '',
+      })
+      const linhas = funcs.length > 0
+        ? funcs.map(f => ({ uid: crypto.randomUUID(), area: f.especialidade || '', funcionarioId: String(f.id) }))
+        : [criarLinhaProfissional()]
+      setProfissionais(linhas)
+      linhas.forEach(l => {
+        if (l.area) {
+          listarFuncionariosPorEspecialidade(l.area).then(data =>
+            setFuncionariosPorArea(prev => ({ ...prev, [l.area]: data }))
+          ).catch(console.error)
+        }
       })
       setModo('view')
     }
@@ -66,27 +87,85 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpd
     setForm(prev => ({ ...prev, [name]: value }))
   }
 
-  async function handleSalvarEdicao() {
+  function handleProfissionalAreaChange(uid, newArea) {
+    setProfissionais(prev => prev.map(p =>
+      p.uid === uid ? { ...p, area: newArea, funcionarioId: '' } : p
+    ))
+    if (newArea && !funcionariosPorArea[newArea]) {
+      listarFuncionariosPorEspecialidade(newArea).then(data =>
+        setFuncionariosPorArea(prev => ({ ...prev, [newArea]: data }))
+      ).catch(console.error)
+    }
+  }
+
+  function handleProfissionalFuncChange(uid, funcionarioId) {
+    setProfissionais(prev => prev.map(p =>
+      p.uid === uid ? { ...p, funcionarioId } : p
+    ))
+  }
+
+  function buildBody() {
+    return {
+      pacienteId: consulta.paciente?.id,
+      funcionarioIds: profissionais.map(p => p.funcionarioId).filter(Boolean).map(Number),
+      data: form.data,
+      horarioInicio: form.horarioInicio.length === 5 ? form.horarioInicio + ':00' : form.horarioInicio,
+      horarioFim: form.horarioFim ? (form.horarioFim.length === 5 ? form.horarioFim + ':00' : form.horarioFim) : null,
+      tipo: form.tipo || undefined,
+    }
+  }
+
+  function handleSalvarEdicao() {
     if (!form.data || !form.horarioInicio) {
       toast.error('Data e horário de início são obrigatórios.')
       return
     }
+    const body = buildBody()
+    if (consulta.recorrenciaId) {
+      setPendingBody(body)
+      setModo('confirm-edit')
+    } else {
+      executarSalvar(body)
+    }
+  }
+
+  async function executarSalvar(body) {
     setSalvando(true)
     try {
-      const body = {
-        pacienteId: consulta.paciente?.id,
-        funcionarioId: form.funcionarioId ? Number(form.funcionarioId) : undefined,
-        data: form.data,
-        horarioInicio: form.horarioInicio.length === 5 ? form.horarioInicio + ':00' : form.horarioInicio,
-        horarioFim: form.horarioFim ? (form.horarioFim.length === 5 ? form.horarioFim + ':00' : form.horarioFim) : null,
-        tipo: form.tipo || undefined,
-      }
       await editarConsulta(consulta.id, body)
       toast.success('Consulta atualizada com sucesso!')
       onUpdate?.()
       onClose()
     } catch {
       toast.error('Erro ao atualizar consulta.')
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  async function handleSalvarSoEsta() {
+    setSalvando(true)
+    try {
+      await editarConsulta(consulta.id, pendingBody)
+      toast.success('Consulta atualizada com sucesso!')
+      onUpdate?.()
+      onClose()
+    } catch {
+      toast.error('Erro ao atualizar consulta.')
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  async function handleSalvarRecorrencia() {
+    setSalvando(true)
+    try {
+      await editarRecorrencia(consulta.recorrenciaId, pendingBody)
+      toast.success('Série atualizada com sucesso!')
+      onUpdate?.()
+      onClose()
+    } catch {
+      toast.error('Erro ao atualizar série.')
     } finally {
       setSalvando(false)
     }
@@ -145,7 +224,7 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpd
               </svg>
             </div>
             <h2 className="text-[16px] font-semibold text-slate-800">
-              {modo === 'edit' ? 'Editar Consulta' : modo === 'confirm-delete' ? 'Remover Consulta' : 'Detalhes da Consulta'}
+              {modo === 'edit' ? 'Editar Consulta' : modo === 'confirm-edit' ? 'Editar Consulta' : modo === 'confirm-delete' ? 'Remover Consulta' : 'Detalhes da Consulta'}
             </h2>
           </div>
           <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
@@ -245,23 +324,70 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpd
               </div>
             </div>
 
-            {/* Profissional */}
-            {allFuncionarios.length > 0 && (
-              <div>
-                <label className="block text-[12px] font-medium text-slate-500 mb-1">Profissional</label>
-                <select
-                  name="funcionarioId"
-                  value={form.funcionarioId}
-                  onChange={handleFormChange}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            {/* Profissionais */}
+            <div>
+              <label className="block text-[12px] font-medium text-slate-500 mb-1">Profissionais</label>
+              <div className="flex flex-col gap-2">
+                {profissionais.map((prof) => (
+                  <div key={prof.uid} className="flex gap-2 items-center">
+                    <div className="relative flex-1">
+                      <select
+                        value={prof.area}
+                        onChange={(e) => handleProfissionalAreaChange(prof.uid, e.target.value)}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-blue-300 appearance-none pr-8"
+                      >
+                        <option value="">Área</option>
+                        {areas.map((a, i) => <option key={i} value={a}>{a}</option>)}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="relative flex-1">
+                      <select
+                        value={prof.funcionarioId}
+                        onChange={(e) => handleProfissionalFuncChange(prof.uid, e.target.value)}
+                        disabled={!prof.area}
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-700 outline-none focus:ring-2 focus:ring-blue-300 appearance-none pr-8 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <option value="">Profissional</option>
+                        {(funcionariosPorArea[prof.area] || []).map(f => (
+                          <option key={f.id} value={f.id}>{f.nome}</option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </div>
+                    </div>
+                    {profissionais.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setProfissionais(prev => prev.filter(p => p.uid !== prof.uid))}
+                        className="p-2 text-slate-300 hover:text-red-400 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setProfissionais(prev => [...prev, criarLinhaProfissional()])}
+                  className="flex items-center gap-1.5 text-[12px] text-blue-500 hover:text-blue-700 font-medium mt-1 transition-colors cursor-pointer w-fit"
                 >
-                  <option value="">Selecionar profissional</option>
-                  {allFuncionarios.map(f => (
-                    <option key={f.id} value={f.id}>{f.nome}{f.especialidade ? ` – ${f.especialidade}` : ''}</option>
-                  ))}
-                </select>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  Adicionar outro profissional
+                </button>
               </div>
-            )}
+            </div>
 
             {/* Data */}
             <div>
@@ -348,6 +474,18 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpd
           </div>
         )}
 
+        {/* Confirmação de edição */}
+        {modo === 'confirm-edit' && (
+          <div className="px-6 py-5 space-y-3">
+            <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 text-center">
+              <p className="text-[14px] font-semibold text-blue-700 mb-1">Editar consulta recorrente?</p>
+              <p className="text-[12px] text-blue-500">
+                Deseja editar apenas esta consulta ou todas as da série?
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-100 flex gap-2">
           {modo === 'view' && (
@@ -387,6 +525,31 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpd
                 className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer disabled:opacity-60"
               >
                 {salvando ? 'Salvando...' : 'Salvar'}
+              </button>
+            </>
+          )}
+          {modo === 'confirm-edit' && (
+            <>
+              <button
+                onClick={() => setModo('edit')}
+                disabled={salvando}
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-[14px] rounded-xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSalvarSoEsta}
+                disabled={salvando}
+                className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer disabled:opacity-60"
+              >
+                {salvando ? 'Salvando...' : 'Só esta'}
+              </button>
+              <button
+                onClick={handleSalvarRecorrencia}
+                disabled={salvando}
+                className="flex-1 py-2.5 bg-blue-900 hover:bg-blue-950 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer disabled:opacity-60"
+              >
+                {salvando ? 'Salvando...' : 'Toda a série'}
               </button>
             </>
           )}

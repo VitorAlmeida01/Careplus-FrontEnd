@@ -32,6 +32,14 @@ export default function DetalhesConsultaProfissionalModal({ isOpen, onClose, con
   const pacienteId = consulta?.paciente?.id
   const consultaId = consulta?.id
 
+  const isPassada = (() => {
+    if (!consulta?.data) return false
+    const hoje = new Date()
+    hoje.setHours(0, 0, 0, 0)
+    const dataConsulta = new Date(consulta.data + 'T12:00:00')
+    return dataConsulta < hoje
+  })()
+
   const funcionarios = (() => {
     if (consulta?.funcionarios?.length) return consulta.funcionarios
     if (consulta?.consultaFuncionarios?.length)
@@ -94,13 +102,18 @@ export default function DetalhesConsultaProfissionalModal({ isOpen, onClose, con
           {/* Body — view */}
           {modo === 'view' && (
             <div className="px-6 py-5 space-y-4">
-              {consulta.tipo && (
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                {consulta.tipo && (
                   <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                     {consulta.tipo}
                   </span>
-                </div>
-              )}
+                )}
+                {isPassada && (
+                  <span className="inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                    Consulta passada
+                  </span>
+                )}
+              </div>
 
               {/* Paciente */}
               <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -202,8 +215,9 @@ export default function DetalhesConsultaProfissionalModal({ isOpen, onClose, con
                 </button>
                 <button
                   onClick={() => setModo('confirm-iniciar')}
-                  disabled={!consultaId}
-                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer disabled:opacity-50"
+                  disabled={!consultaId || isPassada}
+                  title={isPassada ? 'Esta consulta já passou' : undefined}
+                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-[14px] rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Iniciar Consulta
                 </button>
