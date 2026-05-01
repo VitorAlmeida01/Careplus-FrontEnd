@@ -27,8 +27,7 @@ function ddmmyyyy(dateStr) {
 function proximaDoDia(diaSemana) {
   const hoje = new Date()
   hoje.setHours(0, 0, 0, 0)
-  let diff = (diaSemana - hoje.getDay() + 7) % 7
-  if (diff === 0) diff = 7
+  const diff = (diaSemana - hoje.getDay() + 7) % 7
   const data = new Date(hoje)
   data.setDate(data.getDate() + diff)
   const d = String(data.getDate()).padStart(2, '0')

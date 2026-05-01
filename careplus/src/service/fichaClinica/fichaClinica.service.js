@@ -181,6 +181,21 @@ async function detalhesConsultaPorId(idConsulta) {
   }
 }
 
+async function detalhesConsultaAnteriorPorId(idConsulta) {
+  try {
+    const response = await api.get("/consultas-prontuario/detalhes-anterior", {
+      params: { idConsulta },
+    })
+
+    if (response.status === 200) {
+      return response.data
+    }
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
 async function ultimasConsultasPorPacienteFuncionario({ idPaciente, pagina = 0, idFuncionario }) {
   try {
     const response = await api.get("/consultas-prontuario/ultimas-consultas", {
@@ -205,5 +220,6 @@ export {
   atualizarFichaClinica,
   proximaConsultaPorPaciente,
   detalhesConsultaPorId,
+  detalhesConsultaAnteriorPorId,
   ultimasConsultasPorPacienteFuncionario,
 }

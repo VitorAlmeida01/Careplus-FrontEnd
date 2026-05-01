@@ -4,12 +4,10 @@ import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 import { DayView } from './DayView';
 import CadastroConsultaModal from '../../modalConsulta/MarcacaoConsultaModal'
-import DetalhesConsultaModal from '../../modalConsulta/DetalhesConsultaModal'
 import {
   listarAgendaSemanal,
   listarAgendaDiaria,
   listarAgendaMensal,
-  listarConsultasPorPaciente,
   normalizarConsultas,
 } from '@/src/service/agendamento/agendamento.service';
 
@@ -39,11 +37,12 @@ const CalendarApp = ({
   funcionarios = [],
   pacientes = [],
   onTiposChange,
+  onEventClick,
+  refreshKey = 0,
 }) => {
   const [view, setView] = useState('week');
   const [events, setEvents] = useState({});
   const [modalState, setModalState] = useState({ isOpen: false, data: null });
-  const [detalhesModal, setDetalhesModal] = useState({ isOpen: false, consulta: null });
 
   // Resolve IDs a partir dos nomes selecionados
   const selectedFuncionario = React.useMemo(() => {
@@ -97,6 +96,10 @@ const CalendarApp = ({
     fetchEventos();
   }, [fetchEventos]);
 
+  useEffect(() => {
+    if (refreshKey > 0) fetchEventos();
+  }, [refreshKey, fetchEventos]);
+
   const filteredEvents = React.useMemo(() => {
     if (!selectedArea) return events;
     const filtrados = {};
@@ -144,7 +147,8 @@ const CalendarApp = ({
         pacientePreSelecionado: filterMode === 'paciente' ? selectedPacienteObj : null,
         profissionalPreSelecionado: filterMode === 'profissional' ? selectedFuncionario : null,
       },
-    });
+    })
+    
   };
 
   const handleCloseModal = () => {
@@ -153,7 +157,7 @@ const CalendarApp = ({
   };
 
   const handleEventClick = (e, event) => {
-    setDetalhesModal({ isOpen: true, consulta: event });
+    if (onEventClick) onEventClick(event);
   };
 
   const emptyState = (
@@ -219,15 +223,7 @@ const CalendarApp = ({
         tiposDeConsulta={tiposDeConsultaUnicos}
       />
 
-      {/* Modal de detalhes de consulta existente */}
-      <DetalhesConsultaModal
-        isOpen={detalhesModal.isOpen}
-        onClose={() => setDetalhesModal({ isOpen: false, consulta: null })}
-        consulta={detalhesModal.consulta}
-        onUpdate={() => { setDetalhesModal({ isOpen: false, consulta: null }); setTimeout(() => fetchEventos(), 200); }}
-        allFuncionarios={funcionarios}
-        tiposDeConsulta={tiposDeConsultaUnicos}
-      />
+
     </div>
   );
 };

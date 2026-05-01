@@ -6,7 +6,7 @@ import ConsultaAntiga from "../../components/ConsultaAntigaComponent/ConsultaAnt
 import DetalhesConsultaAntigaModal from "../../components/modalConsulta/DetalhesConsultaAntigaModal"
 import { Paginacao } from "@/src/components/Paginacao/Paginacao"
 import {
-  detalhesConsultaPorId,
+  detalhesConsultaAnteriorPorId,
   ultimasConsultasPorPacienteFuncionario,
 } from "../../service/fichaClinica/fichaClinica.service"
 import { getFuncionarioId } from "../../service/login/jwtDecoder"
@@ -43,7 +43,7 @@ export default function ConsultasAntigas() {
     const novosParams = new URLSearchParams(searchParams)
     novosParams.set("pagina", String(page))
     if (Number.isFinite(idPaciente)) novosParams.set("idPaciente", String(idPaciente))
-    setSearchParams(novosParams)
+    setSearchParams(novosParams, { replace: true })
   }, [idPaciente, idFuncionario, page])
 
   const fetchTotalPaginas = useCallback(
@@ -92,8 +92,10 @@ export default function ConsultasAntigas() {
     if (!idConsulta) return
 
     try {
-      const response = await detalhesConsultaPorId(idConsulta)
-      setConsultaSelecionada(response || consulta)
+      const response = await detalhesConsultaAnteriorPorId(idConsulta)
+      if (response) {
+        setConsultaSelecionada({ ...consulta, ...response, paciente: consulta.paciente })
+      }
     } catch (error) {
       console.error("Erro ao carregar detalhes da consulta:", error)
     }
@@ -121,22 +123,28 @@ export default function ConsultasAntigas() {
         </div>
 
         <div className="flex-1 space-y-3 md:space-y-4 mx-auto w-full">
-          {consultas.map((consulta) => (
-            <ConsultaAntiga
-              key={consulta.consultaId || consulta.id}
-              titulo={formatarEspecialidades(consulta)}
-              data={formatarData(consulta?.data)}
-              horario={formatarHorario(consulta?.horarioInicio, consulta?.horarioFim)}
-              profissional={
-                consulta?.funcionarios?.[0]?.nome ||
-                consulta?.nomeProfissional ||
-                consulta?.nomeFuncionarioUltimaConsulta ||
-                "-"
-              }
-              tratamento={null}
-              onVerDetalhes={() => abrirDetalhes(consulta)}
-            />
-          ))}
+          {consultas.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+              <p className="text-base">Nenhuma consulta concluída encontrada.</p>
+            </div>
+          ) : (
+            consultas.map((consulta) => (
+              <ConsultaAntiga
+                key={consulta.consultaId || consulta.id}
+                titulo={formatarEspecialidades(consulta)}
+                data={formatarData(consulta?.data)}
+                horario={formatarHorario(consulta?.horarioInicio, consulta?.horarioFim)}
+                profissional={
+                  consulta?.funcionarios?.[0]?.nome ||
+                  consulta?.nomeProfissional ||
+                  consulta?.nomeFuncionarioUltimaConsulta ||
+                  "-"
+                }
+                tratamento={null}
+                onVerDetalhes={() => abrirDetalhes(consulta)}
+              />
+            ))
+          )}
         </div>
 
         <div className="sticky bottom-0 py-3">

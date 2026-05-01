@@ -6,13 +6,14 @@ import { WeekView } from '../../components/agendamento/calendario/WeekView'
 import { DayView } from '../../components/agendamento/calendario/DayView'
 import CadastroConsultaModal from '../../components/modalConsulta/MarcacaoConsultaModal'
 import DetalhesConsultaModal from '../../components/modalConsulta/DetalhesConsultaModal'
+import DetalhesConsultaProfissionalModal from '../../components/modalConsulta/DetalhesConsultaProfissionalModal'
 import {
   listarAgendaSemanal,
   listarAgendaDiaria,
   listarAgendaMensal,
   normalizarConsultas,
 } from '../../service/agendamento/agendamento.service'
-import { getFuncionarioId, getFuncionarioNome } from '../../service/login/jwtDecoder'
+import { getFuncionarioId, getFuncionarioNome, hasRole } from '../../service/login/jwtDecoder'
 
 const toISODate = (date) => {
   const d = new Date(date)
@@ -39,6 +40,7 @@ export default function Consultas() {
 
   const funcionarioId = getFuncionarioId()
   const funcionarioNome = getFuncionarioNome()
+  const isProfissional = hasRole('USER')
 
   const fetchEventos = useCallback(() => {
     if (!funcionarioId) return
@@ -155,16 +157,13 @@ export default function Consultas() {
           tiposDeConsulta={tiposDeConsulta}
         />
 
-        <DetalhesConsultaModal
-          isOpen={detalhesModal.isOpen}
-          onClose={() => setDetalhesModal({ isOpen: false, consulta: null })}
-          consulta={detalhesModal.consulta}
-          onUpdate={() => {
-            setDetalhesModal({ isOpen: false, consulta: null })
-            setTimeout(() => fetchEventos(), 200)
-          }}
-          tiposDeConsulta={tiposDeConsulta}
-        />
+
+          <DetalhesConsultaProfissionalModal
+            isOpen={detalhesModal.isOpen}
+            onClose={() => setDetalhesModal({ isOpen: false, consulta: null })}
+            consulta={detalhesModal.consulta}
+          />
+
       </div>
     </Layout>
   )

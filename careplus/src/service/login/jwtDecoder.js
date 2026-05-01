@@ -23,6 +23,19 @@ export function getUserRoles() {
   return payload?.roles || [];
 }
 
+export function hasRole(roleName) {
+  const payload = getTokenData();
+  if (!payload || !payload.roles) return false;
+  const target = roleName.replace(/^ROLE_/, '').toUpperCase();
+  const raw = payload.roles;
+  const arr = typeof raw === 'string'
+    ? raw.split(',').map(r => r.trim().replace(/^ROLE_/, '').toUpperCase())
+    : Array.isArray(raw)
+      ? raw.map(r => (typeof r === 'string' ? r.replace(/^ROLE_/, '').toUpperCase() : ''))
+      : [];
+  return arr.includes(target);
+}
+
 export function getFuncionarioNome() {
   const payload = getTokenData();
   return payload?.nome ?? null;

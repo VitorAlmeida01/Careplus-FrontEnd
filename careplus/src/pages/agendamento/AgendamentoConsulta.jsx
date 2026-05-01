@@ -3,9 +3,12 @@ import CalendarApp from '../../components/agendamento/calendario/Index'
 import HintCard from '../../components/agendamento/tipes/HintCard';
 import Layout from '../../components/layout/Layout'
 import FilterBar from '../../components/agendamento/filterBar/FilterBar';
+import DetalhesConsultaModal from '../../components/modalConsulta/DetalhesConsultaModal'
+import DetalhesConsultaProfissionalModal from '../../components/modalConsulta/DetalhesConsultaProfissionalModal'
 import {listarFuncionariosConsulta} from '@/src/service/agendamento/agendamento.service'
 import { buscarPacientes } from '@/src/service/pacientes/pacientes.service'
 import { buscarFuncionarios } from '@/src/service/funcionarios/funcionarios.service'
+import { hasRole } from '@/src/service/login/jwtDecoder'
 import useDebouncedValue from '@/src/service/searchEngine/useDebounceValue'
 
 
@@ -30,6 +33,13 @@ function App() {
   });
 
   const [tiposDeConsulta, setTiposDeConsulta] = useState([]);
+  const [detalhesModal, setDetalhesModal] = useState({ isOpen: false, consulta: null });
+  const [refreshKey, setRefreshKey] = useState(0);
+  const isProfissional = hasRole('USER');
+
+  const handleEventClick = (event) => {
+    setDetalhesModal({ isOpen: true, consulta: event });
+  };
 
   useEffect(() => {
     listarFuncionariosConsulta().then((response) => {
@@ -117,6 +127,20 @@ function App() {
               funcionarios={funcionarios}
               pacientes={pacientes}
               onTiposChange={setTiposDeConsulta}
+              onEventClick={handleEventClick}
+              refreshKey={refreshKey}
+            />
+
+            <DetalhesConsultaModal
+              isOpen={detalhesModal.isOpen}
+              onClose={() => setDetalhesModal({ isOpen: false, consulta: null })}
+              consulta={detalhesModal.consulta}
+              onUpdate={() => {
+                setDetalhesModal({ isOpen: false, consulta: null });
+                setRefreshKey(k => k + 1);
+              }}
+              allFuncionarios={funcionarios}
+              tiposDeConsulta={tiposDeConsulta}
             />
           </div>
 
