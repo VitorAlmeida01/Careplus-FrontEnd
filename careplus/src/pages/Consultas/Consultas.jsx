@@ -125,7 +125,7 @@ export default function Consultas() {
             <MonthView
               currentDate={currentDate}
               events={events}
-              onAddEvent={openCreateModal}
+              // onAddEvent={openCreateModal}
               onEventClick={handleEventClick}
             />
           )}
@@ -133,7 +133,7 @@ export default function Consultas() {
             <WeekView
               currentDate={currentDate}
               events={events}
-              onAddEvent={openCreateModal}
+              // onAddEvent={openCreateModal}
               onEventClick={handleEventClick}
             />
           )}
@@ -141,13 +141,13 @@ export default function Consultas() {
             <DayView
               currentDate={currentDate}
               events={events}
-              onAddEvent={openCreateModal}
+              // onAddEvent={openCreateModal}
               onEventClick={handleEventClick}
             />
           )}
         </main>
-
-        <CadastroConsultaModal
+        {/* Comentado para que o funcionario não possa marcar uma consulta */}
+        {/* <CadastroConsultaModal
           isOpen={modalState.isOpen}
           onClose={handleCloseModal}
           events={events}
@@ -155,7 +155,7 @@ export default function Consultas() {
           horaSelecionada={modalState.data?.hour}
           profissionalPreSelecionado={modalState.data?.profissionalPreSelecionado}
           tiposDeConsulta={tiposDeConsulta}
-        />
+        /> */}
 
 
           <DetalhesConsultaProfissionalModal
