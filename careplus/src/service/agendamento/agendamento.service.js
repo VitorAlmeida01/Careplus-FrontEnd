@@ -97,10 +97,10 @@ export async function buscarResponsavelPorPaciente(idPaciente) {
     }
 }
 
-export async function notificarResponsavel(id, dataReferencia) {
+export async function notificarResponsavel(idPaciente, dataReferencia) {
     try {
         const response = await api.get(`/consultas-prontuario/notificar-responsavel`, {
-            params: { id, dataReferencia }
+            params: { idPaciente, dataReferencia }
         });
         return response.data;
     } catch (error) {
