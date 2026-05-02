@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect as useEffectDOM } from 'rea
 // import IniciarConsultaModal from '../../modalConsulta/IniciarConsultaModal';
 import CadastroFuncionarioModal from '../../modalConsulta/MarcacaoConsultaModal'
 import { toast} from 'react-toastify'
-import { notificarResponsavel } from '@/src/service/agendamento/agendamento.service'
+import { notificarResponsavel, buscarResponsavelPorPaciente } from '@/src/service/agendamento/agendamento.service'
 
 function AutocompleteInput({ lista, valor, onChange, onQueryChange, placeholder, icone }) {
   const [query, setQuery] = useState(valor || "");
@@ -118,6 +118,8 @@ const FilterBar = ({
   const [modal, setModal] = useState(false);
   const [confirmarNotificacao, setConfirmarNotificacao] = useState(false);
   const [enviandoNotificacao, setEnviandoNotificacao] = useState(false);
+  const [responsavel, setResponsavel] = useState(null);
+  const [carregandoResponsavel, setCarregandoResponsavel] = useState(false);
   const [modo, setModo] = useState("profissional");
 
   // const [tempArea, setTempArea] = useState("");
@@ -162,6 +164,19 @@ const FilterBar = ({
     return d.toISOString().split('T')[0];
   };
 
+  const semanaAtual = useMemo(() => {
+    const base = currentDate ? new Date(currentDate) : new Date();
+    base.setHours(12, 0, 0, 0);
+    const diaSemana = base.getDay(); // 0=dom, 1=seg ... 6=sab
+    const diffSegunda = diaSemana === 0 ? -6 : 1 - diaSemana;
+    const segunda = new Date(base);
+    segunda.setDate(base.getDate() + diffSegunda);
+    const sexta = new Date(segunda);
+    sexta.setDate(segunda.getDate() + 4);
+    const fmt = (d) => d.toLocaleDateString('pt-BR');
+    return `${fmt(segunda)} até ${fmt(sexta)}`;
+  }, [currentDate]);
+
   const handleEnviarNotificacao = async () => {
     if (!selectedPacienteObj) return;
     setEnviandoNotificacao(true);
@@ -170,6 +185,7 @@ const FilterBar = ({
       await notificarResponsavel(selectedPacienteObj.id, dataRef);
       toast.success("Notificação enviada com sucesso!");
       setConfirmarNotificacao(false);
+      setResponsavel(null);
     } catch (error) {
       toast.error("Erro ao enviar notificação.");
     } finally {
@@ -303,7 +319,19 @@ return (
     {modo === "paciente" && selectedPacienteObj && (
       <div className="w-full sm:w-auto">
         <button
-          onClick={() => setConfirmarNotificacao(true)}
+          onClick={async () => {
+            setResponsavel(null);
+            setConfirmarNotificacao(true);
+            setCarregandoResponsavel(true);
+            try {
+              const resp = await buscarResponsavelPorPaciente(selectedPacienteObj.id);
+              setResponsavel(resp);
+            } catch {
+              setResponsavel(null);
+            } finally {
+              setCarregandoResponsavel(false);
+            }
+          }}
           className="bg-[#F59E0B] hover:bg-[#D97706] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -345,15 +373,38 @@ return (
               <span className="font-medium text-slate-700">Paciente:</span> {selectedPacienteObj?.nome}
             </p>
             <p className="text-[13px] text-slate-600">
-              <span className="font-medium text-slate-700">Data de referência:</span> {currentDate ? toISODate(currentDate) : toISODate(new Date())}
+              <span className="font-medium text-slate-700">Data de referência:</span> {semanaAtual}
             </p>
-            <p className="text-[13px] text-slate-500 mt-2">
-              O responsável pelo paciente será notificado sobre as consultas agendadas.
-            </p>
+
+            {carregandoResponsavel ? (
+              <p className="text-[13px] text-slate-400 mt-2 flex items-center gap-2">
+                <svg className="animate-spin w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Buscando responsável...
+              </p>
+            ) : responsavel ? (
+              <div className="mt-2 pt-2 border-t border-slate-200 space-y-1">
+                <p className="text-[13px] text-slate-600">
+                  <span className="font-medium text-slate-700">Responsável:</span> {responsavel.nome}
+                </p>
+                <p className="text-[13px] text-slate-600">
+                  <span className="font-medium text-slate-700">Telefone:</span> {responsavel.telefone}
+                </p>
+                <p className="text-[12px] text-slate-400 mt-1">
+                  A notificação será enviada para este responsável.
+                </p>
+              </div>
+            ) : (
+              <p className="text-[13px] text-slate-500 mt-2">
+                O responsável pelo paciente será notificado sobre as consultas agendadas.
+              </p>
+            )}
           </div>
           <div className="flex items-center justify-end gap-3">
             <button
-              onClick={() => setConfirmarNotificacao(false)}
+              onClick={() => { setConfirmarNotificacao(false); setResponsavel(null); }}
               disabled={enviandoNotificacao}
               className="px-4 py-2 rounded-xl text-[13px] font-medium text-slate-600 bg-[#F4F4F5] hover:bg-[#e4e4e7] transition-colors"
             >
