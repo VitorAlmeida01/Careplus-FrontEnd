@@ -29,7 +29,6 @@ export default function ProximaConsultaModal({
       horario: formatarHorario(dados?.horarioInicio, dados?.horarioFim),
       tipo: dados?.tipo || "-",
       profissional: dados?.nomeProfissional || "-",
-      tratamento: dados?.tratamento || "-",
     })
   }, [dados])
 

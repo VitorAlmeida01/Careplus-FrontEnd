@@ -140,7 +140,6 @@ export default function ConsultasAntigas() {
                   consulta?.nomeFuncionarioUltimaConsulta ||
                   "-"
                 }
-                tratamento={null}
                 onVerDetalhes={() => abrirDetalhes(consulta)}
               />
             ))

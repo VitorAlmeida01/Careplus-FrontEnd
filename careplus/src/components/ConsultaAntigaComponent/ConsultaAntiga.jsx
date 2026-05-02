@@ -5,7 +5,6 @@ export default function ConsultaAntiga({
   data = "02/09/2025",
   horario = "16:00 - 17:00",
   profissional = "Dra. Ana Silva",
-  tratamento = "Fonético",
   onVerDetalhes,
 }) {
   return (
@@ -34,13 +33,6 @@ export default function ConsultaAntiga({
           <span>{profissional}</span>
         </div>
 
-        {/* Tratamento */}
-        {tratamento && (
-          <div className="text-xs md:text-sm text-gray-700">
-            <span>Tratamento: </span>
-            <span className="font-medium">{tratamento}</span>
-          </div>
-        )}
       </div>
 
       {/* Botão Ver Detalhes */}

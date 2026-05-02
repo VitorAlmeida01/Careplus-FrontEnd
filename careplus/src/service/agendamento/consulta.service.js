@@ -66,6 +66,35 @@ export async function marcarConsultaRecorrente(payload){
     }
 }
 
+export async function adicionarMaterial(idConsulta, item) {
+    try {
+        const response = await api.post('/materiais', { idConsulta, item })
+        return response.data
+    } catch (error) {
+        console.error('Erro ao adicionar material:', error)
+        throw error
+    }
+}
+
+export async function removerMaterial(id) {
+    try {
+        await api.delete('/materiais/deletar', { params: { id } })
+    } catch (error) {
+        console.error('Erro ao remover material:', error)
+        throw error
+    }
+}
+
+export async function buscarMateriais(idConsulta) {
+    try {
+        const response = await api.get('/materiais', { params: { idConsulta } })
+        return response.data
+    } catch (error) {
+        console.error('Erro ao buscar material:', error)
+        throw error
+    }
+}
+
 export async function realizarAnotacoes(idConsulta, observacao){
     if(!observacao){
         console.warn("Realização de anotações cancelada: payload está indefinido.");

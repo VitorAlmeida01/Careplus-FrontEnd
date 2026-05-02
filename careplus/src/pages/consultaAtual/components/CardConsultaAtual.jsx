@@ -12,7 +12,6 @@ export default function CardConsultaAtual({
   tipo,
   especialidade,
   profissional,
-  tratamentoAtual
 }) {
   const [searchParams] = useSearchParams()
   const idConsulta = searchParams.get('idConsulta')
@@ -52,7 +51,7 @@ export default function CardConsultaAtual({
         <div className="flex flex-col justify-between gap-[15px] w-[90%] h-[75%]">
           <LinhaInformacao tipo1="Data" dado1={data} tipo2="Horário" dado2={horario} />
           <LinhaInformacao tipo1="Tipo" dado1={tipo} tipo2="Especialidade" dado2={especialidade} />
-          <LinhaInformacao tipo1="Profissional" dado1={profissional} tipo2="Tratamento atual" dado2={tratamentoAtual} />
+          <LinhaInformacao tipo1="Profissional" dado1={profissional} />
 
           <div className="mt-[10px]">
             <textarea

@@ -57,11 +57,6 @@ export default function IniciarConsultaModal({ isOpen, onClose }) {
                         <span id='profissional'>Dr. Ana</span>
                     </div>
                 </div>
-                <div className='w-[90%] h-[22%] flex flex-col justify-center items-start text-wrap gap-2 rounded-lg bg-gray-100 p-4'>
-                    <label>Tratamento</label>
-                    <span id='tratamentoType'>Voz</span>
-                </div>
-
                 <div className='w-[90%] h-[20%] flex flex-row justify-center items-center gap-4'>
                     <button className='w-[80%] h-2/3 border-gray-200 border-2 rounded-lg hover:bg-blue-100' onClick={onClose}>
                         Fechar

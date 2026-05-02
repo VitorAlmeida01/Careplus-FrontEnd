@@ -2,7 +2,7 @@ import CardDadosPaciente from './CardDadosPaciente'
 import CardUltimaConsulta from './CardUltimaConsulta'
 import CardReforcadores from './CardReforcadores'
 
-export default function ColunaDireita({ dadosPaciente, ultimaConsulta }) {
+export default function ColunaDireita({ dadosPaciente, ultimaConsulta, idConsulta, reforcadores }) {
   const formatarBoolean = (valor) => {
     if (valor === true) return "Sim"
     if (valor === false) return "Não"
@@ -50,7 +50,7 @@ export default function ColunaDireita({ dadosPaciente, ultimaConsulta }) {
         }
       />
 
-      <CardReforcadores />
+      <CardReforcadores idConsulta={idConsulta} reforcadoresIniciais={reforcadores} />
     </div>
   )
 }

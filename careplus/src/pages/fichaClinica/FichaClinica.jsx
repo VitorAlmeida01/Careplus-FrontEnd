@@ -59,8 +59,6 @@ export default function FichaClinica() {
   })
   const [progresso, setProgresso] = useState({
     percentual: undefined,
-    tratamentoFeito: undefined,
-    tratamentoAtual: undefined,
   })
 
   const [proximaConsulta, setProximaConsulta] = useState(undefined)
@@ -89,8 +87,6 @@ export default function FichaClinica() {
     })
     setProgresso({
       percentual: fichaClinica?.progresso?.percentual,
-      tratamentoFeito: fichaClinica?.progresso?.tratamentoFeito,
-      tratamentoAtual: fichaClinica?.progresso?.tratamentoAtual,
     })
     setProximaConsulta(fichaClinica?.proximaConsulta)
   }, [fichaClinica])

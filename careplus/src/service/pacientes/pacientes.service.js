@@ -69,6 +69,16 @@ export async function buscarPacientes(query) {
     return [];
 }
 
+export async function buscarFotoPaciente(documento) {
+    try {
+        const response = await api.get(`/pacientes/foto?cpf=${documento}`)
+        if (response.status === 200) return response;
+    } catch (error) {
+        console.log(error);
+    }
+    return [];
+}
+
 export async function cadastrarPaciente(paciente){
     try{
         const formData = new FormData()

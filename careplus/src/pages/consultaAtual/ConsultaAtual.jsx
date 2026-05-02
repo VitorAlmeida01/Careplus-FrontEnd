@@ -9,9 +9,9 @@ export default function ConsultaAtual() {
   const [searchParams] = useSearchParams()
   const [detalhesConsulta, setDetalhesConsulta] = useState(null)
 
+        const idConsulta = searchParams.get("idConsulta")
   useEffect(() => {
     const carregarConsulta = async () => {
-      const idConsulta = searchParams.get("idConsulta")
 
       if (idConsulta) {
         try {
@@ -37,7 +37,10 @@ export default function ConsultaAtual() {
           setDetalhesConsulta(null)
         }
       }
+          console.log("Testesssdaw")
     }
+
+
 
     carregarConsulta()
   }, [searchParams])
@@ -75,12 +78,13 @@ export default function ConsultaAtual() {
           tipo={detalhesConsulta?.tipo || "-"}
           especialidade={detalhesConsulta?.especialidade || "-"}
           profissional={detalhesConsulta?.nomeProfissional || "-"}
-          tratamentoAtual={detalhesConsulta?.tratamentoAtual || "-"}
         />
 
         <ColunaDireita
           dadosPaciente={detalhesConsulta?.dadosPaciente}
           ultimaConsulta={detalhesConsulta?.ultimaConsulta}
+          idConsulta={idConsulta}
+          reforcadores={detalhesConsulta?.materiais || []}
         />
       </div>
     </Layout>
