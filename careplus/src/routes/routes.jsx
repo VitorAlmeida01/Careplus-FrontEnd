@@ -13,6 +13,7 @@ import AgendamentoConsulta from "../pages/agendamento/AgendamentoConsulta"
 import Unauthorized from "../pages/unauthorized/Unauthorized"
 import PrivateRoute from "./PrivateRoute"
 import Responsaveis from "../pages/Responsaveis/Responsaveis"
+import MeuPerfil from "../pages/meuPerfil/MeuPerfil"
 
 export default function RoutesApp() {
 
@@ -60,6 +61,11 @@ export default function RoutesApp() {
           </PrivateRoute>
         } />
         <Route path="/responsaveis" element={<Responsaveis/>} />
+        <Route path="/meu-perfil" element={
+          <PrivateRoute allowedRoles={["USER", "ADMIN", "MANAGER", "SCHEDULER"]}>
+            <MeuPerfil />
+          </PrivateRoute>
+        } />
       </Routes>
     </BrowserRouter>
   )

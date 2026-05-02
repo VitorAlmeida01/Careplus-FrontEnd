@@ -63,6 +63,25 @@ export function getCachedFotoFuncionario(documento) {
     return _fotoFuncionarioCache.get(documento) ?? null
 }
 
+export async function buscarMeuPerfil() {
+    const response = await api.get('/funcionarios/me')
+    return response.data
+}
+
+export async function atualizarMeuPerfil(dados) {
+    const formData = new FormData()
+    formData.append('nome', dados.nome)
+    formData.append('email', dados.email)
+    if (dados.telefone) formData.append('telefone', dados.telefone)
+    if (dados.tipoAtendimento) formData.append('tipoAtendimento', dados.tipoAtendimento)
+    if (dados.senha) formData.append('senha', dados.senha)
+    if (dados.foto) formData.append('foto', dados.foto)
+    const response = await api.patch('/funcionarios/me', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return response.data
+}
+
 export async function buscarFotoFuncionario(documento) {
     if (_fotoFuncionarioCache.has(documento)) return _fotoFuncionarioCache.get(documento)
     try {

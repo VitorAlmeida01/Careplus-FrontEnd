@@ -3,7 +3,8 @@ import {
   BarChart3,
   ClipboardMinus,
   Calendar,
-  IdCardLanyard
+  IdCardLanyard,
+  UserCircle,
 } from "lucide-react"
 
 export const menuConfig = [
@@ -69,5 +70,12 @@ export const menuConfig = [
     path: "/responsaveis",
     icon: IdCardLanyard,
     roles: ["SCHEDULER", "ADMIN"],
+  },
+  {
+    key: "meu-perfil",
+    label: "Meu Perfil",
+    path: "/meu-perfil",
+    icon: UserCircle,
+    roles: ["USER", "ADMIN", "MANAGER", "SCHEDULER"],
   },
 ]
