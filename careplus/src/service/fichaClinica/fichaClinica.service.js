@@ -151,10 +151,10 @@ async function atualizarFichaClinica(idFicha, dadosFicha) {
   }
 }
 
-async function proximaConsultaPorPaciente(idPaciente) {
+async function proximaConsultaPorPaciente(idPaciente, idFuncionario) {
   try {
     const response = await api.get("/consultas-prontuario/proxima", {
-      params: { idPaciente },
+      params: { idPaciente, idFuncionario },
     })
 
     if (response.status === 200) {

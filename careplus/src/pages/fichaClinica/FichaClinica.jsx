@@ -12,6 +12,7 @@ import { fichaClinicaPorPaciente } from "@/src/service/fichaClinica/fichaClinica
 import { contatoCuidadorPorPaciente } from "@/src/service/fichaClinica/fichaClinica.service"
 import { proximaConsultaPorPaciente } from "@/src/service/fichaClinica/fichaClinica.service"
 import { detalhesConsultaPorId } from "@/src/service/fichaClinica/fichaClinica.service"
+import { getFuncionarioId } from "@/src/service/login/jwtDecoder"
 
 export default function FichaClinica() {
   const navigate = useNavigate()
@@ -117,7 +118,8 @@ export default function FichaClinica() {
 
   const abrirModalProximaConsulta = async () => {
     try {
-      const response = await proximaConsultaPorPaciente(idPaciente)
+      const idFuncionario = getFuncionarioId()
+      const response = await proximaConsultaPorPaciente(idPaciente, idFuncionario)
       setProximaConsulta(response || null)
     } catch (error) {
       console.error("Erro ao buscar proxima consulta:", error)
