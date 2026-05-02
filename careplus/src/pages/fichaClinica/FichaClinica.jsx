@@ -13,6 +13,7 @@ import { contatoCuidadorPorPaciente } from "@/src/service/fichaClinica/fichaClin
 import { proximaConsultaPorPaciente } from "@/src/service/fichaClinica/fichaClinica.service"
 import { detalhesConsultaPorId } from "@/src/service/fichaClinica/fichaClinica.service"
 import { getFuncionarioId } from "@/src/service/login/jwtDecoder"
+import { buscarFotoPaciente } from "@/src/service/pacientes/pacientes.service"
 
 export default function FichaClinica() {
   const navigate = useNavigate()
@@ -62,6 +63,9 @@ export default function FichaClinica() {
   })
 
   const [proximaConsulta, setProximaConsulta] = useState(undefined)
+  const [fotoPaciente, setFotoPaciente] = useState(null)
+
+
 
   // Atualiza os estados derivados quando fichaClinica muda
   useEffect(() => {
@@ -89,6 +93,10 @@ export default function FichaClinica() {
       percentual: fichaClinica?.progresso?.percentual,
     })
     setProximaConsulta(fichaClinica?.proximaConsulta)
+
+    if (fichaClinica?.cpf) {
+      buscarFotoPaciente(fichaClinica.cpf).then(setFotoPaciente)
+    }
   }, [fichaClinica])
   
   const exibirFichaClinica = useCallback(() => {
@@ -178,6 +186,8 @@ export default function FichaClinica() {
                 onProximaConsultaClick={abrirModalProximaConsulta}
                 fichaClinica={fichaClinica}
                 onCidUpdated={exibirFichaClinica}
+                fotoPaciente={fotoPaciente}
+                onFotoAtualizada={setFotoPaciente}
               />
             </section>
           </section>

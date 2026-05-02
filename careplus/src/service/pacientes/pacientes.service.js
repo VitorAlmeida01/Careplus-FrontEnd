@@ -69,14 +69,34 @@ export async function buscarPacientes(query) {
     return [];
 }
 
-export async function buscarFotoPaciente(documento) {
+const _fotoPacienteCache = new Map()
+
+export async function atualizarFotoPaciente(cpf, arquivo) {
+    const formData = new FormData()
+    formData.append('foto', arquivo)
+    await api.patch(`/pacientes/foto?cpf=${cpf}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    _fotoPacienteCache.delete(cpf)
+}
+
+export async function buscarFotoPaciente(cpf) {
+    if (_fotoPacienteCache.has(cpf)) return _fotoPacienteCache.get(cpf)
     try {
-        const response = await api.get(`/pacientes/foto?cpf=${documento}`)
-        if (response.status === 200) return response;
+        const response = await api.get('/pacientes/foto', {
+            params: { cpf },
+            responseType: 'arraybuffer',
+        })
+        if (response.status === 200) {
+            const blob = new Blob([response.data], { type: 'image/jpeg' })
+            const url = URL.createObjectURL(blob)
+            _fotoPacienteCache.set(cpf, url)
+            return url
+        }
     } catch (error) {
-        console.log(error);
+        console.log(error)
     }
-    return [];
+    return null
 }
 
 export async function cadastrarPaciente(paciente){

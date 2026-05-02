@@ -12,7 +12,7 @@ export const menuConfig = [
     label: "Consultas",
     path: "/consultas",
     icon: ClipboardMinus,
-    roles: ["USER"],
+    roles: ["USER", "MANAGER"],
   },
   {
     key: "funcionarios",
@@ -26,7 +26,7 @@ export const menuConfig = [
     label: "Pacientes",
     path: "/pacientes",
     icon: Users,
-    roles: ["USER", "ADMIN", "SCHEDULER"],
+    roles: ["USER", "MANAGER", "ADMIN", "SCHEDULER"],
   },
   {
     key: "dashboard",

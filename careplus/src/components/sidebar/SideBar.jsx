@@ -3,7 +3,7 @@ import {
   X,
   Menu,
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import "./sideBar.css"
 import { logoutService } from "../../service/login/login.service"
@@ -12,6 +12,7 @@ import { getUserRoles } from "../../service/login/jwtDecoder"
 import { getTokenData } from "../../service/login/jwtDecoder"
 import { Button } from "@/components/ui/button"
 import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
+import { buscarFotoFuncionario, getCachedFotoFuncionario } from "../../service/funcionarios/funcionarios.service"
 
 export default function SideBar({ isOpen: isOpenProp, onClose }) {
   const [isOpenDesktop, setIsOpenDesktop] = useState(true)
@@ -19,6 +20,12 @@ export default function SideBar({ isOpen: isOpenProp, onClose }) {
   const userRoles = getUserRoles()
   const [usuario] = useState(getTokenData())
   const [modalLogoutAberto, setModalLogoutAberto] = useState(false)
+  const [fotoFuncionario, setFotoFuncionario] = useState(() => getCachedFotoFuncionario(usuario?.documento))
+
+  useEffect(() => {
+    if (!usuario?.documento) return
+    buscarFotoFuncionario(usuario.documento).then(setFotoFuncionario)
+  }, [usuario?.documento])
 
   // Detectar mudanças de tamanho da tela
   useState(() => {
@@ -78,9 +85,17 @@ export default function SideBar({ isOpen: isOpenProp, onClose }) {
 
       {isOpen && (
         <div className="flex flex-col items-center p-5 mx-4 my-5  rounded-2xl">
-          <div className="w-15 h-15 rounded-full bg-linear-to-br from-cyan-400 to-emerald-400 flex items-center justify-center text-white text-[28px] font-semibold mb-3 shadow-lg ">
-            {usuario.nome?.charAt(0).toUpperCase()}
-          </div>
+          {fotoFuncionario ? (
+            <img
+              src={fotoFuncionario}
+              alt="Foto do funcionário"
+              className="w-15 h-15 rounded-full object-cover mb-3 shadow-lg"
+            />
+          ) : (
+            <div className="w-15 h-15 rounded-full bg-linear-to-br from-cyan-400 to-emerald-400 flex items-center justify-center text-white text-[28px] font-semibold mb-3 shadow-lg">
+              {usuario.nome?.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div className="text-center w-full">
             <h2 className="text-lg font-semibold text-slate-700 mb-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
               {usuario.nome}

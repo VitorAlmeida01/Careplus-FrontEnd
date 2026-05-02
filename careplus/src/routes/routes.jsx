@@ -31,7 +31,7 @@ export default function RoutesApp() {
           }
         />
         <Route path="/pacientes" element={
-          <PrivateRoute allowedRoles={["ADMIN", "USER", "SCHEDULER"]}>
+          <PrivateRoute allowedRoles={["ADMIN", "USER", "MANAGER", "SCHEDULER"]}>
             <Pacientes />
           </PrivateRoute>
         } />
@@ -41,7 +41,7 @@ export default function RoutesApp() {
           </PrivateRoute>
         } />
         <Route path="/dashboard" element={<TelaDashboard />} />
-        <Route path="/pacientes/ficha-clinica" element={<PrivateRoute allowedRoles={["ADMIN", "USER"]}>
+        <Route path="/pacientes/ficha-clinica" element={<PrivateRoute allowedRoles={["ADMIN", "USER", "MANAGER"]}>
           <FichaClinica />
         </PrivateRoute>} />
         <Route path="/consultas/ficha-clinica" element={<FichaClinica />} />
@@ -49,13 +49,13 @@ export default function RoutesApp() {
         <Route path="/pacientes/consulta-atual" element={<ConsultaAtual />} />
         <Route path="/consultas/consulta-atual" element={<ConsultaAtual />} />
         <Route path="/consultas" element={
-          <PrivateRoute allowedRoles={["USER"]}>
+          <PrivateRoute allowedRoles={["USER", "MANAGER"]}>
             <Consultas />
           </PrivateRoute>
         } />
         <Route path="/pacientes/consultas-antigas" element={<ConsultasAntigas />} />
         <Route path="/agendamento-consulta" element={
-          <PrivateRoute allowedRoles={["ADMIN", "USER", "SCHEDULER"]}>
+          <PrivateRoute allowedRoles={["ADMIN", "USER", "MANAGER", "SCHEDULER"]}>
             <AgendamentoConsulta />
           </PrivateRoute>
         } />

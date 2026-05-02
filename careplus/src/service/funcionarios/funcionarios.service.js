@@ -57,6 +57,31 @@ export async function atualizarFuncionario(id, dados) {
     return response.data
 }
 
+const _fotoFuncionarioCache = new Map()
+
+export function getCachedFotoFuncionario(documento) {
+    return _fotoFuncionarioCache.get(documento) ?? null
+}
+
+export async function buscarFotoFuncionario(documento) {
+    if (_fotoFuncionarioCache.has(documento)) return _fotoFuncionarioCache.get(documento)
+    try {
+        const response = await api.get('/funcionarios/foto', {
+            params: { documento },
+            responseType: 'arraybuffer',
+        })
+        if (response.status === 200) {
+            const blob = new Blob([response.data], { type: 'image/jpeg' })
+            const url = URL.createObjectURL(blob)
+            _fotoFuncionarioCache.set(documento, url)
+            return url
+        }
+    } catch (error) {
+        console.log(error)
+    }
+    return null
+}
+
 export async function cadastrarFuncionario(formData) {
     const response = await api.post("/funcionarios", formData, {
         headers: { "Content-Type": "multipart/form-data" }
