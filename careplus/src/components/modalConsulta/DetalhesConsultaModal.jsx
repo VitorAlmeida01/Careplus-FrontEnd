@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Modal from 'react-modal'
+import { generateUUID } from '@/src/utils/uuid'
 import { toast } from 'react-toastify'
 import { editarConsulta, editarRecorrencia, deletarConsulta, deletarRecorrencia, listarEspecialidades, listarFuncionariosPorEspecialidade } from '@/src/service/agendamento/agendamento.service'
 import './ConsultaModal.css'
@@ -25,7 +26,7 @@ function formatarHorario(inicio, fim) {
 }
 
 function criarLinhaProfissional() {
-  return { uid: crypto.randomUUID(), area: '', funcionarioId: '' }
+  return { uid: generateUUID(), area: '', funcionarioId: '' }
 }
 
 export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpdate, tiposDeConsulta = [] }) {
@@ -68,7 +69,7 @@ export default function DetalhesConsultaModal({ isOpen, onClose, consulta, onUpd
         tipo: consulta.tipo ?? '',
       })
       const linhas = funcs.length > 0
-        ? funcs.map(f => ({ uid: crypto.randomUUID(), area: f.especialidade || '', funcionarioId: String(f.id) }))
+        ? funcs.map(f => ({ uid: generateUUID(), area: f.especialidade || '', funcionarioId: String(f.id) }))
         : [criarLinhaProfissional()]
       setProfissionais(linhas)
       linhas.forEach(l => {

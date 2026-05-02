@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import "./ConsultaModal.css"
 import Modal from "react-modal"
+import { generateUUID } from '@/src/utils/uuid'
 import { buscarPacientePorNome, marcarConsultaRecorrente } from '@/src/service/agendamento/consulta.service'
 import { listarEspecialidades, listarFuncionariosPorEspecialidade } from '@/src/service/agendamento/agendamento.service'
 import { toast } from "react-toastify"
@@ -40,7 +41,7 @@ function formatarData(dateStr) {
 }
 
 function criarLinhaProfissional() {
-  return { uid: crypto.randomUUID(), area: '', funcionarioId: '', funcionarioNome: '' }
+  return { uid: generateUUID(), area: '', funcionarioId: '', funcionarioNome: '' }
 }
 
 let tiposCache = []
@@ -85,7 +86,7 @@ export default function CadastroFuncionarioModal({
     if (profissionalPreSelecionado?.id) {
       const area = profissionalPreSelecionado.especialidade || ''
       setProfissionais([{
-        uid: crypto.randomUUID(),
+        uid: generateUUID(),
         area,
         funcionarioId: String(profissionalPreSelecionado.id),
         funcionarioNome: profissionalPreSelecionado.nome,
@@ -136,7 +137,7 @@ export default function CadastroFuncionarioModal({
     }
     if (profissionalPreSelecionado?.id) {
       setProfissionais([{
-        uid: crypto.randomUUID(),
+        uid: generateUUID(),
         area: profissionalPreSelecionado.especialidade || '',
         funcionarioId: String(profissionalPreSelecionado.id),
         funcionarioNome: profissionalPreSelecionado.nome,
