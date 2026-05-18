@@ -36,7 +36,6 @@ const CalendarApp = ({
   filterMode = 'profissional',
   funcionarios = [],
   pacientes = [],
-  onTiposChange,
   onEventClick,
   refreshKey = 0,
 }) => {
@@ -111,16 +110,6 @@ const CalendarApp = ({
     });
     return filtrados;
   }, [events, selectedArea]);
-
-  const tiposDeConsultaUnicos = React.useMemo(() => {
-    const tipos = new Set();
-    Object.values(events || {}).flat().forEach(c => { if (c?.tipo) tipos.add(c.tipo); });
-    return Array.from(tipos);
-  }, [events]);
-
-  React.useEffect(() => {
-    if (onTiposChange) onTiposChange(tiposDeConsultaUnicos);
-  }, [tiposDeConsultaUnicos]);
 
   const handleNavigate = (direction) => {
     const newDate = new Date(currentDate.getTime());
@@ -220,7 +209,6 @@ const CalendarApp = ({
         horaSelecionada={modalState.data?.hour}
         pacientePreSelecionado={modalState.data?.pacientePreSelecionado}
         profissionalPreSelecionado={modalState.data?.profissionalPreSelecionado}
-        tiposDeConsulta={tiposDeConsultaUnicos}
       />
 
 

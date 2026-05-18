@@ -111,9 +111,9 @@ function App() {
           </div>
 
           {/* Container do HintCard */}
-          <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>
+          {/* <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>
             <HintCard />
-          </div>
+          </div> */}
 
           {/* Container do CalendarApp */}
           <div className='w-full lg:max-w-[95%] xl:max-w-1200px mx-auto'>

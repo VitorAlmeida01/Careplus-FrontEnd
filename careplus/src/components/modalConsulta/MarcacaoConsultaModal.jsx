@@ -44,7 +44,7 @@ function criarLinhaProfissional() {
   return { uid: generateUUID(), area: '', funcionarioId: '', funcionarioNome: '' }
 }
 
-let tiposCache = []
+const TIPOS_CONSULTA = ['Sessão Regular', 'Avaliação Inicial']
 
 export default function CadastroFuncionarioModal({
   isOpen,
@@ -54,7 +54,6 @@ export default function CadastroFuncionarioModal({
   horaSelecionada,
   pacientePreSelecionado = null,
   profissionalPreSelecionado = null,
-  tiposDeConsulta = [],
 }) {
   const [nome, setNome] = useState('')
   const [sugestoes, setSugestoes] = useState([])
@@ -71,7 +70,6 @@ export default function CadastroFuncionarioModal({
   const [diasSelecionados, setDiasSelecionados] = useState([])
   const [dataTermino, setDataTermino] = useState('')
   const [dataConsulta, setDataConsulta] = useState(dataSelecionada || '')
-  const [listaTipos, setListaTipos] = useState(() => tiposCache)
   const [tipoSelecionado, setTipoSelecionado] = useState('')
   const [consultas, setConsultas] = useState([])
   const [salvando, setSalvando] = useState(false)
@@ -80,7 +78,6 @@ export default function CadastroFuncionarioModal({
     if (!isOpen) return
     listarEspecialidades().then(data => {
       setAreas(data)
-      setListaTipos(tiposCache)
     }).catch(err => console.error(err))
 
     if (profissionalPreSelecionado?.id) {
@@ -114,12 +111,6 @@ export default function CadastroFuncionarioModal({
     }
   }, [isOpen])
 
-  useEffect(() => {
-    if (Array.isArray(tiposDeConsulta) && tiposDeConsulta.length > 0) {
-      tiposCache = tiposDeConsulta
-      setListaTipos(tiposDeConsulta)
-    }
-  }, [tiposDeConsulta])
 
   useEffect(() => {
     if (isOpen && nome?.length >= 2 && !pacienteSelecionado) {
@@ -198,7 +189,7 @@ export default function CadastroFuncionarioModal({
     if (!pacienteSelecionado?.id) return toast.error("Selecione um paciente.")
     if (profissionais.some(p => !p.funcionarioId)) return toast.error("Selecione todos os profissionais.")
     if (!horario) return toast.error("Informe o horário de início.")
-    if (listaTipos.length > 0 && !tipoSelecionado) return toast.error("Selecione o tipo de consulta.")
+    if (!tipoSelecionado) return toast.error("Selecione o tipo de consulta.")
 
     const nomesProfissionais = profissionais.map(p => p.funcionarioNome).join(', ')
 
@@ -524,8 +515,7 @@ export default function CadastroFuncionarioModal({
             </div>
 
             {/* Tipo de Consulta */}
-            {listaTipos.length > 0 && (
-              <div className="mb-4">
+            <div className="mb-4">
                 <label className={labelClass}>Tipo de Consulta</label>
                 <div className="relative">
                   <select
@@ -534,7 +524,7 @@ export default function CadastroFuncionarioModal({
                     className={`${fieldClass} appearance-none pr-8`}
                   >
                     <option value="">Selecione o tipo</option>
-                    {listaTipos.map((t, i) => <option key={i} value={t}>{t}</option>)}
+                    {TIPOS_CONSULTA.map((t, i) => <option key={i} value={t}>{t}</option>)}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400">
@@ -543,7 +533,6 @@ export default function CadastroFuncionarioModal({
                   </div>
                 </div>
               </div>
-            )}
 
             {/* Toggle Recorrência */}
             <div className="mb-4">
