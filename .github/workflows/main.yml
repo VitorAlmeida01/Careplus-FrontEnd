@@ -33,6 +33,7 @@ jobs:
         run: |
           npm install
           npm run build --if-present
+        working-directory: ./careplus
 
       # 4. Enviar build (dist/) direto para a EC2 via rsync
       - name: Copiar dist/ para EC2 Frontend
@@ -43,7 +44,7 @@ jobs:
           REMOTE_USER: ubuntu
           TARGET: /var/www/careplus/
           ARGS: "-rltgoDzvO --delete"
-          SOURCE: "dist/"
+          SOURCE: "careplus/dist/"
 
       # 5. Ajustar permissões e recarregar Nginx
       - name: Recarregar Nginx na EC2
