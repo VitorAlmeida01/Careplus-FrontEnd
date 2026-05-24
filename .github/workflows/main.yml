@@ -35,19 +35,19 @@ jobs:
           npm run build --if-present
         working-directory: ./careplus
 
-      # 4. Enviar build (dist/) direto para a EC2 via rsync
+      # 4. Enviar build para diretório temporário do ubuntu (evita problema de permissão em /var/www)
       - name: Copiar dist/ para EC2 Frontend
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.FRONTEND_HOST }}
           REMOTE_USER: ubuntu
-          TARGET: /var/www/careplus/
+          TARGET: /home/ubuntu/dist/
           ARGS: "-rltgoDzvO --delete"
           SOURCE: "careplus/dist/"
 
-      # 5. Ajustar permissões e recarregar Nginx
-      - name: Recarregar Nginx na EC2
+      # 5. Mover arquivos para /var/www/careplus, ajustar permissões e recarregar Nginx
+      - name: Deploy e Recarregar Nginx na EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.FRONTEND_HOST }}
@@ -56,15 +56,19 @@ jobs:
           script: |
             set -e
 
-            chown -R www-data:www-data /var/www/careplus
-            chmod -R 755 /var/www/careplus
+            echo "==> Movendo arquivos para /var/www/careplus/..."
+            sudo rsync -a --delete /home/ubuntu/dist/ /var/www/careplus/
+            sudo chown -R www-data:www-data /var/www/careplus
+            sudo chmod -R 755 /var/www/careplus
+            echo "Arquivos copiados: $(ls -1 /var/www/careplus/ | wc -l) itens na raiz"
 
-            nginx -t && systemctl reload nginx
+            echo "==> Recarregando Nginx..."
+            sudo nginx -t && sudo systemctl reload nginx
 
             if systemctl is-active --quiet nginx; then
               echo "✓ Frontend CarePlus disponível"
             else
               echo "✗ ERRO: Nginx não está ativo"
-              systemctl status nginx
+              sudo systemctl status nginx
               exit 1
             fi
