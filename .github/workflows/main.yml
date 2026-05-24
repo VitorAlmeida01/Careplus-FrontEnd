@@ -33,27 +33,20 @@ jobs:
         run: |
           npm install
           npm run build --if-present
-        # O build gera a pasta dist/ que será enviada ao S3
 
-      # 4. Configurar credenciais AWS (AWS Academy usa session token temporário)
-      - name: Configurar Credenciais AWS
-        uses: aws-actions/configure-aws-credentials@v4
+      # 4. Enviar build (dist/) direto para a EC2 via rsync
+      - name: Copiar dist/ para EC2 Frontend
+        uses: easingthemes/ssh-deploy@main
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.FRONTEND_HOST }}
+          REMOTE_USER: ubuntu
+          TARGET: /var/www/careplus/
+          ARGS: "-rltgoDzvO --delete"
+          SOURCE: "dist/"
 
-      # 5. Sincronizar build (dist/) com o prefixo frontend/ no S3
-      #    --delete remove arquivos antigos que não existem mais no build
-      - name: Sincronizar dist/ com S3
-        run: |
-          aws s3 sync dist/ s3://${{ secrets.DEPLOY_BUCKET }}/frontend/ --delete
-          echo "Frontend sincronizado com s3://${{ secrets.DEPLOY_BUCKET }}/frontend/"
-          echo "Arquivos enviados: $(aws s3 ls s3://${{ secrets.DEPLOY_BUCKET }}/frontend/ --recursive | wc -l)"
-
-      # 6. SSH na EC2 do frontend → atualizar arquivos do S3 → recarregar Nginx
-      - name: Deploy na EC2 (sincronizar S3 e recarregar Nginx)
+      # 5. Ajustar permissões e recarregar Nginx
+      - name: Recarregar Nginx na EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.FRONTEND_HOST }}
@@ -62,24 +55,10 @@ jobs:
           script: |
             set -e
 
-            echo "==> Sincronizando frontend do S3 para /var/www/careplus/..."
-            # A EC2 usa o LabInstanceProfile, sem necessidade de credenciais explícitas
-            aws s3 sync s3://${{ secrets.DEPLOY_BUCKET }}/frontend/ /var/www/careplus/ --delete
-            echo "Arquivos atualizados: $(ls -1 /var/www/careplus/ | wc -l) itens na raiz"
-
-            if [ ! -f /var/www/careplus/index.html ]; then
-              echo "✗ ERRO: index.html não encontrado após sync!"
-              ls -la /var/www/careplus/
-              exit 1
-            fi
-
-            echo "==> Ajustando permissões..."
             chown -R www-data:www-data /var/www/careplus
             chmod -R 755 /var/www/careplus
 
-            echo "==> Recarregando Nginx..."
             nginx -t && systemctl reload nginx
-            echo "✓ Nginx recarregado com sucesso"
 
             if systemctl is-active --quiet nginx; then
               echo "✓ Frontend CarePlus disponível"
