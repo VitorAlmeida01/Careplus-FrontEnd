@@ -127,7 +127,7 @@ export default function Pacientes() {
         {loading ? (
           <Loading message="Carregando pacientes..." />
         ) : (
-          <TabelaPaciente pacientes={pacientes} mostrandoInativos={filtro === 'inativos'} />
+          <TabelaPaciente pacientes={pacientes} mostrandoInativos={filtro === 'inativos'} onRefresh={recarregarPacientes} />
         )}
 
         {!query && <Paginacao page={page} setPage={setPage} fetchTotalPages={fetchPacientes} />}

@@ -6,15 +6,17 @@ import {
   Calendar,
   Phone,
   Eye,
-  RotateCcw
+  RotateCcw,
+  Pencil
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
+import EditarPacienteModal from "../modalCadastro/Pacientes/EditarPacienteModal"
 import { deletarPaciente, reativarPaciente } from "../../service/pacientes/pacientes.service"
 import { toast } from "react-toastify"
 import { useEffect, useState } from "react"
 
-export default function TabelaPaciente({ pacientes, mostrandoInativos = false }) {
+export default function TabelaPaciente({ pacientes, mostrandoInativos = false, onRefresh }) {
   const navigate = useNavigate()
 
   const [pacientesData, setPacientesData] = useState(pacientes)
@@ -22,6 +24,8 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false })
   const [pacienteParaExcluir, setPacienteParaExcluir] = useState(null)
   const [modalReativacaoAberto, setModalReativacaoAberto] = useState(false)
   const [pacienteParaReativar, setPacienteParaReativar] = useState(null)
+  const [modalEdicaoAberto, setModalEdicaoAberto] = useState(false)
+  const [pacienteParaEditar, setPacienteParaEditar] = useState(null)
 
   useEffect(() => {
     setPacientesData(pacientes)
@@ -61,6 +65,15 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false })
     }
   }
 
+  const abrirModalEdicao = (paciente) => {
+    setPacienteParaEditar(paciente)
+    setModalEdicaoAberto(true)
+  }
+
+  const handleEdicaoSucesso = () => {
+    if (onRefresh) onRefresh()
+  }
+
   function fichaClinicaPaciente(id){
     navigate(`/pacientes/ficha-clinica?idPaciente=${id}`)
   }
@@ -94,6 +107,7 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false })
               </th>
               <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle"></th>
               <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle"></th>
+              <th className="py-[22px] px-4 pb-[30px] text-center font-medium text-white text-sm align-middle"></th>
             </tr>
           </thead>
           <tbody>
@@ -125,6 +139,11 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false })
                   <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500" onClick={() => fichaClinicaPaciente(paciente.id)}>
                     <Eye size={18} />
                   </td>
+                  {!mostrandoInativos && (
+                    <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-yellow-500" onClick={() => abrirModalEdicao(paciente)}>
+                      <Pencil size={18} />
+                    </td>
+                  )}
                   <td
                     className={`p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer ${mostrandoInativos ? 'hover:text-green-500' : 'hover:text-red-500'}`}
                     onClick={() => mostrandoInativos ? abrirModalReativacao(paciente) : abrirModalExclusao(paciente)}
@@ -190,6 +209,15 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false })
                 <Eye size={16} />
                 <span className="text-sm font-medium">Ver ficha</span>
               </button>
+              {!mostrandoInativos && (
+                <button
+                  onClick={() => abrirModalEdicao(paciente)}
+                  className="flex-1 flex items-center justify-center gap-2 py-2 px-4 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 transition-colors"
+                >
+                  <Pencil size={16} />
+                  <span className="text-sm font-medium">Editar</span>
+                </button>
+              )}
               {mostrandoInativos ? (
                 <button
                   onClick={() => abrirModalReativacao(paciente)}
@@ -232,6 +260,14 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false })
         mensagem={`Deseja reativar o paciente ${pacienteParaReativar?.nome}?`}
         textoBotaoConfirmar="Reativar"
         textoBotaoCancelar="Cancelar"
+      />
+
+      {/* Modal de Edição */}
+      <EditarPacienteModal
+        isOpen={modalEdicaoAberto}
+        onClose={() => setModalEdicaoAberto(false)}
+        onSuccess={handleEdicaoSucesso}
+        paciente={pacienteParaEditar}
       />
     </div>
   )

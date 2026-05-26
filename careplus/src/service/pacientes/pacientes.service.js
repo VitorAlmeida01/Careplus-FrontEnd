@@ -99,6 +99,19 @@ export async function buscarFotoPaciente(cpf) {
     return null
 }
 
+export async function atualizarPaciente(id, dados) {
+    const formData = new FormData()
+    formData.append('nome', dados.nome)
+    formData.append('email', dados.email)
+    formData.append('cpf', dados.cpf)
+    if (dados.telefone) formData.append('telefone', dados.telefone)
+    formData.append('dtNascimento', dados.dtNascimento)
+    if (dados.convenio) formData.append('convenio', dados.convenio)
+    if (dados.foto) formData.append('foto', dados.foto)
+    const response = await api.put(`/pacientes?id=${id}`, formData)
+    return response.data
+}
+
 export async function cadastrarPaciente(paciente){
     try{
         const formData = new FormData()

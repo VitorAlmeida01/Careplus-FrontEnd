@@ -55,7 +55,7 @@ export const WeekView = ({ currentDate, events, onAddEvent, onEventClick }) => {
         <div className="w-16 shrink-0 border-r border-gray-200" />
         {weekDays.map((day, i) => {
           const isToday = isSameDate(day, new Date());
-          const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+          const isWeekend = day.getDay() === 0;
           return (
             <div key={i} className={`flex-1 p-2 text-center font-semibold text-sm border-l border-gray-200 first:border-l-0 ${isWeekend ? 'text-gray-400 bg-gray-200/60' : 'text-gray-700'}`}>
               <div className="text-xs">{daysOfWeek[i]}</div>
@@ -92,7 +92,7 @@ export const WeekView = ({ currentDate, events, onAddEvent, onEventClick }) => {
             const dateKey = localDateKey(day);
             const dayEvents = events[dateKey] || [];
             const isToday = isSameDate(day, new Date());
-            const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+            const isWeekend = day.getDay() === 0;
 
             return (
               <div
