@@ -118,6 +118,15 @@ export async function reativarFuncionario(id) {
     return response.data
 }
 
+export async function listarSubordinados(id, pagina) {
+    try {
+        const response = await api.get(`/funcionarios/subordinados/paginado?id=${id}&pagina=${pagina}`)
+        if (response.status === 200) return response.data
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 export async function buscarFuncionarios(query) {
     try {
         const isEmail = query.includes('@');
