@@ -29,7 +29,7 @@ export const MonthView = ({ currentDate, events, onAddEvent, onDragOver, onDrop,
         ].join('-');
         const dayEvents = events[dateKey] || [];
         const isToday = isSameDate(cellDate, new Date());
-        const isWeekend = cellDate.getDay() === 0 || cellDate.getDay() === 6;
+        const isWeekend = cellDate.getDay() === 0;
 
         return (
           <div
