@@ -19,9 +19,12 @@ export default function BarraAlinhada(props) {
     carregarDados();
   }, []);
 
-  const categorias = dados.map(item => item.setor);
-  const dataFuncionarios = dados.map(item => item.totalFuncionarios);
-  const dataPacientes = dados.map(item => item.totalPacientes);
+  // Filtrar dados para excluir itens sem setor
+  const dadosFiltrados = dados.filter(item => item.setor && item.setor.trim() !== '');
+
+  const categorias = dadosFiltrados.map(item => item.setor);
+  const dataFuncionarios = dadosFiltrados.map(item => item.totalFuncionarios);
+  const dataPacientes = dadosFiltrados.map(item => item.totalPacientes);
 
 
      const option = {
@@ -45,7 +48,7 @@ export default function BarraAlinhada(props) {
     grid: {
       left: '3%',
       right: '4%',
-      bottom: 80,
+      bottom: 120,
       containLabel: true
     },
     
@@ -56,6 +59,12 @@ export default function BarraAlinhada(props) {
         data: categorias,
         axisTick: {
           alignWithLabel: true 
+        },
+        axisLabel: {
+          rotate: 33,
+          interval: 0,
+          fontSize: 12,
+          hideOverlap: false
         }
       }
     ],
