@@ -169,11 +169,30 @@ export default function TabelaResponsavel({ responsaveis, mostrandoInativos = fa
 
   const formatarData = (valor) => {
     if (!valor) return "-"
+    const parts = valor.split("-")
+    if (parts.length === 3 && parts[0].length === 4)
+      return `${parts[2]}/${parts[1]}/${parts[0]}`
+    return valor
+  }
 
-    const data = new Date(valor)
-    if (Number.isNaN(data.getTime())) return "-"
+  const formatarDocumento = (doc) => {
+    if (!doc) return '-'
+    const digits = doc.replace(/\D/g, '')
+    if (digits.length === 11)
+      return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+    if (digits.length === 9)
+      return digits.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4')
+    return doc
+  }
 
-    return data.toLocaleDateString("pt-BR")
+  const formatarTelefone = (tel) => {
+    if (!tel) return '-'
+    const digits = tel.replace(/\D/g, '')
+    if (digits.length === 11)
+      return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+    if (digits.length === 10)
+      return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+    return tel
   }
 
   const textoEnderecoCompleto = [
@@ -237,13 +256,13 @@ export default function TabelaResponsavel({ responsaveis, mostrandoInativos = fa
                     </div>
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
-                    {responsavel.cpf}
+                    {formatarDocumento(responsavel.cpf)}
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
                     {formatarData(responsavel.dtNascimento)}
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
-                    {responsavel.telefone}
+                    {formatarTelefone(responsavel.telefone)}
                   </td>
                   <td
                     className="p-4 font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500"
@@ -290,7 +309,7 @@ export default function TabelaResponsavel({ responsaveis, mostrandoInativos = fa
               <div className="flex items-center gap-2">
                 <FileText size={16} className="text-gray-500 shrink-0" />
                 <span className="text-gray-600">CPF:</span>
-                <span className="font-medium text-gray-900">{responsavel.cpf}</span>
+                <span className="font-medium text-gray-900">{formatarDocumento(responsavel.cpf)}</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -302,7 +321,7 @@ export default function TabelaResponsavel({ responsaveis, mostrandoInativos = fa
               <div className="flex items-center gap-2">
                 <Phone size={16} className="text-gray-500 shrink-0" />
                 <span className="text-gray-600">Telefone:</span>
-                <span className="font-medium text-gray-900">{responsavel.telefone}</span>
+                <span className="font-medium text-gray-900">{formatarTelefone(responsavel.telefone)}</span>
               </div>
 
               <div className="flex items-center gap-2">
