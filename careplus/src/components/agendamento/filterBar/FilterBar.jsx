@@ -131,22 +131,16 @@ const FilterBar = ({
     return funcionarios;
   }, [funcionarios]);
 
-  const handleAreaChange = (e) => {
-    // setTempArea(e.target.value);
-    setTempProfissional("");
-  };
 
   const handleModoChange = (novoModo) => {
     setModo(novoModo);
     setTempProfissional("");
     setTempPaciente("");
-    // setTempArea("");
   };
 
   const handleApplyClick = () => {
     onApplyFilters({
       modo,
-      // area: tempArea,
       profissional: tempProfissional,
       paciente: tempPaciente,
     });
@@ -258,21 +252,6 @@ return (
           />
         </div>
 
-        {/* Seletor de Área (sempre visível) */}
-        {/* <div className="relative w-full sm:flex-1 sm:min-w-110px">
-          <select value={tempArea} onChange={handleAreaChange} className="w-full appearance-none bg-[#F4F4F5] hover:bg-[#e4e4e7] text-slate-600 px-3 py-2 rounded-xl text-[13px] outline-none cursor-pointer pr-8">
-            <option value="">Área</option>
-            {areas.map((area) => (
-              <option key={area} value={area}>{area}</option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-400">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-            </svg>
-          </div>
-        </div> */}
-
         {/* Input dinâmico: Profissional ou Paciente */}
         {modo === "profissional" ? (
           <AutocompleteInput
@@ -306,7 +285,7 @@ return (
       {/* Botão Aplicar */}
       <button 
         onClick={handleApplyClick} 
-        className="bg-[#2B8BFF] hover:bg-[#1A7AEB] text-white flex items-center gap-1.5 px-5 py-2 rounded-xl text-[13px] font-medium transition-colors whitespace-nowrap w-full sm:w-auto"
+        className="bg-[#2B8BFF] hover:bg-[#1A7AEB] text-white flex items-center justify-center gap-1.5 px-5 py-2 rounded-xl text-[13px] font-medium transition-colors whitespace-nowrap w-full sm:w-auto cursor-pointer"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
@@ -332,7 +311,7 @@ return (
               setCarregandoResponsavel(false);
             }
           }}
-          className="bg-[#F59E0B] hover:bg-[#D97706] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap"
+          className="bg-[#F59E0B] hover:bg-[#D97706] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap cursor-pointer"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
@@ -344,13 +323,13 @@ return (
 
     {/* Botão Nova Consulta */}
     <div className="w-full sm:w-auto">
-      <button onClick={()=> setModal(true)} className="bg-[#00D2A0] hover:bg-[#00C092] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap" >
+      <button onClick={()=> setModal(true)} className="bg-[#00D2A0] hover:bg-[#00C092] text-white flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-[13px] font-medium w-full transition-colors whitespace-nowrap cursor-pointer" >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
         Nova Consulta
       </button>
-      <CadastroFuncionarioModal 
+      <CadastroFuncionarioModal  
       isOpen={modal} onClose={() => setModal(false)}
       tiposDeConsulta={tiposDeConsulta}
       />
