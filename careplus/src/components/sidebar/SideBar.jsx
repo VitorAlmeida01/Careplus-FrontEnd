@@ -3,7 +3,7 @@ import {
   X,
   Menu,
 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import "./sideBar.css"
 import { logoutService } from "../../service/login/login.service"
@@ -15,11 +15,21 @@ import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
 import { buscarFotoFuncionario, getCachedFotoFuncionario } from "../../service/funcionarios/funcionarios.service"
 
 export default function SideBar({ isOpen: isOpenProp, onClose }) {
-  const [isOpenDesktop, setIsOpenDesktop] = useState(true)
+  const [isOpenDesktop, setIsOpenDesktop] = useState(() => {
+    const nome = getTokenData()?.nome ?? 'default'
+    const key = `careplus_sidebar_${btoa(encodeURIComponent(nome))}`
+    const saved = localStorage.getItem(key)
+    return saved !== null ? saved === 'true' : true
+  })
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
   const userRoles = getUserRoles()
   const [usuario] = useState(getTokenData())
   const [modalLogoutAberto, setModalLogoutAberto] = useState(false)
+
+  const sidebarKey = useMemo(() => {
+    const nome = usuario?.nome ?? 'default'
+    return `careplus_sidebar_${btoa(encodeURIComponent(nome))}`
+  }, [usuario?.nome])
   const [fotoFuncionario, setFotoFuncionario] = useState(() => getCachedFotoFuncionario(usuario?.documento))
 
   useEffect(() => {
@@ -45,7 +55,11 @@ export default function SideBar({ isOpen: isOpenProp, onClose }) {
     if (isMobile && onClose) {
       onClose()
     } else {
-      setIsOpenDesktop(!isOpenDesktop)
+      setIsOpenDesktop(prev => {
+        const next = !prev
+        localStorage.setItem(sidebarKey, String(next))
+        return next
+      })
     }
   }
 
