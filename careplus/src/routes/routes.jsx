@@ -14,6 +14,7 @@ import Unauthorized from "../pages/unauthorized/Unauthorized"
 import PrivateRoute from "./PrivateRoute"
 import Responsaveis from "../pages/Responsaveis/Responsaveis"
 import MeuPerfil from "../pages/meuPerfil/MeuPerfil"
+import Subordinados from "../pages/subordinados/Subordinados"
 
 export default function RoutesApp() {
 
@@ -64,6 +65,11 @@ export default function RoutesApp() {
         <Route path="/meu-perfil" element={
           <PrivateRoute allowedRoles={["USER", "ADMIN", "MANAGER", "SCHEDULER"]}>
             <MeuPerfil />
+          </PrivateRoute>
+        } />
+        <Route path="/subordinados" element={
+          <PrivateRoute allowedRoles={["MANAGER"]}>
+            <Subordinados />
           </PrivateRoute>
         } />
       </Routes>

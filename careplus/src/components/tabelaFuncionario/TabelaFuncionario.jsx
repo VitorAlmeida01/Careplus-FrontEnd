@@ -16,6 +16,26 @@ import ConfirmacaoModal from "../modalConfirmacao/ConfirmacaoModal"
 import { deletarFuncionario, reativarFuncionario, atualizarFuncionario } from "../../service/funcionarios/funcionarios.service"
 import { toast } from "react-toastify"
 
+function formatarDocumento(doc) {
+  if (!doc) return '-'
+  const digits = doc.replace(/\D/g, '')
+  if (digits.length === 11)
+    return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+  if (digits.length === 9)
+    return digits.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4')
+  return doc
+}
+
+function formatarTelefone(tel) {
+  if (!tel) return '-'
+  const digits = tel.replace(/\D/g, '')
+  if (digits.length === 11)
+    return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  if (digits.length === 10)
+    return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+  return tel
+}
+
 export default function TabelaFuncionario({ funcionarios, mostrandoInativos = false }) {
 
   const [funcionariosData, setFuncionariosData] = useState(funcionarios)
@@ -130,7 +150,7 @@ export default function TabelaFuncionario({ funcionarios, mostrandoInativos = fa
                     </div>
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
-                    {funcionario.documento || '-'}
+                    {formatarDocumento(funcionario.documento)}
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
                     {funcionario.supervisor ? funcionario.supervisor.nome : '-'}
@@ -139,7 +159,7 @@ export default function TabelaFuncionario({ funcionarios, mostrandoInativos = fa
                     {funcionario.cargo || '-'}
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
-                    {funcionario.telefone || '-'}
+                    {formatarTelefone(funcionario.telefone)}
                   </td>
                   {!mostrandoInativos && (
                     <td
@@ -183,7 +203,7 @@ export default function TabelaFuncionario({ funcionarios, mostrandoInativos = fa
               <div className="flex items-center gap-2">
                 <FileText size={16} className="text-gray-500 shrink-0" />
                 <span className="text-gray-600">Documento:</span>
-                <span className="font-medium text-gray-900">{funcionario.documento || '-'}</span>
+                <span className="font-medium text-gray-900">{formatarDocumento(funcionario.documento)}</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -203,7 +223,7 @@ export default function TabelaFuncionario({ funcionarios, mostrandoInativos = fa
               <div className="flex items-center gap-2">
                 <Phone size={16} className="text-gray-500 shrink-0" />
                 <span className="text-gray-600">Telefone:</span>
-                <span className="font-medium text-gray-900">{funcionario.telefone || '-'}</span>
+                <span className="font-medium text-gray-900">{formatarTelefone(funcionario.telefone)}</span>
               </div>
             </div>
 

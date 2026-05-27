@@ -16,6 +16,34 @@ import { deletarPaciente, reativarPaciente } from "../../service/pacientes/pacie
 import { toast } from "react-toastify"
 import { useEffect, useState } from "react"
 
+function formatarDocumento(doc) {
+  if (!doc) return '-'
+  const digits = doc.replace(/\D/g, '')
+  if (digits.length === 11)
+    return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+  if (digits.length === 9)
+    return digits.replace(/(\d{2})(\d{3})(\d{3})(\d{1})/, '$1.$2.$3-$4')
+  return doc
+}
+
+function formatarData(data) {
+  if (!data) return '-'
+  const parts = data.split('-')
+  if (parts.length === 3 && parts[0].length === 4)
+    return `${parts[2]}/${parts[1]}/${parts[0]}`
+  return data
+}
+
+function formatarTelefone(tel) {
+  if (!tel) return '-'
+  const digits = tel.replace(/\D/g, '')
+  if (digits.length === 11)
+    return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  if (digits.length === 10)
+    return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+  return tel
+}
+
 export default function TabelaPaciente({ pacientes, mostrandoInativos = false, onRefresh }) {
   const navigate = useNavigate()
 
@@ -125,16 +153,16 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false, o
                     </div>
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
-                    {paciente.cpf}
+                    {formatarDocumento(paciente.cpf)}
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
                     {paciente.convenio || "-"}
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
-                    {paciente.dtNascimento}
+                    {formatarData(paciente.dtNascimento)}
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500">
-                    {paciente.telefone}
+                    {formatarTelefone(paciente.telefone)}
                   </td>
                   <td className="p-4 text-center font-normal border-b border-gray-500 hover:cursor-pointer hover:text-blue-500" onClick={() => fichaClinicaPaciente(paciente.id)}>
                     <Eye size={18} />
@@ -177,8 +205,8 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false, o
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2">
                 <FileText size={16} className="text-gray-500 shrink-0" />
-                <span className="text-gray-600">CPF:</span>
-                <span className="font-medium text-gray-900">{paciente.cpf}</span>
+                <span className="text-gray-600">Documento:</span>
+                <span className="font-medium text-gray-900">{formatarDocumento(paciente.cpf)}</span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -190,13 +218,13 @@ export default function TabelaPaciente({ pacientes, mostrandoInativos = false, o
               <div className="flex items-center gap-2">
                 <Calendar size={16} className="text-gray-500 shrink-0" />
                 <span className="text-gray-600">Nascimento:</span>
-                <span className="font-medium text-gray-900">{paciente.dtNascimento}</span>
+                <span className="font-medium text-gray-900">{formatarData(paciente.dtNascimento)}</span>
               </div>
 
               <div className="flex items-center gap-2">
                 <Phone size={16} className="text-gray-500 shrink-0" />
                 <span className="text-gray-600">Telefone:</span>
-                <span className="font-medium text-gray-900">{paciente.telefone}</span>
+                <span className="font-medium text-gray-900">{formatarTelefone(paciente.telefone)}</span>
               </div>
             </div>
 

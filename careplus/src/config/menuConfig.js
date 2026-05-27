@@ -5,6 +5,7 @@ import {
   Calendar,
   IdCardLanyard,
   UserCircle,
+  UsersRound,
 } from "lucide-react"
 
 export const menuConfig = [
@@ -70,6 +71,13 @@ export const menuConfig = [
     path: "/responsaveis",
     icon: IdCardLanyard,
     roles: ["SCHEDULER", "ADMIN"],
+  },
+  {
+    key: "subordinados",
+    label: "Meus Subordinados",
+    path: "/subordinados",
+    icon: UsersRound,
+    roles: ["MANAGER"],
   },
   {
     key: "meu-perfil",
