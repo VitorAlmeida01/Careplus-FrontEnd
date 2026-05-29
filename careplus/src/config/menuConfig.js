@@ -6,6 +6,7 @@ import {
   IdCardLanyard,
   UserCircle,
   UsersRound,
+  BellRing,
 } from "lucide-react"
 
 export const menuConfig = [
@@ -78,6 +79,13 @@ export const menuConfig = [
     path: "/subordinados",
     icon: UsersRound,
     roles: ["MANAGER"],
+  },
+  {
+    key: "recorrencias-a-vencer",
+    label: "Recorrências",
+    path: "/recorrencias-a-vencer",
+    icon: BellRing,
+    roles: ["SCHEDULER"],
   },
   {
     key: "meu-perfil",
