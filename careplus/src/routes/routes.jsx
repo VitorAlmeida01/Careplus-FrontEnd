@@ -15,6 +15,7 @@ import PrivateRoute from "./PrivateRoute"
 import Responsaveis from "../pages/Responsaveis/Responsaveis"
 import MeuPerfil from "../pages/meuPerfil/MeuPerfil"
 import Subordinados from "../pages/subordinados/Subordinados"
+import RecorrenciasAVencer from "../pages/recorrenciasAVencer/RecorrenciasAVencer"
 
 export default function RoutesApp() {
 
@@ -70,6 +71,11 @@ export default function RoutesApp() {
         <Route path="/subordinados" element={
           <PrivateRoute allowedRoles={["MANAGER"]}>
             <Subordinados />
+          </PrivateRoute>
+        } />
+        <Route path="/recorrencias-a-vencer" element={
+          <PrivateRoute allowedRoles={["SCHEDULER"]}>
+            <RecorrenciasAVencer />
           </PrivateRoute>
         } />
       </Routes>
