@@ -28,7 +28,7 @@ export function normalizarConsultas(lista) {
         const eventoFormatado = {
             ...evento,
             date: new Date(`${evento.data}T${evento.horarioInicio}`),
-            title: `${evento.paciente?.nome ?? 'Paciente'} - ${evento.tipo ?? ''}`,
+            title: `${evento.paciente?.nome ?? 'Paciente'} - ${evento.funcionarios[0]?.especialidade ?? ''}`,
             color: corEvento(evento),
         };
         if (!acc[dateKey]) acc[dateKey] = [];
